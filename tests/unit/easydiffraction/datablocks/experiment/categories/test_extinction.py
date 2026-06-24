@@ -38,10 +38,14 @@ def test_extinction_model_setter():
     assert ext.model.value == 'gauss'
 
 
-def test_extinction_model_invalid():
+def test_extinction_model_invalid(monkeypatch):
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
     )
+    from easydiffraction.utils.logging import Logger
+
+    # Invalid input is rejected by fallback (keep current) under WARN mode.
+    monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)
 
     ext = BeckerCoppensExtinction()
 
@@ -63,20 +67,20 @@ def test_extinction_property_setters():
     assert ext.radius.value == 10.0
 
 
-def test_extinction_cif_handler_names():
+def test_extinction_tags_names():
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
     )
 
     ext = BeckerCoppensExtinction()
 
-    model_cif_names = ext._model._cif_handler.names
+    model_cif_names = ext._model._tags.edi_names
     assert '_extinction.model' in model_cif_names
 
-    mosaicity_cif_names = ext._mosaicity._cif_handler.names
+    mosaicity_cif_names = ext._mosaicity._tags.edi_names
     assert '_extinction.mosaicity' in mosaicity_cif_names
 
-    radius_cif_names = ext._radius._cif_handler.names
+    radius_cif_names = ext._radius._tags.edi_names
     assert '_extinction.radius' in radius_cif_names
 
 
@@ -98,11 +102,11 @@ def test_extinction_factory_registration():
 
 
 def test_extinction_factory_create():
-    from easydiffraction.datablocks.experiment.categories.extinction.factory import (
-        ExtinctionFactory,
-    )
     from easydiffraction.datablocks.experiment.categories.extinction.becker_coppens import (
         BeckerCoppensExtinction,
+    )
+    from easydiffraction.datablocks.experiment.categories.extinction.factory import (
+        ExtinctionFactory,
     )
 
     ext = ExtinctionFactory.create('becker-coppens')

@@ -8,9 +8,7 @@ import gemmi
 
 
 def test_least_squares_fit_result_defaults_unknown_outputs_to_none():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
 
@@ -26,9 +24,7 @@ def test_least_squares_fit_result_defaults_unknown_outputs_to_none():
 
 
 def test_least_squares_fit_result_round_trips_cif_outputs():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_objective_name('chi-square')
@@ -56,9 +52,7 @@ def test_least_squares_fit_result_round_trips_cif_outputs():
 
 
 def test_least_squares_fit_result_round_trips_reflection_outputs():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_r_factor_all(0.12)
@@ -82,9 +76,7 @@ def test_least_squares_fit_result_round_trips_reflection_outputs():
 
 
 def test_least_squares_fit_result_round_trips_powder_outputs():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_prof_r_factor(0.21)
@@ -108,9 +100,7 @@ def test_least_squares_fit_result_round_trips_powder_outputs():
 
 
 def test_least_squares_fit_result_serializes_only_active_families():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_number_restraints(0)
@@ -120,8 +110,8 @@ def test_least_squares_fit_result_serializes_only_active_families():
 
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.prof_R_factor' not in cif_text
-    assert '_fit_result.R_factor_all' not in cif_text
+    assert '_fit_result.prof_r_factor' not in cif_text
+    assert '_fit_result.r_factor_all' not in cif_text
     assert '_fit_result.number_restraints' not in cif_text
     assert '_fit_result.number_constraints' not in cif_text
     assert '_fit_result.shift_over_su_max' not in cif_text
@@ -131,20 +121,18 @@ def test_least_squares_fit_result_serializes_only_active_families():
     fit_result._set_number_constraints(1)
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.R_factor_all 0.12' in cif_text
+    assert '_fit_result.r_factor_all 0.12' in cif_text
     assert '_fit_result.number_constraints 1' in cif_text
-    assert '_fit_result.prof_R_factor' not in cif_text
+    assert '_fit_result.prof_r_factor' not in cif_text
 
     fit_result._set_prof_r_factor(0.21)
     cif_text = fit_result.as_cif
 
-    assert '_fit_result.prof_R_factor 0.21' in cif_text
+    assert '_fit_result.prof_r_factor 0.21' in cif_text
 
 
 def test_least_squares_fit_result_omits_duplicate_exit_reason():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_message('Fit succeeded.')
@@ -157,9 +145,7 @@ def test_least_squares_fit_result_omits_duplicate_exit_reason():
 
 
 def test_least_squares_fit_result_keeps_distinct_exit_reason():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_message('Fit failed.')

@@ -54,7 +54,7 @@ class TestAtomSite:
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        assert site.label.value == 'Si'
+        assert site.id.value == 'Si'
         assert site.type_symbol.value == 'Tb'
         assert site.fract_x.value == 0.0
         assert site.fract_y.value == 0.0
@@ -63,12 +63,12 @@ class TestAtomSite:
         assert site.adp_iso.value == 0.0
         assert site.adp_type.value == 'Biso'
 
-    def test_label_setter(self):
+    def test_id_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 
         site = AtomSite()
-        site.label = 'Fe1'
-        assert site.label.value == 'Fe1'
+        site.id = 'Fe1'
+        assert site.id.value == 'Fe1'
 
     def test_type_symbol_setter(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
@@ -120,7 +120,7 @@ class TestAtomSite:
         # letters.
         structure = Structure(name='s')
         structure.space_group.name_h_m = 'P m -3 m'
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5)
         allowed = structure.atom_sites['X']._wyckoff_letter_allowed_values
         assert 'a' in allowed
 
@@ -129,14 +129,12 @@ class TestAtomSite:
 
         site = AtomSite()
 
-        assert site.adp_type._cif_handler.names == [
-            '_atom_site.ADP_type',
-            '_atom_site.adp_type',
-        ]
-        assert site.wyckoff_letter._cif_handler.names == [
+        assert site.adp_type._tags.edi_names == ['_atom_site.adp_type']
+        assert site.adp_type._tags.cif_names == ['_atom_site.ADP_type']
+        assert site.wyckoff_letter._tags.edi_names == ['_atom_site.wyckoff_letter']
+        assert site.wyckoff_letter._tags.cif_names == [
             '_atom_site.Wyckoff_symbol',
             '_atom_site.Wyckoff_letter',
-            '_atom_site.wyckoff_letter',
         ]
 
 
@@ -164,7 +162,7 @@ class TestSyncIsoFromAniso:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -235,7 +233,7 @@ class TestAdpIsoAsB:
 
         structure = Structure(name='test')
         structure.atom_sites.create(
-            label='Si',
+            id='Si',
             type_symbol='Si',
             adp_type=adp_type,
             adp_iso=adp_iso,
@@ -286,7 +284,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_fill_if_empty_on_update(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         atom = structure.atom_sites['A']
         assert atom.wyckoff_letter.value == 'a'
@@ -294,7 +292,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_redetect_via_property_setter(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         structure.atom_sites['A'].fract_x = 0.3
         structure._update_categories()
@@ -302,7 +300,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_redetect_via_descriptor_value(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         structure.atom_sites['A'].fract_x.value = 0.3
         structure._update_categories()
@@ -313,7 +311,7 @@ class TestAtomSiteWyckoffDetection:
         # 'd' = (1/2,0,0); an explicit 'e' must be kept, not detected 'd'.
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.5,
             fract_y=0.0,
@@ -330,7 +328,7 @@ class TestAtomSiteWyckoffDetection:
         import pytest
 
         structure = self._structure()
-        structure.atom_sites.create(label='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
+        structure.atom_sites.create(id='Z', type_symbol='O', adp_iso=0.5, wyckoff_letter='z')
         with pytest.raises(ValueError, match='Invalid Wyckoff letter'):
             structure._update_categories()
 
@@ -340,7 +338,7 @@ class TestAtomSiteWyckoffDetection:
         # to 0 while fract_x stays free.
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.3,
             fract_y=0.0,
@@ -359,7 +357,7 @@ class TestAtomSiteWyckoffDetection:
 
     def test_space_group_change_redetects(self):
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         assert structure.atom_sites['A'].multiplicity.value == 1  # Pm-3m 'a'
         structure.space_group.name_h_m = 'F m -3 m'
@@ -371,7 +369,7 @@ class TestAtomSiteWyckoffDetection:
     def test_minimizer_path_keeps_letter_fixed(self):
         structure = self._structure()
         structure.atom_sites.create(
-            label='E',
+            id='E',
             type_symbol='O',
             fract_x=0.3,
             fract_y=0.0,
@@ -391,7 +389,7 @@ class TestAtomSiteWyckoffDetection:
 
         monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
         structure = self._structure()
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5, wyckoff_letter='a')
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5, wyckoff_letter='a')
         structure._update_categories()
         atom = structure.atom_sites['X']
         assert atom.wyckoff_letter.value == 'a'
@@ -402,18 +400,330 @@ class TestAtomSiteWyckoffDetection:
 
         monkeypatch.setattr(ecr, 'space_group_wyckoff_table', lambda *a, **k: None)
         structure = self._structure()
-        structure.atom_sites.create(label='X', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='X', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         assert structure.atom_sites['X'].multiplicity.value is None
-        assert '_atom_site.site_symmetry_multiplicity' in structure.as_cif
+        assert '_atom_site.multiplicity' in structure.as_cif
 
     def test_cif_round_trip_redrives_letter(self):
         from easydiffraction.datablocks.structure.item.factory import StructureFactory
 
         structure = self._structure()
-        structure.atom_sites.create(label='A', type_symbol='O', adp_iso=0.5)
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
         structure._update_categories()
         reloaded = StructureFactory.from_cif_str(structure.as_cif)
         reloaded._update_categories()
         assert reloaded.atom_sites['A'].wyckoff_letter.value == 'a'
         assert reloaded.atom_sites['A'].multiplicity.value == 1
+
+
+# ------------------------------------------------------------------
+#  Beta-tensor conversion (cell-dependent)
+# ------------------------------------------------------------------
+
+
+class TestBetaConversion:
+    def _make_structure(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_iso=0.0)
+        structure.atom_sites['Fe'].adp_type = 'Uani'
+        structure._sync_atom_site_aniso()
+        return structure
+
+    def _set_aniso(self, structure, vals):
+        aniso = structure.atom_site_aniso['Fe']
+        aniso.adp_11, aniso.adp_22, aniso.adp_33 = vals[0], vals[1], vals[2]
+        aniso.adp_12, aniso.adp_13, aniso.adp_23 = vals[3], vals[4], vals[5]
+        return aniso
+
+    def _read_aniso(self, structure):
+        aniso = structure.atom_site_aniso['Fe']
+        return (
+            aniso.adp_11.value,
+            aniso.adp_22.value,
+            aniso.adp_33.value,
+            aniso.adp_12.value,
+            aniso.adp_13.value,
+            aniso.adp_23.value,
+        )
+
+    def test_uani_to_beta_round_trip(self):
+        import math
+
+        structure = self._make_structure()
+        u_vals = (0.012, 0.008, 0.015, -0.002, 0.001, -0.003)
+        self._set_aniso(structure, u_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Uani'
+        for got, expected in zip(self._read_aniso(structure), u_vals, strict=True):
+            assert math.isclose(got, expected, rel_tol=1e-9, abs_tol=1e-12)
+
+    def test_uani_to_beta_uses_reciprocal_formula(self):
+        import math
+
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.012, 0.0, 0.0, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        # beta_11 = 2*pi**2 * U_11 * a*^2, with a* = 1/5 for this cell.
+        expected = 2.0 * math.pi**2 * 0.012 * (1.0 / 5.0) ** 2
+        assert math.isclose(structure.atom_site_aniso['Fe'].adp_11.value, expected, rel_tol=1e-9)
+
+    def test_bani_to_beta_round_trip(self):
+        import math
+
+        structure = self._make_structure()
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        b_vals = (0.9, 0.6, 1.2, -0.1, 0.05, -0.15)
+        self._set_aniso(structure, b_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        for got, expected in zip(self._read_aniso(structure), b_vals, strict=True):
+            assert math.isclose(got, expected, rel_tol=1e-9, abs_tol=1e-12)
+
+    def test_param_identity_preserved_uani_to_beta(self):
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.01, 0.01, 0.01, 0.0, 0.0, 0.0))
+        before = structure.atom_site_aniso['Fe'].adp_11
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        after = structure.atom_site_aniso['Fe'].adp_11
+        assert before is after
+
+    def test_beta_to_biso_collapses_to_b_equivalent(self):
+        import math
+
+        structure = self._make_structure()
+        self._set_aniso(structure, (0.012, 0.008, 0.015, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        structure.atom_sites['Fe'].adp_type = 'Biso'
+        u_eq = (0.012 + 0.008 + 0.015) / 3.0
+        expected = 8.0 * math.pi**2 * u_eq
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso.value, expected, rel_tol=1e-6)
+
+    def test_switch_to_beta_on_unattached_atom_defers(self):
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        # Inside create() the atom has no parent yet, so the beta switch
+        # defers the cell-dependent conversion (the structure's aniso sync
+        # completes it on add) rather than raising.
+        site = AtomSite()
+        site.adp_type = 'beta'
+        assert site.adp_type.value == 'beta'
+
+    def test_create_with_inline_beta_adp_type(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        # adp_type='beta' passed inline to create(): the atom is created
+        # with a zero-filled aniso row, ready for direct assignment.
+        structure.atom_sites.create(
+            id='Fe',
+            type_symbol='Fe',
+            fract_x=0.1,
+            fract_y=0.2,
+            fract_z=0.3,
+            adp_type='beta',
+        )
+        assert structure.atom_sites['Fe'].adp_type.value == 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert aniso.adp_11.value == 0.0
+        aniso.adp_11 = 0.0071
+        assert aniso.adp_11.value == 0.0071
+
+    def test_adp_iso_as_b_for_beta_atom_matches_b_equivalent(self):
+        import math
+
+        structure = self._make_structure()
+        u_vals = (0.012, 0.008, 0.015, 0.0, 0.0, 0.0)
+        self._set_aniso(structure, u_vals)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        # F1 regression: equivalent B computed straight from the beta
+        # tensor, independent of the stored adp_iso.
+        u_eq = (0.012 + 0.008 + 0.015) / 3.0
+        expected = 8.0 * math.pi**2 * u_eq
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_adp_iso_as_b_for_beta_from_bani(self):
+        import math
+
+        # F1 completeness: the equivalent B is correct for a beta atom
+        # reached from Bani too (B_eq = mean of the B diagonal).
+        structure = self._make_structure()
+        structure.atom_sites['Fe'].adp_type = 'Bani'
+        self._set_aniso(structure, (0.9, 0.6, 1.2, 0.0, 0.0, 0.0))
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        expected = (0.9 + 0.6 + 1.2) / 3.0
+        assert math.isclose(structure.atom_sites['Fe'].adp_iso_as_b, expected, rel_tol=1e-6)
+
+    def test_uiso_to_beta_seeds_and_converts_diagonal(self):
+        import math
+
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        # iso → anisotropic-beta seeding: the diagonal is seeded from the
+        # isotropic U then mapped to beta (off-diagonals stay zero).
+        structure = Structure(name='test')
+        structure.space_group.name_h_m = 'P 1'
+        structure.cell.length_a = 5.0
+        structure.cell.length_b = 6.0
+        structure.cell.length_c = 8.0
+        structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_type='Uiso', adp_iso=0.01)
+        structure.atom_sites['Fe'].adp_type = 'beta'
+        aniso = structure.atom_site_aniso['Fe']
+        assert math.isclose(aniso.adp_11.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 5.0) ** 2)
+        assert math.isclose(aniso.adp_22.value, 2.0 * math.pi**2 * 0.01 * (1.0 / 6.0) ** 2)
+        assert aniso.adp_12.value == 0.0
+
+
+# ------------------------------------------------------------------
+#  ADP symmetry constraints during minimization
+# ------------------------------------------------------------------
+
+
+class TestAdpSymmetryConstraintMinimizerBypass:
+    """Cover the ``called_by_minimizer`` ADP-constraint write path.
+
+    When the minimizer drives anisotropic tensor components, symmetry
+    averaging on a special position can write back a value that is
+    transiently outside the diagonal ``RangeValidator(ge=0, le=10)``.
+    The minimizer path must apply it raw (``_set_value_from_minimizer``)
+    so the fit is not aborted, while the interactive path keeps the
+    validating setter.
+    """
+
+    def _make_cubic_bani(self):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='test')
+        # P m -3 m Wyckoff a forces β11=β22=β33 and zero off-diagonals.
+        structure.space_group.name_h_m = 'P m -3 m'
+        structure.atom_sites.create(
+            id='Si',
+            type_symbol='Si',
+            adp_type='Bani',
+            adp_iso=0.3,
+        )
+        structure._sync_atom_site_aniso()
+        aniso = structure.atom_site_aniso['Si']
+        aniso.adp_11 = 0.3
+        aniso.adp_22 = 0.3
+        aniso.adp_33 = 0.3
+        # Populate the Wyckoff letter so the ADP constraint pass engages.
+        structure.atom_sites._update()
+        return structure
+
+    @staticmethod
+    def _drive_out_of_range(aniso):
+        # Distinct sub-zero diagonals (raw minimizer writes); the cubic
+        # constraint equalises them to an out-of-range value that differs
+        # from each current component, so the validating setter would fire.
+        aniso.adp_11._set_value_from_minimizer(-0.3)
+        aniso.adp_22._set_value_from_minimizer(-0.2)
+        aniso.adp_33._set_value_from_minimizer(-0.1)
+
+    def test_minimizer_path_applies_out_of_range_tensor_without_raising(self, monkeypatch):
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        # RAISE mode makes the validating setter abort on a range breach.
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=True)
+
+        # The constrained diagonals are equalised and applied raw, even
+        # though the value is below the validator's lower bound.
+        assert aniso.adp_11.value == aniso.adp_22.value == aniso.adp_33.value
+        assert aniso.adp_11.value < 0.0
+
+    def test_interactive_path_still_validates(self, monkeypatch):
+        import pytest
+
+        from easydiffraction.utils.logging import Logger
+
+        structure = self._make_cubic_bani()
+        aniso = structure.atom_site_aniso['Si']
+        self._drive_out_of_range(aniso)
+
+        monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
+        with pytest.raises(TypeError, match='outside'):
+            structure.atom_sites._apply_adp_symmetry_constraints(called_by_minimizer=False)
+
+
+# ------------------------------------------------------------------
+#  Wyckoff orbit-template cache (issue 172)
+# ------------------------------------------------------------------
+
+
+class TestAtomSiteWyckoffTemplateCache:
+    """Minimizer fast path reuses the cached orbit template (issue 172)."""
+
+    @staticmethod
+    def _structure(name_hm='P m -3 m'):
+        from easydiffraction.datablocks.structure.item.base import Structure
+
+        structure = Structure(name='s')
+        structure.space_group.name_h_m = name_hm
+        return structure
+
+    def test_cache_populated_on_detection(self):
+        structure = self._structure()
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)
+        structure._update_categories()
+        assert structure.atom_sites['A']._wyckoff_template_cache is not None
+
+    def test_minimizer_snap_matches_full_path(self):
+        # 'e' = (x,0,0): the cached fast path and the cache-cleared full
+        # path (wyckoff_position_info) must give identical snap output.
+        def make():
+            s = self._structure()
+            s.atom_sites.create(
+                id='E', type_symbol='O', fract_x=0.3, fract_y=0.0, fract_z=0.0, adp_iso=0.5
+            )
+            s._update_categories()
+            return s
+
+        fast = make()
+        full = make()
+        fast.atom_sites['E'].fract_x = 0.31
+        fast._update_categories(called_by_minimizer=True)
+        a = fast.atom_sites['E']
+
+        full.atom_sites['E'].fract_x = 0.31
+        full.atom_sites['E']._wyckoff_template_cache = None  # force full path
+        full._update_categories(called_by_minimizer=True)
+        b = full.atom_sites['E']
+
+        assert (a.fract_x.value, a.fract_y.value, a.fract_z.value) == (
+            b.fract_x.value,
+            b.fract_y.value,
+            b.fract_z.value,
+        )
+        assert a.multiplicity.value == b.multiplicity.value
+        assert a.fract_x._symmetry_constrained == b.fract_x._symmetry_constrained
+        assert a.fract_y._symmetry_constrained == b.fract_y._symmetry_constrained
+
+    def test_cache_refreshed_on_redetection(self):
+        # A non-minimizer coordinate edit that moves the atom to a
+        # different Wyckoff letter must refresh the cached template.
+        structure = self._structure()
+        structure.atom_sites.create(id='A', type_symbol='O', adp_iso=0.5)  # (0,0,0) -> 'a'
+        structure._update_categories()
+        atom = structure.atom_sites['A']
+        template_a = atom._wyckoff_template_cache
+        assert template_a is not None
+
+        atom.fract_x = 0.3  # -> 'e' = (x,0,0)
+        structure._update_categories()
+        assert atom.wyckoff_letter.value == 'e'
+        assert atom._wyckoff_template_cache != template_a

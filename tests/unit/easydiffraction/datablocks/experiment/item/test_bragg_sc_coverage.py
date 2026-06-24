@@ -35,15 +35,15 @@ def _mk_type_sc_tof():
 
 class TestCwlScExperiment:
     def test_init(self):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         assert ex.name == 'cwl_sc'
-        assert ex.type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL.value
+        assert ex.experiment_type.sample_form.value == SampleFormEnum.SINGLE_CRYSTAL.value
 
     def test_type_info(self):
         assert CwlScExperiment.type_info.tag == 'bragg-sc-cwl'
 
     def test_load_ascii_5col(self, tmp_path):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         data = np.column_stack([
             np.array([1, 0, 0]),
             np.array([0, 1, 0]),
@@ -58,7 +58,7 @@ class TestCwlScExperiment:
 
     def test_load_ascii_too_few_columns(self, tmp_path, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         data = np.column_stack([np.array([1, 2, 3]), np.array([4, 5, 6])])
         p = tmp_path / 'bad.dat'
         np.savetxt(p, data)
@@ -66,12 +66,12 @@ class TestCwlScExperiment:
             ex._load_ascii_data_to_experiment(str(p))
 
     def test_switchable_categories(self):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         # extinction
         assert ex.extinction is not None
         assert isinstance(ex.extinction.type, str)
-        # linked crystal
-        assert ex.linked_crystal is not None
+        # linked structure
+        assert ex.linked_structure is not None
         # instrument
         assert ex.instrument is not None
         # refln
@@ -80,20 +80,20 @@ class TestCwlScExperiment:
     def test_extinction_type_invalid(self):
         import pytest
 
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         old = ex.extinction.type
         with pytest.raises(ValueError, match='Unsupported extinction type'):
             ex.extinction.type = 'bogus'
         assert ex.extinction.type == old
 
     def test_show_extinction_types(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         ex.extinction.show_supported()
         out = capsys.readouterr().out
         assert len(out) > 0
 
     def test_show_extinction_types_includes_current(self, capsys):
-        ex = CwlScExperiment(name='cwl_sc', type=_mk_type_sc_cwl())
+        ex = CwlScExperiment(name='cwl_sc', experiment_type=_mk_type_sc_cwl())
         ex.extinction.show_supported()
         out = capsys.readouterr().out
         assert ex.extinction.type in out
@@ -101,15 +101,15 @@ class TestCwlScExperiment:
 
 class TestTofScExperiment:
     def test_init(self):
-        ex = TofScExperiment(name='tof_sc', type=_mk_type_sc_tof())
+        ex = TofScExperiment(name='tof_sc', experiment_type=_mk_type_sc_tof())
         assert ex.name == 'tof_sc'
-        assert ex.type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
+        assert ex.experiment_type.beam_mode.value == BeamModeEnum.TIME_OF_FLIGHT.value
 
     def test_type_info(self):
         assert TofScExperiment.type_info.tag == 'bragg-sc-tof'
 
     def test_load_ascii_6col(self, tmp_path):
-        ex = TofScExperiment(name='tof_sc', type=_mk_type_sc_tof())
+        ex = TofScExperiment(name='tof_sc', experiment_type=_mk_type_sc_tof())
         data = np.column_stack([
             np.array([1, 0, 0]),
             np.array([0, 1, 0]),
@@ -125,7 +125,7 @@ class TestTofScExperiment:
 
     def test_load_ascii_too_few_columns(self, tmp_path, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
-        ex = TofScExperiment(name='tof_sc', type=_mk_type_sc_tof())
+        ex = TofScExperiment(name='tof_sc', experiment_type=_mk_type_sc_tof())
         data = np.column_stack([
             np.array([1, 2]),
             np.array([0, 1]),
@@ -140,6 +140,6 @@ class TestTofScExperiment:
 
     def test_load_ascii_nonexistent_file(self, monkeypatch):
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.RAISE, raising=True)
-        ex = TofScExperiment(name='tof_sc', type=_mk_type_sc_tof())
+        ex = TofScExperiment(name='tof_sc', experiment_type=_mk_type_sc_tof())
         with pytest.raises(OSError, match='No such file'):
             ex._load_ascii_data_to_experiment('/no/such/file.dat')

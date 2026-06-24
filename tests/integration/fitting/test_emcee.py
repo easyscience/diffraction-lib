@@ -95,7 +95,7 @@ def test_emcee_resume_matches_small_dream_posterior(tmp_path, proposal_moves):
     emcee.nwalkers = 16
     emcee.parallel_workers = 1
     emcee.proposal_moves = proposal_moves
-    emcee._sidecar_path = tmp_path / 'analysis' / 'results.h5'
+    emcee._sidecar_path = tmp_path / 'analysis' / 'mcmc.h5'
     emcee_results = emcee.fit(
         _toy_parameters(),
         _mapping_residuals,

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Abstract base class for pluggable least-squares minimizers."""
 
 from abc import ABC
 from abc import abstractmethod
@@ -44,12 +45,12 @@ class MinimizerBase(ABC):
         method: str | None = None,
         max_iterations: int | None = None,
     ) -> None:
+        """Initialize the minimizer with optional configuration."""
         self.name: str | None = name
         self.method: str | None = method
         self._max_iterations: int | None = max_iterations
         self.result: FitResults | None = None
         self._previous_chi2: float | None = None
-        self._iteration: int | None = None
         self._best_chi2: float | None = None
         self._best_iteration: int | None = None
         self._fitting_time: float | None = None
@@ -66,6 +67,7 @@ class MinimizerBase(ABC):
 
     @max_iterations.setter
     def max_iterations(self, value: int | None) -> None:
+        """Set the user-facing iteration limit."""
         self._max_iterations = value
 
     def _start_tracking(

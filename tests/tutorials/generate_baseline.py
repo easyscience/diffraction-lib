@@ -5,7 +5,7 @@
 Run the tutorials first (``pixi run script-tests`` or
 ``pixi run notebook-tests``) so each saved project exists under
 ``<artifact-root>/projects/``. Then run this script to (re)write
-``baseline.json`` from the freshly produced ``analysis.cif`` files::
+``baseline.json`` from the freshly produced ``analysis.edi`` files::
 
     pixi run python tests/tutorials/generate_baseline.py
 
@@ -19,8 +19,8 @@ import json
 import os
 from pathlib import Path
 
-from analysis_cif_reader import AnalysisCif
-from analysis_cif_reader import read_analysis_cif
+from analysis_edi_reader import AnalysisEdi
+from analysis_edi_reader import read_analysis_edi
 
 # Relative tolerances used when comparing against the baseline. Bayesian
 # (MCMC) fits are seeded but still vary slightly more than deterministic
@@ -29,7 +29,7 @@ DETERMINISTIC_RTOL = 0.02
 BAYESIAN_RTOL = 0.10
 
 # Optional deterministic fit-quality scalars to track when present.
-OPTIONAL_SCALARS = ('R_factor_all', 'wR_factor_all')
+OPTIONAL_SCALARS = ('r_factor_all', 'wr_factor_all')
 
 # Tutorials whose fit metrics are not reproducible across platforms,
 # so they are exempted from the numeric baseline comparison. ed-7
@@ -37,7 +37,15 @@ OPTIONAL_SCALARS = ('R_factor_all', 'wR_factor_all')
 # differs between arm64 macOS and x86-64 Linux/Windows. They still
 # run in script-/notebook-tests and are checked for result_kind;
 # only their numeric metrics are skipped. Add a name here to exempt.
-PLATFORM_SENSITIVE = frozenset({'ed_7_si_sepd'})
+PLATFORM_SENSITIVE = frozenset({'refine-si-sepd'})
+
+# Sequential-fitting tutorials run one fit per measured point and write
+# ``_fitting_mode.type sequential`` with no single ``_fit_result`` block,
+# so there is no scalar reduced_chi_square / r-factor to baseline. They
+# are excluded from the numeric baseline here and covered separately by
+# ``test_sequential_tutorial_saved`` (which asserts each one saved a
+# sequential analysis.edi). Add a name here to exclude another.
+SEQUENTIAL_TUTORIALS = frozenset({'refine-cosio-d20-tscan', 'refine-cosio-d20-tscan-resumed'})
 
 # Number of refined parameters to track per tutorial (cell lengths and
 # phase scales preferred, topped up from the front of the loop).
@@ -61,7 +69,7 @@ def _is_key_parameter(name: str) -> bool:
     return '.cell.length_' in name or name.endswith('.scale')
 
 
-def select_key_parameters(cif: AnalysisCif) -> dict[str, float]:
+def select_key_parameters(cif: AnalysisEdi) -> dict[str, float]:
     """Return the tracked refined parameter values for one project."""
     names = list(cif.fit_parameters)
     selected = [name for name in names if _is_key_parameter(name)]
@@ -74,7 +82,7 @@ def select_key_parameters(cif: AnalysisCif) -> dict[str, float]:
     return {name: round(cif.parameter_value(name), ROUND_DIGITS) for name in ordered}
 
 
-def build_entry(name: str, cif: AnalysisCif) -> dict | None:
+def build_entry(name: str, cif: AnalysisEdi) -> dict | None:
     """Build a baseline entry, or ``None`` if the project has no fit."""
     reduced_chi_square = cif.scalar('reduced_chi_square')
     if reduced_chi_square is None or reduced_chi_square <= 0:
@@ -100,11 +108,17 @@ def collect_baseline(root: Path) -> dict[str, dict]:
     """Build baseline entries for every saved project under *root*."""
     projects_dir = root / 'projects'
     baseline: dict[str, dict] = {}
-    for cif_path in sorted(projects_dir.glob('*/analysis/analysis.cif')):
+    for cif_path in sorted(projects_dir.glob('*/analysis/analysis.edi')):
         name = cif_path.parents[1].name
-        if not name.startswith('ed_'):
+        # Skip downloaded project archives (the ``proj-`` data category);
+        # only tutorial-saved projects are baselined.
+        if name.startswith('proj-'):
             continue
-        entry = build_entry(name, read_analysis_cif(cif_path))
+        # Sequential fits have no scalar fit result to compare; they are
+        # covered by ``test_sequential_tutorial_saved`` instead.
+        if name in SEQUENTIAL_TUTORIALS:
+            continue
+        entry = build_entry(name, read_analysis_edi(cif_path))
         if entry is not None:
             baseline[name] = entry
     return baseline

@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.variable import StringDescriptor
+from easydiffraction.datablocks.experiment.categories.peak.base import PeakBase
 
 
 def test_peak_base_identity_code():

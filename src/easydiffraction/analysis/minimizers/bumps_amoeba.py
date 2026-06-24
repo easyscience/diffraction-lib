@@ -28,6 +28,7 @@ class BumpsAmoebaMinimizer(BumpsMinimizer):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the BUMPS Nelder-Mead simplex minimizer."""
         super().__init__(
             name=name,
             method=method,

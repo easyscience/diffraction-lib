@@ -1,4 +1,5 @@
 ---
+title: Experiment
 icon: material/microscope
 ---
 
@@ -64,7 +65,7 @@ example, if the CIF file contains a data block with the id `hrpt`,
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_expt_type</b>.beam_mode</span>  "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>  "constant wavelength"
 ...
 </pre>
 </div>
@@ -144,6 +145,23 @@ project.experiments.create(
 )
 ```
 
+The calculated pattern needs a range to compute over. With no measured
+data loaded, this comes from the `data_range` category, which defaults
+to a sensible window derived from the instrument so the experiment is
+calculable straight away. To choose the range yourself, set its bounds
+and step (in 2θ for constant-wavelength, or time-of-flight for TOF):
+
+```python
+# Set the calculation range explicitly (constant wavelength)
+data_range = project.experiments['hrpt'].data_range
+data_range.two_theta_min = 10.0
+data_range.two_theta_max = 160.0
+data_range.two_theta_inc = 0.05
+```
+
+Once a measured scan is present the range is read from the data instead,
+so `data_range` becomes read-only.
+
 Finally, you can also add an experiment by passing the experiment object
 directly using the `add` method:
 
@@ -176,9 +194,9 @@ aspects of the experiment:
    parameters, such as broadening and asymmetry.
 3. **Background Category**: Defines the background type and allows you
    to add background points.
-4. **Linked Phases Category**: Links the structure defined in the
+4. **Linked Structures Category**: Links the structure defined in the
    previous step to the experiment, allowing you to specify the scale
-   factor for the linked phase.
+   factor for the linked structure.
 5. **Measured Data Category**: Contains the measured data. The expected
    format depends on the experiment type, but generally includes columns
    for 2θ angle or TOF and intensity.
@@ -213,6 +231,19 @@ project.experiments['hrpt'].peak.broad_lorentz_x = 0
 project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 ```
 
+For time-of-flight data, the peak profiles by source type and relative
+performance (fastest to slowest):
+
+| TOF profile                                                         | TOF source                                                        | Performance |
+| ------------------------------------------------------------------- | ----------------------------------------------------------------- | ----------- |
+| Pseudo-Voigt (non-convoluted)                                       | Symmetric profile; simplest TOF case                              | Fastest     |
+| Jorgensen (back-to-back exponentials ⊗ Gaussian)                    | Simpler TOF profile, including reactor-source TOF implementations | Fast        |
+| Ikeda-Carpenter ⊗ pseudo-Voigt :construction:                       | Spallation-source TOF; moderator pulse shape model                | Moderate    |
+| Jorgensen-Von Dreele (back-to-back exponentials ⊗ pseudo-Voigt)     | Spallation-source TOF                                             | Slower      |
+| Double back-to-back exponentials ⊗ pseudo-Voigt (Z-Rietveld type0m) | Spallation-source TOF; more elaborate asymmetric profile          | Slowest     |
+
+:construction: = work in progress (not yet available for selection).
+
 ### 4. Background Category { #background-category }
 
 ```python
@@ -220,36 +251,87 @@ project.experiments['hrpt'].peak.broad_lorentz_y = 0.1
 project.experiments['hrpt'].background.type = 'line-segment'
 
 # Add background points
-project.experiments['hrpt'].background.create(x=10, y=170)
-project.experiments['hrpt'].background.create(x=30, y=170)
-project.experiments['hrpt'].background.create(x=50, y=170)
-project.experiments['hrpt'].background.create(x=110, y=170)
-project.experiments['hrpt'].background.create(x=165, y=170)
+project.experiments['hrpt'].background.create(position=10, intensity=170)
+project.experiments['hrpt'].background.create(position=30, intensity=170)
+project.experiments['hrpt'].background.create(position=50, intensity=170)
+project.experiments['hrpt'].background.create(position=110, intensity=170)
+project.experiments['hrpt'].background.create(position=165, intensity=170)
 ```
 
-### 5. Linked Phases Category { #linked-phases-category }
+Instead of placing every point by hand, you can let EasyDiffraction
+detect a sensible set of background points directly from the measured
+pattern with the `auto_estimate` method. Called with no arguments, it
+builds a peak-insensitive background curve, places points between the
+peaks, and reads their heights from that curve so they do not eat into
+peak intensities:
+
+```python
+# Automatically estimate background points from the measured pattern
+project.experiments['hrpt'].background.auto_estimate()
+```
+
+The generated points are ordinary, editable control points. They are
+created **fixed** (not refined); you can review them, keep them, or free
+any of them for refinement (see [Analysis](analysis.md)). Each call
+**overwrites** the existing points (when there are active data to
+estimate from), so you always start from a clean, reproducible
+background; if no active data remain — for example every point is
+excluded, or data are not yet loaded — it warns and leaves your existing
+points unchanged. It works for both constant-wavelength and
+time-of-flight data, neutron and X-ray.
+
+You can also guide the estimate with optional arguments, for example to
+cap the number of points or choose a specific method:
+
+```python
+# Estimate with at most 10 background points
+project.experiments['hrpt'].background.auto_estimate(n_points=10)
+```
+
+### 5. Linked Structures Category { #linked-structures-category }
 
 ```python
 # Link the structure defined in the previous step to the experiment
-project.experiments['hrpt'].linked_phases.create(id='lbco', scale=10.0)
+project.experiments['hrpt'].linked_structures.create(structure_id='lbco', scale=10.0)
 ```
 
-### 6. Measured Data Category { #measured-data-category }
+### 6. Preferred Orientation Category { #preferred-orientation-category }
+
+For textured powders, add a March–Dollase preferred-orientation
+correction per phase. Set the March coefficient `march_r` (1 = no
+texture, &lt;1 platy/disk, &gt;1 needle), the texture direction
+(`index_h`, `index_k`, `index_l`), and optionally the random untextured
+fraction `march_random_fract`:
+
+```python
+# Add a March–Dollase preferred-orientation correction for a phase
+project.experiments['hrpt'].preferred_orientation.create(
+    structure_id='lbco', march_r=1.2, index_h=0, index_k=0, index_l=1
+)
+```
+
+This is a constant-wavelength Bragg powder correction, available on the
+`cryspy` engine. The defaults (`march_r=1`, `march_random_fract=0`)
+apply no texture, so it has no effect until you set them. See the
+[preferred-orientation parameters](../parameters/experiment/preferred_orientation.md)
+for details.
+
+### 7. Measured Data Category { #measured-data-category }
 
 If you do not have a CIF file for your experiment, you can load measured
-data from a file in a supported format. The measured data will be
-automatically converted into CIF format and added to the experiment. The
-expected format depends on the experiment type.
+data from a file in a supported format. The measured data is added to
+the experiment and saved with the project as Edi. The expected format
+depends on the experiment type.
 
 #### Supported data file formats:
 
 - `.xye` or `.xys` (3 columns, including standard deviations)
-  - [\_pd_meas.2theta_scan](../parameters/pd_meas.md)
-  - [\_pd_meas.intensity_total](../parameters/pd_meas.md)
-  - [\_pd_meas.intensity_total_su](../parameters/pd_meas.md)
+  - [\_data.two_theta](../parameters/experiment/data.md#data-two-theta)
+  - [\_data.intensity_meas](../parameters/experiment/data.md#data-intensity-meas)
+  - [\_data.intensity_meas_su](../parameters/experiment/data.md#data-intensity-meas-su)
 - `.xy` (2 columns, no standard deviations):
-  - [\_pd_meas.2theta_scan](../parameters/pd_meas.md)
-  - [\_pd_meas.intensity_total](../parameters/pd_meas.md)
+  - [\_data.two_theta](../parameters/experiment/data.md#data-two-theta)
+  - [\_data.intensity_meas](../parameters/experiment/data.md#data-intensity-meas)
 
 If no **standard deviations** are provided, they are automatically
 calculated as the **square root** of measured intensities.
@@ -336,79 +418,80 @@ Defined experiments 🔬
 ['hrpt']
 ```
 
-## Viewing an Experiment as CIF
+## Viewing an Experiment as Text
 
-To inspect an experiment in CIF format, use:
+To inspect an experiment's serialized text (the same content the project
+persists into its Edi files), use:
 
 ```python
-# Show experiment as CIF
-project.experiments['hrpt'].show_as_cif()
+# Show experiment as text
+project.experiments['hrpt'].show_as_text()
 ```
 
-Example output:
+Long loops (measured data, reflections) are truncated with `...` for
+display. Example output:
 
 ```
-Experiment 🔬 'hrpt' as cif
-╒═════════════════════════════════════════════╕
-│ data_hrpt                                   │
-│                                             │
-│ _expt_type.beam_mode  "constant wavelength" │
-│ _expt_type.radiation_probe  neutron         │
-│ _expt_type.sample_form  powder              │
-│ _expt_type.scattering_type  bragg           │
-│                                             │
-│ _instr.2theta_offset  0.6                   │
-│ _instr.wavelength  1.494                    │
-│                                             │
-│ _peak.broad_gauss_u  0.1                    │
-│ _peak.broad_gauss_v  -0.1                   │
-│ _peak.broad_gauss_w  0.1                    │
-│ _peak.broad_lorentz_x  0                    │
-│ _peak.broad_lorentz_y  0.1                  │
-│                                             │
-│ loop_                                       │
-│ _pd_phase_block.id                          │
-│ _pd_phase_block.scale                       │
-│ lbco 10.0                                   │
-│                                             │
-│ loop_                                       │
-│ _pd_background.line_segment_X               │
-│ _pd_background.line_segment_intensity       │
-│ 10 170                                      │
-│ 30 170                                      │
-│ 50 170                                      │
-│ 110 170                                     │
-│ 165 170                                     │
-│                                             │
-│ loop_                                       │
-│ _pd_meas.2theta_scan                        │
-│ _pd_meas.intensity_total                    │
-│ _pd_meas.intensity_total_su                 │
-│ 10.0 167.0 12.6                             │
-│ 10.05 157.0 12.5                            │
-│ 10.1 187.0 13.3                             │
-│ 10.15 197.0 14.0                            │
-│ 10.2 164.0 12.5                             │
-│ ...                                         │
-│ 164.65 173.0 30.1                           │
-│ 164.7 187.0 27.9                            │
-│ 164.75 175.0 38.2                           │
-│ 164.8 168.0 30.9                            │
-│ 164.85 109.0 41.2                           │
-╘═════════════════════════════════════════════╛
+Experiment 🔬 'hrpt' as text
+┌────────────────────────────────────────────────────┐
+│       CIF                                            │
+├────────────────────────────────────────────────────┤
+│   1   data_hrpt                                      │
+│   2                                                  │
+│   3   _experiment_type.sample_form powder            │
+│   4   _experiment_type.beam_mode "constant wavelength" │
+│   5   _experiment_type.radiation_probe neutron       │
+│   6   _experiment_type.scattering_type bragg         │
+│   7                                                  │
+│   8   _calculator.type cryspy                        │
+│   9                                                  │
+│  10   _peak.broad_gauss_u 0.0816(31)                 │
+│  11   _peak.broad_gauss_v -0.1159(66)                │
+│  12   _peak.broad_gauss_w 0.1204(32)                 │
+│  13   _peak.broad_lorentz_x 0.                       │
+│  14   _peak.broad_lorentz_y 0.0844(21)               │
+│  15   _peak.type cwl-pseudo-voigt                    │
+│  16                                                  │
+│  17   _instrument.setup_wavelength 1.494             │
+│  18   _instrument.calib_twotheta_offset 0.6226(10)   │
+│  19                                                  │
+│  20   loop_                                          │
+│  21   _linked_structure.structure_id                 │
+│  22   _linked_structure.scale                        │
+│  23   lbco 9.135(54)                                 │
+│  24                                                  │
+│  25   _background.type line-segment                  │
+│  26                                                  │
+│  27   loop_                                          │
+│  28   _background.id                                 │
+│  29   _background.position                           │
+│  30   _background.intensity                          │
+│  31   1 10. 168.4(1.4)                               │
+│  32   ...                                            │
+│  33                                                  │
+│  34   loop_                                          │
+│  35   _data.two_theta                                │
+│  36   _data.id                                       │
+│  37   _data.intensity_meas                           │
+│  38   _data.intensity_meas_su                        │
+│  39   10. 1 167. 12.6                                │
+│  40   ...                                            │
+└────────────────────────────────────────────────────┘
 ```
 
 ## Saving an Experiment
 
-Saving the project, as described in the [Project](project.md) section, will 
-also save the experiment. Each experiment is saved as a separate CIF file in 
-the `experiments` subdirectory of the project directory. The project file 
-contains references to these files.
+Saving the project, as described in the [Project](project.md) section, will
+also save the experiment. Each experiment is saved as a separate
+`.edi` file in the `experiments` subdirectory of the project
+directory. The project file contains references to these files.
 
-EasyDiffraction supports different types of experiments, and each experiment 
-is saved in a dedicated CIF file with experiment-specific parameters. 
+EasyDiffraction supports different types of experiments, and each
+experiment is saved in a dedicated Edi file with experiment-specific
+parameters.
 
-Below are examples of how different experiments are saved in CIF format.
+Below are examples of how different experiments are saved in Edi
+format.
 
 ### [pd-neut-cwl][3]{:.label-experiment}
 
@@ -421,13 +504,13 @@ experiment:
 <pre>
 data_<span class="red"><b>hrpt</b></span>
 
-<span class="blue"><b>_expt_type</b>.beam_mode</span>        "constant wavelength"
-<span class="blue"><b>_expt_type</b>.radiation_probe</span>  neutron
-<span class="blue"><b>_expt_type</b>.sample_form</span>      powder
-<span class="blue"><b>_expt_type</b>.scattering_type</span>  bragg
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      powder
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_instr</b>.wavelength</span>    1.494
-<span class="blue"><b>_instr</b>.2theta_offset</span> 0.6225(4)
+<span class="blue"><b>_instrument</b>.setup_wavelength</span>       1.494
+<span class="blue"><b>_instrument</b>.calib_twotheta_offset</span> 0.6225(4)
 
 <span class="blue"><b>_peak</b>.broad_gauss_u</span>    0.0834
 <span class="blue"><b>_peak</b>.broad_gauss_v</span>   -0.1168
@@ -436,35 +519,36 @@ data_<span class="red"><b>hrpt</b></span>
 <span class="blue"><b>_peak</b>.broad_lorentz_y</span>  0.0797
 
 loop_
-<span class="green"><b>_pd_phase_block</b>.id</span>
-<span class="green"><b>_pd_phase_block</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 lbco 9.0976(3)
 
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
- 10  174.3  2theta
- 20  159.8  2theta
- 30  167.9  2theta
- 50  166.1  2theta
- 70  172.3  2theta
- 90  171.1  2theta
-110  172.4  2theta
-130  182.5  2theta
-150  173.0  2theta
-165  171.1  2theta
+<span class="green"><b>_background</b>.id</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
+ 1   10  174.3
+ 2   20  159.8
+ 3   30  167.9
+ 4   50  166.1
+ 5   70  172.3
+ 6   90  171.1
+ 7  110  172.4
+ 8  130  182.5
+ 9  150  173.0
+10  165  171.1
 
 loop_
-<span class="green"><b>_pd_meas</b>.2theta_scan</span>
-<span class="green"><b>_pd_meas</b>.intensity_total</span>
-<span class="green"><b>_pd_meas</b>.intensity_total_su</span>
- 10.00  167  12.6
- 10.05  157  12.5
- 10.10  187  13.3
- 10.15  197  14.0
- 10.20  164  12.5
- 10.25  171  13.0
+<span class="green"><b>_data</b>.id</span>
+<span class="green"><b>_data</b>.two_theta</span>
+<span class="green"><b>_data</b>.intensity_meas</span>
+<span class="green"><b>_data</b>.intensity_meas_su</span>
+1   10.00  167  12.6
+2   10.05  157  12.5
+3   10.10  187  13.3
+4   10.15  197  14.0
+5   10.20  164  12.5
+6   10.25  171  13.0
 ...
 164.60  153  20.7
 164.65  173  30.1
@@ -487,57 +571,61 @@ experiment:
 <pre>
 data_<span class="red"><b>wish</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "time-of-flight"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      powder
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
 
-<span class="blue"><b>_instr</b>.2theta_bank</span> 152.827
+<span class="blue"><b>_instrument</b>.setup_twotheta_bank</span> 152.827
 
-<span class="blue"><b>_instr</b>.d_to_tof_linear</span> 20773.1(3)
-<span class="blue"><b>_instr</b>.d_to_tof_quad</span>    -1.08308
-<span class="blue"><b>_instr</b>.d_to_tof_offset</span>   -13.7(5)
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_linear</span>    20773.1(3)
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_quadratic</span> -1.08308
+<span class="blue"><b>_instrument</b>.calib_d_to_tof_offset</span>    -13.7(5)
 
-<span class="blue"><b>_peak</b>.rise_alpha_0</span> -0.009(1)
-<span class="blue"><b>_peak</b>.rise_alpha_1</span>  0.109(2)
-<span class="blue"><b>_peak</b>.decay_beta_0</span>  0.00670(3)
-<span class="blue"><b>_peak</b>.decay_beta_1</span>  0.0100(3)
-<span class="blue"><b>_peak</b>.gauss_sigma_0</span> 0
-<span class="blue"><b>_peak</b>.gauss_sigma_1</span> 0
-<span class="blue"><b>_peak</b>.gauss_sigma_2</span> 15.7(8)
+<span class="blue"><b>_peak</b>.rise_alpha_0</span>    -0.009(1)
+<span class="blue"><b>_peak</b>.rise_alpha_1</span>     0.109(2)
+<span class="blue"><b>_peak</b>.decay_beta_0</span>     0.00670(3)
+<span class="blue"><b>_peak</b>.decay_beta_1</span>     0.0100(3)
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_0</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_1</span> 0
+<span class="blue"><b>_peak</b>.broad_gauss_sigma_2</span> 15.7(8)
 
 loop_
-<span class="green"><b>_pd_phase_block</b>.id</span>
-<span class="green"><b>_pd_phase_block</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 ncaf 1.093(5)
 
 loop_
-<span class="green"><b>_pd_background</b>.line_segment_X</span>
-<span class="green"><b>_pd_background</b>.line_segment_intensity</span>
-<span class="green"><b>_pd_background</b>.X_coordinate</span>
-  9162.3  465(38) time-of-flight
- 11136.8  593(30) time-of-flight
- 14906.5  546(18) time-of-flight
- 17352.2  496(14) time-of-flight
- 20179.5  452(10) time-of-flight
- 22176.0  468(12) time-of-flight
- 24644.7  380(6)  time-of-flight
- 28257.2  378(4)  time-of-flight
- 34034.4  328(4)  time-of-flight
- 41214.6  323(3)  time-of-flight
- 49830.9  273(3)  time-of-flight
- 58204.9  260(4)  time-of-flight
- 70186.9  262(5)  time-of-flight
- 82103.2  268(5)  time-of-flight
-102712.0  262(15) time-of-flight
+<span class="green"><b>_background</b>.id</span>
+<span class="green"><b>_background</b>.position</span>
+<span class="green"><b>_background</b>.intensity</span>
+ 1    9162.3  465(38)
+ 2   11136.8  593(30)
+ 3   14906.5  546(18)
+ 4   17352.2  496(14)
+ 5   20179.5  452(10)
+ 6   22176.0  468(12)
+ 7   24644.7  380(6)
+ 8   28257.2  378(4)
+ 9   34034.4  328(4)
+10   41214.6  323(3)
+11   49830.9  273(3)
+12   58204.9  260(4)
+13   70186.9  262(5)
+14   82103.2  268(5)
+15  102712.0  262(15)
 
 loop_
-<span class="green"><b>_pd_meas</b>.time_of_flight</span>
-<span class="green"><b>_pd_meas</b>.intensity_total</span>
-<span class="green"><b>_pd_meas</b>.intensity_total_su</span>
-  9001.0  616.523  124.564
-  9006.8  578.769  123.141
-  9012.6  574.184  120.507
-  9018.5  507.739  111.300
-  9024.3  404.672  101.616
-  9030.1  469.244  107.991
+<span class="green"><b>_data</b>.id</span>
+<span class="green"><b>_data</b>.time_of_flight</span>
+<span class="green"><b>_data</b>.intensity_meas</span>
+<span class="green"><b>_data</b>.intensity_meas_su</span>
+1    9001.0  616.523  124.564
+2    9006.8  578.769  123.141
+3    9012.6  574.184  120.507
+4    9018.5  507.739  111.300
+5    9024.3  404.672  101.616
+6    9030.1  469.244  107.991
 ...
 103085.0  275.072   60.978
 103151.4  214.187   55.675
@@ -558,12 +646,16 @@ This example represents a single-crystal neutron diffraction experiment:
 <pre>
 data_<span class="red"><b>heidi</b></span>
 
-<span class="blue"><b>_diffrn_radiation</b>.probe</span> neutron
-<span class="blue"><b>_instr</b>.wavelength</span>       0.793
+<span class="blue"><b>_experiment_type</b>.beam_mode</span>        "constant wavelength"
+<span class="blue"><b>_experiment_type</b>.radiation_probe</span>  neutron
+<span class="blue"><b>_experiment_type</b>.sample_form</span>      "single crystal"
+<span class="blue"><b>_experiment_type</b>.scattering_type</span>  bragg
+
+<span class="blue"><b>_instrument</b>.setup_wavelength</span>       0.793
 
 loop_
-<span class="green"><b>_exptl_crystal</b>.id</span>
-<span class="green"><b>_exptl_crystal</b>.scale</span>
+<span class="green"><b>_linked_structure</b>.structure_id</span>
+<span class="green"><b>_linked_structure</b>.scale</span>
 tbti 2.92(6)
 
 loop_

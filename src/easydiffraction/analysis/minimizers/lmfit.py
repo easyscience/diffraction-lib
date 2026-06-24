@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
+"""Least-squares minimizer adapter built on lmfit."""
 
 import lmfit
 
@@ -28,6 +28,7 @@ class LmfitMinimizer(MinimizerBase):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the lmfit minimizer with default settings."""
         super().__init__(
             name=name,
             method=method,
@@ -129,31 +130,3 @@ class LmfitMinimizer(MinimizerBase):
             True if the optimization was successful, False otherwise.
         """
         return getattr(raw_result, 'success', False)
-
-    def _iteration_callback(
-        self,
-        params: lmfit.Parameters,
-        iter: int,
-        resid: object,
-        *args: object,
-        **kwargs: object,
-    ) -> None:
-        """
-        Handle each iteration callback of the minimizer.
-
-        Parameters
-        ----------
-        params : lmfit.Parameters
-            The current parameters.
-        iter : int
-            The current iteration number.
-        resid : object
-            The residuals.
-        *args : object
-            Additional positional arguments.
-        **kwargs : object
-            Additional keyword arguments.
-        """
-        # Intentionally unused, required by callback signature
-        del params, resid, args, kwargs
-        self._iteration = iter

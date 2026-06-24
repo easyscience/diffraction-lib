@@ -13,6 +13,11 @@ runs alongside the
 [`python-cif-category-correspondence.md`](python-cif-category-correspondence.md)
 suggestion (Python-side correspondence).
 
+[`edstar-project-persistence.md`](edstar-project-persistence.md)
+supersedes this ADR's default-save file-extension and project-tag naming
+policy. This ADR remains authoritative for strict IUCr/pdCIF report
+export under `reports/<project>.cif`.
+
 Grounded in:
 
 - COMCIFS
@@ -169,7 +174,7 @@ dotted DDLm tag emitted by the IUCr CIF report writer.
 | `_atom_site.B_iso_or_equiv` / `U_iso_or_equiv`                                                  | core                                                                                                           | Structure — single-tag emit                 | `_atom_site.B_iso_or_equiv` xor `_atom_site.U_iso_or_equiv` per row, based on `_atom_site.ADP_type`.                                                                                             |
 | `_atom_site_aniso.B_*` / `U_*`                                                                  | core                                                                                                           | Structure — single-tag emit                 | `_atom_site_aniso.B_*` xor `_atom_site_aniso.U_*` per row.                                                                                                                                       |
 | `_space_group.name_h_m`                                                                         | core (`_space_group.name_H-M_alt`)                                                                             | Structure — casing fix                      | `_space_group.name_H-M_alt`.                                                                                                                                                                     |
-| `_space_group.it_coordinate_system_code`                                                        | core (`_space_group.IT_coordinate_system_code`)                                                                | Structure — casing fix                      | `_space_group.IT_coordinate_system_code`.                                                                                                                                                        |
+| `_space_group.coord_system_code`                                                                | core (`_space_group.IT_coordinate_system_code`)                                                                | Structure — casing fix                      | `_space_group.IT_coordinate_system_code`.                                                                                                                                                        |
 | symmetry operations                                                                             | core (`_space_group_symop.*`)                                                                                  | (not emitted today)                         | `_space_group_symop.id` + `_space_group_symop.operation_xyz` loop alongside the H-M name.                                                                                                        |
 | `_diffrn.ambient_temperature`, `ambient_pressure`                                               | core                                                                                                           | Experiment — unchanged                      | `_diffrn.ambient_temperature`, `_diffrn.ambient_pressure`.                                                                                                                                       |
 | `_diffrn.ambient_magnetic_field`, `ambient_electric_field`                                      | none                                                                                                           | Experiment — unchanged                      | `_easydiffraction_diffrn.ambient_magnetic_field`, `…electric_field` (project extension).                                                                                                         |
@@ -214,7 +219,7 @@ In `structures/<name>.cif`:
   a different category (`_space_group_Wyckoff.letter`).
 - Rename `_space_group.name_h_m` → `_space_group.name_H-M_alt`
   (uppercase hyphenated H-M, with `_alt` suffix per dictionary).
-- Rename `_space_group.it_coordinate_system_code` →
+- Rename `_space_group.coord_system_code` →
   `_space_group.IT_coordinate_system_code` (uppercase IT).
 - ADP single-tag emission per row (see §4).
 - All other `_cell.*`, `_atom_site.*`, `_atom_site_aniso.*`,
@@ -222,7 +227,7 @@ In `structures/<name>.cif`:
 
 Python attribute names stay lowercase (`atom_site.adp_type`,
 `atom_site.wyckoff_letter`, `space_group.name_h_m`,
-`space_group.it_coordinate_system_code`). Only emitted CIF tags change.
+`space_group.coord_system_code`). Only emitted CIF tags change.
 
 #### 1.2 Analysis tier — topology-neutral `_fit_result.*`, IUCr renaming on export only
 

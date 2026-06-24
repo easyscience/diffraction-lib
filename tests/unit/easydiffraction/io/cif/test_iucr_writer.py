@@ -7,14 +7,16 @@ from __future__ import annotations
 from collections import UserDict
 from types import SimpleNamespace
 
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class _Descriptor:
-    def __init__(self, value, tag='_x.value', iucr_name=None):
+    def __init__(self, value, tag='_x.value', cif_name=None):
         self.name = tag.rsplit('.', maxsplit=1)[-1]
         self.value = value
-        self._cif_handler = CifHandler(names=[tag], iucr_name=iucr_name)
+        self._tags = TagSpec(
+            edi_names=[tag], cif_names=[cif_name] if cif_name is not None else None
+        )
 
 
 class _SwitchableCategory:
@@ -56,8 +58,8 @@ def _collection(*items):
     return _Collection({item.name: item for item in items})
 
 
-def _descriptor(value, tag='_x.value', iucr_name=None):
-    return _Descriptor(value, tag=tag, iucr_name=iucr_name)
+def _descriptor(value, tag='_x.value', cif_name=None):
+    return _Descriptor(value, tag=tag, cif_name=cif_name)
 
 
 def _experiment_type(*, sample_form, beam_mode='constant wavelength'):
@@ -86,9 +88,7 @@ def _experiment_type(*, sample_form, beam_mode='constant wavelength'):
 
 
 def _fit_result():
-    from easydiffraction.analysis.categories.fit_result.lsq import (
-        LeastSquaresFitResult,
-    )
+    from easydiffraction.analysis.categories.fit_result.lsq import LeastSquaresFitResult
 
     fit_result = LeastSquaresFitResult()
     fit_result._set_n_parameters(4)
@@ -115,7 +115,7 @@ def _structure(name='phase1'):
     structure.cell.length_b = 5.43
     structure.cell.length_c = 5.43
     structure.atom_sites.create(
-        label='Si1',
+        id='Si1',
         type_symbol='Si',
         fract_x=0.0,
         fract_y=0.0,
@@ -129,7 +129,7 @@ def _structure(name='phase1'):
 def _project(name, tmp_path, structures, experiments):
     return SimpleNamespace(
         name=name,
-        info=SimpleNamespace(path=tmp_path),
+        metadata=SimpleNamespace(path=tmp_path),
         structures=structures,
         experiments=experiments,
         analysis=SimpleNamespace(
@@ -142,9 +142,9 @@ def _project(name, tmp_path, structures, experiments):
 def _single_crystal_experiment(name='sc1'):
     return SimpleNamespace(
         name=name,
-        type=_experiment_type(sample_form='single crystal'),
-        linked_crystal=SimpleNamespace(
-            id=_descriptor(
+        experiment_type=_experiment_type(sample_form='single crystal'),
+        linked_structure=SimpleNamespace(
+            structure_id=_descriptor(
                 'phase1',
                 '_sc_crystal_block.id',
                 '_easydiffraction_sc_crystal_block.id',
@@ -191,7 +191,7 @@ def _single_crystal_experiment(name='sc1'):
 
 def _linked_phase():
     return SimpleNamespace(
-        id=_descriptor('phase1'),
+        structure_id=_descriptor('phase1'),
         scale=_descriptor(1.0),
     )
 
@@ -216,8 +216,8 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
     )
     return SimpleNamespace(
         name=name,
-        type=_experiment_type(sample_form='powder', beam_mode=beam_mode),
-        linked_phases=[_linked_phase()],
+        experiment_type=_experiment_type(sample_form='powder', beam_mode=beam_mode),
+        linked_structures=[_linked_phase()],
         diffrn=SimpleNamespace(
             ambient_temperature=_descriptor(295.0),
             ambient_pressure=_descriptor(101.3),
@@ -226,8 +226,8 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
             setup_wavelength=_descriptor(1.5406 if beam_mode == 'constant wavelength' else None),
             calib_d_to_tof_offset=_descriptor(1.0),
             calib_d_to_tof_linear=_descriptor(2.0),
-            calib_d_to_tof_quad=_descriptor(3.0),
-            calib_d_to_tof_recip=_descriptor(4.0),
+            calib_d_to_tof_quadratic=_descriptor(3.0),
+            calib_d_to_tof_reciprocal=_descriptor(4.0),
         ),
         calculator=_SwitchableCategory(
             'cryspy',
@@ -256,7 +256,7 @@ def _powder_experiment(name, *, beam_mode='constant wavelength'):
                 index_k=_descriptor(0),
                 index_l=_descriptor(0),
                 f_squared_calc=_descriptor(25.0),
-                phase_id=_descriptor('phase1'),
+                structure_id=_descriptor('phase1'),
                 d_spacing=_descriptor(2.5),
             )
         ],
@@ -352,6 +352,57 @@ def test_write_iucr_cif_emits_powder_cwl_blocks(tmp_path):
     assert '_pd_meas.info_author_' not in text
 
 
+def test_write_iucr_cif_disabled_second_wavelength_stays_scalar(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    # Second wavelength recorded but disabled (ratio == 0): the report
+    # keeps the single-row scalar wavelength and omits the disabled λ₂.
+    experiment = _powder_experiment('disabled')
+    experiment.instrument.setup_wavelength_2 = _descriptor(1.5444)
+    experiment.instrument.setup_wavelength_2_to_1_ratio = _descriptor(0.0)
+
+    project = _project(
+        'disabled',
+        tmp_path,
+        _collection(_structure()),
+        _collection(experiment),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert '_diffrn_radiation_wavelength.value' in text
+    assert '_diffrn_radiation_wavelength.wt' in text
+    assert '1.5444' not in text
+
+
+def test_write_iucr_cif_active_doublet_emits_wavelength_loop(tmp_path):
+    from easydiffraction.io.cif.iucr_writer import write_iucr_cif
+
+    # Active doublet: the report emits the two-row
+    # _diffrn_radiation_wavelength loop with both wavelengths.
+    experiment = _powder_experiment('doublet')
+    experiment.instrument.setup_wavelength_2 = _descriptor(1.5444)
+    experiment.instrument.setup_wavelength_2_to_1_ratio = _descriptor(0.5)
+
+    project = _project(
+        'doublet',
+        tmp_path,
+        _collection(_structure()),
+        _collection(experiment),
+    )
+
+    text = write_iucr_cif(project).read_text(encoding='utf-8')
+
+    assert (
+        'loop_\n'
+        '_diffrn_radiation_wavelength.id\n'
+        '_diffrn_radiation_wavelength.value\n'
+        '_diffrn_radiation_wavelength.wt\n'
+        '  1 1.5406 1.\n'
+        '  2 1.5444 0.5\n'
+    ) in text
+
+
 def test_write_iucr_cif_emits_joint_tof_pattern_blocks(tmp_path):
     from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 
@@ -438,16 +489,14 @@ def test_iucr_loop_rows_are_not_padded_to_tag_width():
 
 
 def test_iucr_atom_site_rows_preserve_parameter_uncertainties():
-    from easydiffraction.datablocks.structure.categories.atom_sites.default import (
-        AtomSite,
-    )
+    from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
     from easydiffraction.io.cif.iucr_writer import _atom_site_row
     from easydiffraction.io.cif.iucr_writer import _atom_site_tags
     from easydiffraction.io.cif.iucr_writer import _write_loop
     from easydiffraction.io.cif.serialize import format_param_value
 
     atom_site = AtomSite()
-    atom_site.label = 'Si1'
+    atom_site.id = 'Si1'
     atom_site.type_symbol = 'Si'
     atom_site.fract_x = 11.98509310
     atom_site.fract_x.free = True
@@ -469,7 +518,7 @@ def test_iucr_atom_site_aniso_rows_preserve_parameter_uncertainties():
     from easydiffraction.io.cif.serialize import format_param_value
 
     aniso_site = AtomSiteAniso()
-    aniso_site.label = 'Si1'
+    aniso_site.id = 'Si1'
     aniso_site.adp_11 = 0.00658189
     aniso_site.adp_11.free = True
     aniso_site.adp_11.uncertainty = 0.00014
@@ -490,9 +539,9 @@ def test_iucr_extension_items_preserve_parameter_uncertainties():
     scale = Parameter(
         name='scale',
         value_spec=AttributeSpec(default=1.0),
-        cif_handler=CifHandler(
-            names=['_sc_crystal_block.scale'],
-            iucr_name='_easydiffraction_sc_crystal_block.scale',
+        tags=TagSpec(
+            edi_names=['_sc_crystal_block.scale'],
+            cif_names=['_easydiffraction_sc_crystal_block.scale'],
         ),
     )
     scale.value = 2.87438284
@@ -530,3 +579,81 @@ def test_iucr_extinction_extensions_preserve_parameter_uncertainties():
     )
 
     assert format_param_value(extinction.radius) in lines[0]
+
+
+def test_adp_family_returns_beta_for_beta_type():
+    from easydiffraction.io.cif.iucr_writer import _adp_family
+
+    atom = SimpleNamespace(adp_type=SimpleNamespace(value='beta'))
+    assert _adp_family(atom) == 'beta'
+
+
+def test_adp_iso_family_maps_beta_to_b_column():
+    from easydiffraction.io.cif.iucr_writer import _adp_iso_family
+
+    # beta has no isotropic CIF tag; its equivalent iso is written in the
+    # B_iso_or_equiv column.
+    atom = SimpleNamespace(adp_type=SimpleNamespace(value='beta'))
+    assert _adp_iso_family(atom) == 'B'
+
+
+def test_atom_site_aniso_tags_for_beta_family():
+    from easydiffraction.io.cif.iucr_writer import _atom_site_aniso_tags
+
+    tags = _atom_site_aniso_tags('beta')
+    assert '_atom_site_aniso.beta_11' in tags
+    assert '_atom_site_aniso.beta_22' in tags
+    assert '_atom_site_aniso.beta_23' in tags
+
+
+def test_atom_site_aniso_section_renders_beta_header_and_tags():
+    from easydiffraction.datablocks.structure.item.base import Structure
+    from easydiffraction.io.cif.iucr_writer import _write_atom_site_aniso_sections
+
+    structure = Structure(name='beta')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+    structure.atom_sites.create(id='Fe', type_symbol='Fe', adp_type='beta')
+    structure.atom_site_aniso['Fe'].adp_11 = 0.001
+    structure._update_categories()
+
+    lines = []
+    _write_atom_site_aniso_sections(lines, structure)
+    text = '\n'.join(lines)
+
+    assert 'Anisotropic ADP (beta)' in text
+    assert '_atom_site_aniso.beta_11' in text
+
+
+def test_write_pref_orient_loop_standard_and_fraction():
+    from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
+    from easydiffraction.io.cif import iucr_writer as W
+
+    coll = PrefOrients()
+    coll.create(structure_id='lbco', march_r=0.75, index_h=0, index_k=0, index_l=1)  # fraction=0
+    experiment = SimpleNamespace(preferred_orientation=coll)
+
+    lines: list[str] = []
+    W._write_pref_orient_loop(lines, experiment)
+    text = '\n'.join(lines)
+    assert '_pd_pref_orient_March_Dollase.r' in text
+    assert '_pd_pref_orient_March_Dollase.index_l' in text
+    # fraction == 0 -> the non-standard namespaced item is omitted
+    assert '_easydiffraction_pref_orient.march_random_fract' not in text
+
+    coll['lbco'].march_random_fract = 0.3
+    lines2: list[str] = []
+    W._write_pref_orient_loop(lines2, experiment)
+    assert '_easydiffraction_pref_orient.march_random_fract' in '\n'.join(lines2)
+
+
+def test_write_pref_orient_loop_empty_is_noop():
+    from easydiffraction.datablocks.experiment.categories.pref_orient import PrefOrients
+    from easydiffraction.io.cif import iucr_writer as W
+
+    experiment = SimpleNamespace(preferred_orientation=PrefOrients())
+    lines: list[str] = []
+    W._write_pref_orient_loop(lines, experiment)
+    assert lines == []

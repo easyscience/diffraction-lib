@@ -21,7 +21,7 @@ from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import BoolDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 _TARGET_SEGMENT_PATTERN = re.compile(r'^[A-Za-z_][A-Za-z0-9_]*$')
 _EXTRACT_TARGET_SEGMENTS = 2
@@ -62,6 +62,7 @@ class SequentialFitExtractItem(CategoryItem):
     _category_entry_name = 'id'
 
     def __init__(self) -> None:
+        """Initialize the extract-rule descriptors."""
         super().__init__()
 
         self._id = StringDescriptor(
@@ -71,36 +72,36 @@ class SequentialFitExtractItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_sequential_fit_extract.id'],
-                iucr_name='_easydiffraction_sequential_fit_extract.id',
+            tags=TagSpec(
+                edi_names=['_sequential_fit_extract.id'],
+                cif_names=['_easydiffraction_sequential_fit_extract.id'],
             ),
         )
         self._target = StringDescriptor(
             name='target',
             description='diffrn attribute updated by this extract rule.',
             value_spec=AttributeSpec(default='diffrn._'),
-            cif_handler=CifHandler(
-                names=['_sequential_fit_extract.target'],
-                iucr_name='_easydiffraction_sequential_fit_extract.target',
+            tags=TagSpec(
+                edi_names=['_sequential_fit_extract.target'],
+                cif_names=['_easydiffraction_sequential_fit_extract.target'],
             ),
         )
         self._pattern = StringDescriptor(
             name='pattern',
             description='Regex used to extract one numeric capture group.',
             value_spec=AttributeSpec(default='(.*)'),
-            cif_handler=CifHandler(
-                names=['_sequential_fit_extract.pattern'],
-                iucr_name='_easydiffraction_sequential_fit_extract.pattern',
+            tags=TagSpec(
+                edi_names=['_sequential_fit_extract.pattern'],
+                cif_names=['_easydiffraction_sequential_fit_extract.pattern'],
             ),
         )
         self._required = BoolDescriptor(
             name='required',
             description='Whether this extract rule must match every file.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(
-                names=['_sequential_fit_extract.required'],
-                iucr_name='_easydiffraction_sequential_fit_extract.required',
+            tags=TagSpec(
+                edi_names=['_sequential_fit_extract.required'],
+                cif_names=['_easydiffraction_sequential_fit_extract.required'],
             ),
         )
 
@@ -111,6 +112,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @id.setter
     def id(self, value: str) -> None:
+        """Set the extract-rule identifier."""
         self._id.value = value
 
     @property
@@ -120,6 +122,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @target.setter
     def target(self, value: str) -> None:
+        """Set the diffrn attribute updated by this rule."""
         self._target.value = value
 
     @property
@@ -129,6 +132,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @pattern.setter
     def pattern(self, value: str) -> None:
+        """Set the extract-rule capture-group regex."""
         self._pattern.value = value
 
     @property
@@ -138,6 +142,7 @@ class SequentialFitExtractItem(CategoryItem):
 
     @required.setter
     def required(self, value: bool) -> None:
+        """Set whether this extract rule must match every file."""
         self._required.value = value
 
 

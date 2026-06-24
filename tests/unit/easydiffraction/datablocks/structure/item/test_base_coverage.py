@@ -13,7 +13,6 @@ from easydiffraction.datablocks.structure.categories.space_group import SpaceGro
 from easydiffraction.datablocks.structure.categories.space_group.factory import SpaceGroupFactory
 from easydiffraction.datablocks.structure.item.base import Structure
 
-
 # ------------------------------------------------------------------
 # Fixture
 # ------------------------------------------------------------------
@@ -93,7 +92,7 @@ class TestStructureAtomSites:
 
 
 class TestStructureDisplay:
-    def test_show_as_cif(self, structure, capsys):
-        structure.show_as_cif()
+    def test_show_as_text(self, structure, capsys):
+        structure.show_as_text()
         out = capsys.readouterr().out
         assert 'test_struct' in out

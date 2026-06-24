@@ -3,6 +3,8 @@
 
 from typer.testing import CliRunner
 
+import easydiffraction as edi
+
 runner = CliRunner()
 
 
@@ -15,7 +17,6 @@ def test_module_import():
 
 
 def test_cli_version_invokes_show_version(monkeypatch, capsys):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     called = {'ok': False}
@@ -24,7 +25,7 @@ def test_cli_version_invokes_show_version(monkeypatch, capsys):
         print('VERSION_OK')
         called['ok'] = True
 
-    monkeypatch.setattr(ed, 'show_version', fake_show_version)
+    monkeypatch.setattr(edi, 'show_version', fake_show_version)
     result = runner.invoke(main_mod.app, ['--version'])
     assert result.exit_code == 0
     assert called['ok']
@@ -40,42 +41,82 @@ def test_cli_help_shows_and_exits_zero():
 
 
 def test_cli_subcommands_call_utils(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     logs = []
-    monkeypatch.setattr(ed, 'list_data', lambda: logs.append('LIST_DATA'))
+    monkeypatch.setattr(edi, 'list_data', lambda: logs.append('LIST_DATA'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_data',
-        lambda id, destination='data', overwrite=False: logs.append(
-            f'DATA_{id}_{destination}_{overwrite}'
+        lambda name, destination='data', overwrite=False: logs.append(
+            f'DATA_{name}_{destination}_{overwrite}'
         ),
     )
-    monkeypatch.setattr(ed, 'list_tutorials', lambda: logs.append('LIST'))
+    monkeypatch.setattr(edi, 'list_tutorials', lambda: logs.append('LIST'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_all_tutorials',
         lambda destination='tutorials', overwrite=False: logs.append('DOWNLOAD_ALL'),
     )
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_tutorial',
-        lambda id, destination='tutorials', overwrite=False: logs.append(f'DOWNLOAD_{id}'),
+        lambda name, destination='tutorials', file_format='ipynb', overwrite=False: logs.append(
+            f'DOWNLOAD_{name}_{file_format}'
+        ),
     )
 
     res0 = runner.invoke(main_mod.app, ['list-data'])
-    res1 = runner.invoke(main_mod.app, ['download-data', '30', '--destination', 'projects'])
+    res1 = runner.invoke(
+        main_mod.app,
+        ['download-data', 'proj-lbco-hrpt', '--destination', 'projects'],
+    )
     res2 = runner.invoke(main_mod.app, ['list-tutorials'])
     res3 = runner.invoke(main_mod.app, ['download-all-tutorials'])
-    res4 = runner.invoke(main_mod.app, ['download-tutorial', '1'])
+    res4 = runner.invoke(main_mod.app, ['download-tutorial', 'refine-lbco-hrpt-from-cif'])
 
     assert res0.exit_code == 0
     assert res1.exit_code == 0
     assert res2.exit_code == 0
     assert res3.exit_code == 0
     assert res4.exit_code == 0
-    assert logs == ['LIST_DATA', 'DATA_30_projects_False', 'LIST', 'DOWNLOAD_ALL', 'DOWNLOAD_1']
+    assert logs == [
+        'LIST_DATA',
+        'DATA_proj-lbco-hrpt_projects_False',
+        'LIST',
+        'DOWNLOAD_ALL',
+        'DOWNLOAD_refine-lbco-hrpt-from-cif_ipynb',
+    ]
+
+
+def test_cli_download_tutorial_format_flags(monkeypatch):
+    import easydiffraction as edi
+    import easydiffraction.__main__ as main_mod
+
+    calls = []
+    monkeypatch.setattr(
+        edi,
+        'download_tutorial',
+        lambda name, destination='tutorials', file_format='ipynb', overwrite=False: calls.append(
+            file_format
+        ),
+    )
+
+    # Default (no flag) -> notebook only.
+    calls.clear()
+    assert runner.invoke(main_mod.app, ['download-tutorial', '3']).exit_code == 0
+    assert calls == ['ipynb']
+
+    # --py alone -> script only.
+    calls.clear()
+    assert runner.invoke(main_mod.app, ['download-tutorial', '3', '--py']).exit_code == 0
+    assert calls == ['py']
+
+    # Both flags -> notebook and script.
+    calls.clear()
+    res = runner.invoke(main_mod.app, ['download-tutorial', '3', '--ipynb', '--py'])
+    assert res.exit_code == 0
+    assert calls == ['ipynb', 'py']
 
 
 def test_cli_removed_report_commands_are_unknown(tmp_path):
@@ -161,7 +202,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     # Create a minimal project directory so load doesn't fail on path check
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.cif').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 
@@ -221,7 +262,7 @@ def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
 
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.cif').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 
@@ -241,7 +282,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeInfo()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -278,13 +319,13 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     proj_dir = tmp_path / 'proj'
     proj_dir.mkdir()
-    (proj_dir / 'project.cif').write_text('_project.id test\n')
+    (proj_dir / 'project.edi').write_text('_project.id test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda dir_path: fake_project))
 
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(proj_dir)])
     assert result.exit_code == 0
-    assert fake_project.info._path is None
+    assert fake_project.metadata._path is None
 
 
 def test_cli_undo_noop_exits_zero_and_does_not_save(monkeypatch, tmp_path):
@@ -357,7 +398,7 @@ def test_cli_undo_dry_uses_outcome_summary_without_saving(monkeypatch, tmp_path)
     assert "Would undo last fit for 'demo_project'" in result.stdout
     assert '2 parameters would be restored to pre-fit values' in result.stdout
     assert 'analysis.fit_results would be cleared' in result.stdout
-    assert 'analysis/results.h5 (Bayesian sidecar) would be cleared' in result.stdout
+    assert 'analysis/mcmc.h5 (Bayesian sidecar) would be cleared' in result.stdout
 
 
 def test_cli_undo_saves_after_real_rollback(monkeypatch, tmp_path):

@@ -9,6 +9,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
+from easydiffraction.analysis.verification import closeness_annotation
+from easydiffraction.analysis.verification import pattern_closeness
+from easydiffraction.analysis.verification import restrict_to_included
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
@@ -86,9 +89,17 @@ class ParameterDisplay:
         """Show Python access paths for all parameters."""
         self._project.analysis.display.how_to_access_parameters()
 
-    def cif_uids(self) -> None:
-        """Show CIF unique identifiers for all parameters."""
-        self._project.analysis.display.parameter_cif_uids()
+    def uid(self) -> None:
+        """Show the constraint unique identifier for all parameters."""
+        self._project.analysis.display.parameter_uids()
+
+    def edi(self) -> None:
+        """Show the Edi persistence tag for all parameters."""
+        self._project.analysis.display.parameter_edi_tags()
+
+    def cif(self) -> None:
+        """Show the report CIF tag for all parameters."""
+        self._project.analysis.display.parameter_cif_tags()
 
     def help(self) -> None:
         """Print available parameter-display methods."""
@@ -142,7 +153,7 @@ class FitDisplay:
         threshold: float | None = None,
         precision: int = 2,
         *,
-        max_parameters: int = 6,
+        max_parameters: int = 5,
         show_diagonal: bool = True,
     ) -> None:
         """Show parameter correlations from the latest fit."""
@@ -214,7 +225,7 @@ class PosteriorDisplay:
         analysis = self._project.analysis
         experiment = self._project.experiments[expt_name]
         plotter = self._project.rendering_plot.plotter
-        _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.type, x)
+        _, x_axis_name, _, _, _ = plotter._resolve_x_axis(experiment.experiment_type, x)
         x_axis_name = str(x_axis_name)
         require_draws = plotter.engine == PlotterEngineEnum.PLOTLY.value and style in {
             'draws',
@@ -431,6 +442,113 @@ class ProjectDisplay:
             x=x,
         )
 
+    def pattern_comparison(
+        self,
+        expt_name: str,
+        *,
+        reference: object,
+        candidate: object,
+        reference_label: str,
+        candidate_label: str,
+        show_metrics: bool = True,
+    ) -> None:
+        """
+        Overlay a reference and a candidate calculated pattern.
+
+        Draws the reference as a solid line and the candidate as markers
+        on the experiment's x grid, with a residual panel below and, by
+        default, a closeness-metrics box in the top-left corner. Bragg
+        ticks and background are omitted. Intended for the cross-engine
+        and external-reference Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the x grid and axis labels.
+        reference : object
+            Reference intensities (for example FullProf), drawn as a
+            line.
+        candidate : object
+            Candidate intensities (for example an engine), drawn as
+            markers.
+        reference_label : str
+            Legend name for the reference curve.
+        candidate_label : str
+            Legend name for the candidate curve.
+        show_metrics : bool, default=True
+            Whether to annotate the plot with closeness metrics.
+        """
+        # Drop points in excluded regions so a full-grid reference is
+        # compared and plotted only over the included points (the
+        # experiment's own arrays are already restricted to them).
+        experiment = self._project.experiments[expt_name]
+        self._project.rendering_plot.plotter._update_project_categories(expt_name)
+        reference = restrict_to_included(experiment, reference)
+        candidate = restrict_to_included(experiment, candidate)
+        annotation_lines: tuple[str, ...] = ()
+        if show_metrics:
+            metrics = pattern_closeness(reference, candidate)
+            annotation_lines = tuple(closeness_annotation(metrics))
+        self._project.rendering_plot.plotter.plot_calc_comparison(
+            expt_name=expt_name,
+            reference=reference,
+            candidate=candidate,
+            reference_label=reference_label,
+            candidate_label=candidate_label,
+            annotation_lines=annotation_lines,
+        )
+
+    def reflection_comparison(
+        self,
+        expt_name: str,
+        *,
+        reference: object,
+        candidate: object,
+        reference_label: str,
+        candidate_label: str,
+        show_metrics: bool = True,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Plots the reference on the x-axis and the candidate on the
+        y-axis against a y=x reference line, both peak-normalised so
+        they share one scale and points fall on the diagonal when the
+        two agree. By default a closeness-metrics box is drawn in the
+        top-left corner. The single-crystal counterpart of
+        :meth:`pattern_comparison`, intended for the external-reference
+        Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Single-crystal experiment supplying the plot context.
+        reference : object
+            Reference F² per reflection (for example FullProf F2cal),
+            aligned with ``candidate``.
+        candidate : object
+            Candidate F² per reflection (for example an engine), aligned
+            with ``reference``.
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        show_metrics : bool, default=True
+            Whether to annotate the plot with closeness metrics.
+        """
+        annotation_lines: tuple[str, ...] = ()
+        if show_metrics:
+            metrics = pattern_closeness(reference, candidate)
+            annotation_lines = tuple(closeness_annotation(metrics))
+        self._project.rendering_plot.plotter.plot_reflection_comparison(
+            expt_name=expt_name,
+            reference=reference,
+            candidate=candidate,
+            reference_label=reference_label,
+            candidate_label=candidate_label,
+            annotation_lines=annotation_lines,
+        )
+
     def structure(
         self,
         struct_name: str,
@@ -642,10 +760,12 @@ class ProjectDisplay:
                 ('excluded',),
             )
         if status_by_name['calculated'].available:
+            # Calculated-only: offer background and Bragg too (residual
+            # is measured-gated and filtered out automatically).
             return cls._with_available_options(
                 status_by_name,
                 ('calculated',),
-                ('excluded',),
+                optional_point_estimate,
             )
         return ()
 
@@ -698,6 +818,21 @@ class ProjectDisplay:
                 show_excluded=True,
             )
             return
+        if 'calculated' in include_set and 'measured' not in include_set:
+            # Calculated-only: the calc renderer overlays the background
+            # and, for a powder Bragg pattern, adds the Bragg-peaks row
+            # (rendering the composite two-panel figure with no measured
+            # series).
+            self._project.rendering_plot.plotter.plot_calc(
+                expt_name=expt_name,
+                x_min=x_min,
+                x_max=x_max,
+                x=x,
+                show_background='background' in include_set,
+                show_bragg='bragg' in include_set,
+                show_excluded='excluded' in include_set,
+            )
+            return
         if {'measured', 'calculated'}.issubset(include_set):
             self._project.rendering_plot.plotter._plot_meas_vs_calc_request(
                 expt_name=expt_name,
@@ -724,25 +859,23 @@ class ProjectDisplay:
         self._project.rendering_plot.plotter._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         pattern = intensity_category_for(experiment)
-        sample_form = experiment.type.sample_form.value
-        scattering_type = experiment.type.scattering_type.value
+        sample_form = experiment.experiment_type.sample_form.value
+        scattering_type = experiment.experiment_type.scattering_type.value
         has_linked_structure = self._has_linked_structure_for_calculation(experiment)
 
-        measured_available = self._has_nonempty_value(getattr(pattern, 'intensity_meas', None))
+        measured_available = experiment._has_measured_data()
         calculated_available = has_linked_structure and self._has_nonempty_value(
             getattr(pattern, 'intensity_calc', None)
         )
         background_available = (
             sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
-            and measured_available
             and calculated_available
             and self._has_nonempty_value(getattr(experiment, 'background', None))
             and self._has_nonempty_value(getattr(pattern, 'intensity_bkg', None))
         )
         bragg_available = (
-            measured_available
-            and calculated_available
+            calculated_available
             and sample_form == SampleFormEnum.POWDER.value
             and scattering_type == ScatteringTypeEnum.BRAGG.value
             and self._has_nonempty_value(getattr(experiment, 'refln', None))
@@ -902,17 +1035,21 @@ class ProjectDisplay:
         """Return whether the experiment links to a known structure."""
         structure_names = set(getattr(self._project.structures, 'names', ()))
 
-        linked_phases = getattr(experiment, 'linked_phases', None)
-        if self._has_nonempty_value(linked_phases):
-            for linked_phase in linked_phases:
-                identity = getattr(linked_phase, '_identity', None)
+        linked_structures = getattr(experiment, 'linked_structures', None)
+        if self._has_nonempty_value(linked_structures):
+            for linked_structure in linked_structures:
+                identity = getattr(linked_structure, '_identity', None)
                 category_entry_name = getattr(identity, 'category_entry_name', None)
                 if category_entry_name in structure_names:
                     return True
 
-        linked_crystal = getattr(experiment, 'linked_crystal', None)
-        linked_crystal_id = getattr(getattr(linked_crystal, 'id', None), 'value', None)
-        return linked_crystal_id in structure_names
+        linked_structure = getattr(experiment, 'linked_structure', None)
+        linked_structure_id = getattr(
+            getattr(linked_structure, 'structure_id', None),
+            'value',
+            None,
+        )
+        return linked_structure_id in structure_names
 
     def _uncertainty_status(
         self,

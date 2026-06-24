@@ -68,6 +68,7 @@ class _EmceeLogProbability:
         parameter_names: list[str],
         objective_function: Callable[[dict[str, object]], object],
     ) -> None:
+        """Capture parameters, names and objective for sampling."""
         self._parameter_names = parameter_names
         self._objective_function = objective_function
         self._bounds = {
@@ -123,6 +124,7 @@ class _EmceeProgressReporter:
         total_steps: int,
         burn_steps: int,
     ) -> None:
+        """Store the tracker and step counts for progress rows."""
         self._tracker = tracker
         self._total_steps = max(1, total_steps)
         self._burn_steps = min(max(0, burn_steps), self._total_steps)
@@ -289,6 +291,7 @@ class EmceeMinimizer(MinimizerBase):
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_NSTEPS,
     ) -> None:
+        """Initialize the emcee minimizer with sampler defaults."""
         super().__init__(
             name=name,
             method=method,
@@ -310,6 +313,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nsteps.setter
     def nsteps(self, value: int) -> None:
+        """Set the number of emcee steps per walker."""
         self._max_iterations = self._validated_positive_integer('nsteps', value)
 
     @property
@@ -319,6 +323,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nburn.setter
     def nburn(self, value: int) -> None:
+        """Set the number of burn-in steps to discard."""
         self._nburn = self._validated_non_negative_integer('nburn', value)
 
     @property
@@ -328,6 +333,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @thin.setter
     def thin(self, value: int) -> None:
+        """Set the emcee thinning interval."""
         self._thin = self._validated_positive_integer('thin', value)
 
     @property
@@ -337,6 +343,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @nwalkers.setter
     def nwalkers(self, value: int) -> None:
+        """Set the number of emcee walkers."""
         self._nwalkers = self._validated_positive_integer('nwalkers', value)
 
     @property
@@ -348,6 +355,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @parallel_workers.setter
     def parallel_workers(self, value: int) -> None:
+        """Set the number of parallel sampling workers."""
         self._parallel_workers = self._validated_non_negative_integer('parallel_workers', value)
 
     @property
@@ -357,6 +365,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @initialization_method.setter
     def initialization_method(self, value: InitializationMethodEnum | str) -> None:
+        """Set the emcee walker initialization method."""
         self._initialization_method = self._validated_initialization_method(value)
 
     @property
@@ -366,6 +375,7 @@ class EmceeMinimizer(MinimizerBase):
 
     @proposal_moves.setter
     def proposal_moves(self, value: str) -> None:
+        """Set the emcee proposal move name."""
         self._proposal_moves = self._validated_proposal_moves(value)
 
     def fit(
@@ -711,9 +721,14 @@ class EmceeMinimizer(MinimizerBase):
         )
         self._sampler = sampler
 
+        # The progress bar counts requested steps: extra_steps on
+        # resume, or nsteps + nburn on a fresh run. total_iterations
+        # carries an extra initial iteration (the blank pre-processing
+        # row) that is run but not shown as a step.
+        reporter_total_steps = int(extra_steps) if resume else (self.nsteps + self.nburn)
         reporter = _EmceeProgressReporter(
             tracker=self.tracker,
-            total_steps=total_iterations,
+            total_steps=reporter_total_steps,
             burn_steps=0 if resume else self.nburn,
         )
         if resume:
@@ -1086,11 +1101,6 @@ class EmceeMinimizer(MinimizerBase):
             posterior_parameter_summaries
         )
         best_log_posterior = float(finite_log_posterior[best_draw_index, best_walker_index])
-        self._track_sampler_completion(
-            total_steps=total_steps,
-            best_log_posterior=best_log_posterior,
-            reduced_chi_square=None,
-        )
 
         return OptimizeResult(
             x=best_sample_values,
@@ -1167,32 +1177,6 @@ class EmceeMinimizer(MinimizerBase):
                 'Convergence diagnostics indicate the posterior may be poorly mixed.'
             )
         return convergence_diagnostics
-
-    def _track_sampler_completion(
-        self,
-        *,
-        total_steps: int,
-        best_log_posterior: float,
-        reduced_chi_square: float | None,
-    ) -> None:
-        """Record one final sampler progress row."""
-        reduced_chi2 = reduced_chi_square
-        if reduced_chi2 is None:
-            reduced_chi2 = self.tracker.best_chi2
-        if reduced_chi2 is None:
-            reduced_chi2 = np.nan
-        self.tracker.track_sampler_progress(
-            SamplerProgressUpdate(
-                iteration=max(1, total_steps),
-                total_iterations=max(1, total_steps),
-                phase='sampling',
-                progress_percent=100.0,
-                log_posterior=best_log_posterior,
-                reduced_chi2=float(reduced_chi2),
-                elapsed_time=self.tracker._current_elapsed_time(),
-                force_report=True,
-            )
-        )
 
     @staticmethod
     def _sync_result_to_parameters(

@@ -61,9 +61,7 @@ def test_identity_category_code(view):
 
 
 def test_registered_with_factory():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     # The @StructureViewFactory.register decorator in default.py must
     # register the concrete class under its type_info tag.
@@ -122,12 +120,12 @@ def test_default_range_maximums(view):
 # ----------------------------------------------------------------------
 
 
-def test_boolean_cif_handler_names(view):
-    assert view.show_labels._cif_handler.names == ['_structure_view.show_labels']
-    assert view.show_moments._cif_handler.names == ['_structure_view.show_moments']
+def test_boolean_tags_names(view):
+    assert view.show_labels._tags.edi_names == ['_structure_view.show_labels']
+    assert view.show_moments._tags.edi_names == ['_structure_view.show_moments']
 
 
-def test_range_cif_handler_names(view):
+def test_range_tags_names(view):
     expected = {
         'range_a_min': ['_structure_view.range_a_min'],
         'range_a_max': ['_structure_view.range_a_max'],
@@ -137,7 +135,7 @@ def test_range_cif_handler_names(view):
         'range_c_max': ['_structure_view.range_c_max'],
     }
     for attr, names in expected.items():
-        assert getattr(view, attr)._cif_handler.names == names
+        assert getattr(view, attr)._tags.edi_names == names
 
 
 def test_descriptor_names_match_attribute(view):

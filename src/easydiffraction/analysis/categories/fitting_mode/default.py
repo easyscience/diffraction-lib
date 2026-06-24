@@ -13,7 +13,10 @@ from easydiffraction.core.switchable import SwitchableCategoryBase
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
+
+# Minimum loaded experiments for which joint fitting applies.
+_MINIMUM_JOINT_EXPERIMENTS = 2
 
 
 @FittingModeFactory.register
@@ -30,6 +33,7 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the fitting-mode type descriptor."""
         super().__init__()
 
         self._type = StringDescriptor(
@@ -41,9 +45,8 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
                     allowed=[mode.value for mode in FitModeEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_fitting_mode.type'],
-                iucr_name='_easydiffraction_fitting_mode.type',
+            tags=TagSpec(
+                edi_names=['_fitting_mode.type'], cif_names=['_easydiffraction_fitting_mode.type']
             ),
             display_handler=DisplayHandler(display_name='Type', latex_name='Type'),
         )
@@ -52,6 +55,13 @@ class FittingMode(CategoryItem, SwitchableCategoryBase):
     def _supported_types(
         filters: dict[str, object],
     ) -> list[tuple[str, str]]:
-        """Return supported fitting modes."""
-        del filters
-        return [(mode.value, mode.description()) for mode in FitModeEnum]
+        """Return fitting modes applicable to the loaded project."""
+        count = filters.get('experiment_count')
+        if count is None:
+            return [(mode.value, mode.description()) for mode in FitModeEnum]
+        applicable = []
+        for mode in FitModeEnum:
+            ok = count >= _MINIMUM_JOINT_EXPERIMENTS if mode is FitModeEnum.JOINT else count == 1
+            if ok:
+                applicable.append((mode.value, mode.description()))
+        return applicable

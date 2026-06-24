@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Typer command-line interface for the EasyDiffraction library."""
 
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ if hasattr(sys.stdout, 'reconfigure'):
 
 import typer
 
-import easydiffraction as ed
+import easydiffraction as edi
 
 app = typer.Typer(add_completion=False)
 
@@ -45,7 +46,7 @@ def _normalized_cli_args(args: list[str]) -> list[str]:
 
 def _load_project(project_dir: str) -> object:
     """Load one saved project directory."""
-    return ed.Project.load(project_dir)
+    return edi.Project.load(project_dir)
 
 
 def _display_project_patterns(project: object) -> None:
@@ -121,7 +122,7 @@ def _display_undo_summary(
         if outcome.cleared_fit_result:
             typer.echo('  - analysis.fit_results would be cleared')
         if outcome.cleared_sidecar:
-            typer.echo('  - analysis/results.h5 (Bayesian sidecar) would be cleared')
+            typer.echo('  - analysis/mcmc.h5 (Bayesian sidecar) would be cleared')
         return
 
     typer.echo(f"Undoing last fit for '{project_name}'...")
@@ -129,7 +130,7 @@ def _display_undo_summary(
     if outcome.cleared_fit_result:
         typer.echo('✅ Cleared analysis.fit_results.')
     if outcome.cleared_sidecar:
-        typer.echo('✅ Cleared analysis/results.h5 (Bayesian sidecar).')
+        typer.echo('✅ Cleared analysis/mcmc.h5 (Bayesian sidecar).')
     project.save()
     typer.echo(f'✅ Saved project to {project_dir}.')
 
@@ -155,7 +156,7 @@ def main(
 ) -> None:
     """EasyDiffraction command-line interface."""
     if version:
-        ed.show_version()
+        edi.show_version()
         raise typer.Exit(code=0)
     # If no subcommand and no option provided, show help and exit 0.
     if ctx.invoked_subcommand is None:
@@ -167,18 +168,21 @@ def main(
 @app.command('list-data')
 def list_data() -> None:
     """List available example data and project archives."""
-    ed.list_data()
+    edi.list_data()
 
 
 @app.command('list-tutorials')
 def list_tutorials() -> None:
     """List available tutorial notebooks."""
-    ed.list_tutorials()
+    edi.list_tutorials()
 
 
 @app.command('download-data')
 def download_data(
-    id: int = typer.Argument(..., help='Data ID to download.'),
+    name: str = typer.Argument(
+        ...,
+        help="Dataset name (e.g. 'meas-lbco-hrpt') or a list-data row number.",
+    ),
     destination: str = typer.Option(
         'data',
         '--destination',
@@ -192,18 +196,43 @@ def download_data(
         help='Overwrite an existing file or extracted project if present.',
     ),
 ) -> None:
-    """Download one example data record by ID."""
-    ed.download_data(id=id, destination=destination, overwrite=overwrite)
+    """Download one dataset by its name."""
+    edi.download_data(name, destination=destination, overwrite=overwrite)
+
+
+def _selected_tutorial_formats(*, ipynb: bool, py: bool) -> list[str]:
+    """
+    Return the formats to download; default to notebook if none set.
+    """
+    formats = []
+    if ipynb:
+        formats.append('ipynb')
+    if py:
+        formats.append('py')
+    return formats or ['ipynb']
 
 
 @app.command('download-tutorial')
 def download_tutorial(
-    id: int = typer.Argument(..., help='Tutorial ID to download.'),
+    name: str = typer.Argument(
+        ...,
+        help="Tutorial name (e.g. 'refine-lbco-hrpt-from-cif') or a list-tutorials row number.",
+    ),
     destination: str = typer.Option(
         'tutorials',
         '--destination',
         '-d',
         help='Directory to save the tutorial into.',
+    ),
+    ipynb: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--ipynb',
+        help='Download the Jupyter notebook (.ipynb). Default when no format flag is given.',
+    ),
+    py: bool = typer.Option(  # noqa: FBT001
+        False,  # noqa: FBT003
+        '--py',
+        help='Download the plain-Python script (.py). Combine with --ipynb to get both.',
     ),
     overwrite: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
@@ -212,8 +241,14 @@ def download_tutorial(
         help='Overwrite existing file if present.',
     ),
 ) -> None:
-    """Download a specific tutorial notebook by ID."""
-    ed.download_tutorial(id=id, destination=destination, overwrite=overwrite)
+    """Download a tutorial by its name as a notebook and/or script."""
+    for file_format in _selected_tutorial_formats(ipynb=ipynb, py=py):
+        edi.download_tutorial(
+            name,
+            destination=destination,
+            file_format=file_format,
+            overwrite=overwrite,
+        )
 
 
 @app.command('download-all-tutorials')
@@ -232,14 +267,14 @@ def download_all_tutorials(
     ),
 ) -> None:
     """Download all available tutorial notebooks."""
-    ed.download_all_tutorials(destination=destination, overwrite=overwrite)
+    edi.download_all_tutorials(destination=destination, overwrite=overwrite)
 
 
 @app.command('display')
 def display(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edi).',
     ),
 ) -> None:
     """Display the typical outputs for a saved project state."""
@@ -251,7 +286,7 @@ def display(
 def fit(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edi).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003
@@ -262,7 +297,7 @@ def fit(
     """Fit a saved project: easydiffraction PROJECT_DIR fit [--dry]."""
     project = _load_project(project_dir)
     if dry:
-        project.info._path = None
+        project.metadata._path = None
     project.analysis.fit()
     _display_fit_outputs(project)
 
@@ -271,7 +306,7 @@ def fit(
 def undo(
     project_dir: str = typer.Argument(
         ...,
-        help='Path to the project directory (must contain project.cif).',
+        help='Path to the project directory (must contain project.edi).',
     ),
     dry: bool = typer.Option(  # noqa: FBT001
         False,  # noqa: FBT003

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Space-group Wyckoff-position category for structures."""
 
 from easydiffraction.datablocks.structure.categories.space_group_wyckoff.default import (
     SpaceGroupWyckoff,

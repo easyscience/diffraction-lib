@@ -117,12 +117,14 @@ def _element_symbol(type_symbol: str) -> str:
 
 
 def _vec3(values: np.ndarray | tuple[float, ...]) -> tuple[float, float, float]:
+    """Return the first three values as a float 3-tuple."""
     return (float(values[0]), float(values[1]), float(values[2]))
 
 
 def _cell_lengths_angles(
     cell: object,
 ) -> tuple[float, float, float, float, float, float]:
+    """Return the cell lengths and angles as a 6-tuple."""
     return (
         cell.length_a.value,
         cell.length_b.value,
@@ -134,17 +136,16 @@ def _cell_lengths_angles(
 
 
 def _reciprocal_lengths(cell: object) -> np.ndarray:
+    """Return the reciprocal-cell axis lengths a*, b*, c*."""
     a, b, c, alpha, beta, gamma = _cell_lengths_angles(cell)
-    al, be, ga = np.radians([alpha, beta, gamma])
-    ca, cb, cg = np.cos([al, be, ga])
-    omega = np.sqrt(1.0 - ca * ca - cb * cb - cg * cg + 2.0 * ca * cb * cg)
-    return np.array([np.sin(al) / (a * omega), np.sin(be) / (b * omega), np.sin(ga) / (c * omega)])
+    return np.array(ecr.reciprocal_cell_lengths(a, b, c, alpha, beta, gamma))
 
 
 def _lattice_shifts(
     pos: np.ndarray,
     view_range: ViewRange,
 ) -> Iterator[np.ndarray]:
+    """Yield integer lattice shifts placing pos within the view."""
     axis_ranges = []
     for i in range(3):
         lo, hi = view_range[i]
@@ -156,6 +157,7 @@ def _lattice_shifts(
 
 
 def _pos_key(pos: np.ndarray) -> tuple[int, int, int]:
+    """Return a tolerance-quantised key for position identity."""
     return tuple(round(v / IDENTITY_TOL) for v in pos)
 
 
@@ -260,7 +262,7 @@ def _atom_shape(
     view = AtomViewEnum(style.atom_view.value)
     radius, substituted = radius_for(element, view.radius_model())
     ball_radius = _display_radius(radius, style)
-    label = atom.label.value
+    label = atom.id.value
     adp_type = AdpTypeEnum(atom.adp_type.value)
     scale = float(chi.ppf(style.adp_probability.value, 3))
     if (
@@ -304,7 +306,7 @@ def _atom_primitive(
             shape[1],
             shape[2],
             colour,
-            atom.label.value,
+            atom.id.value,
             asymmetric=asymmetric,
         )
     else:
@@ -312,11 +314,11 @@ def _atom_primitive(
             _vec3(centre),
             shape[1],
             colour,
-            atom.label.value,
+            atom.id.value,
             asymmetric=asymmetric,
         )
     return (
-        _SceneAtom(primitive, centre, element, colour, atom.label.value),
+        _SceneAtom(primitive, centre, element, colour, atom.id.value),
         substituted,
     )
 
@@ -339,7 +341,7 @@ def _wedge_atom(
     major_atom, _occ, major_element, major_colour, _radius, major_rot = max(
         rows, key=itemgetter(1)
     )
-    label = '/'.join(r[0].label.value for r in rows)
+    label = '/'.join(r[0].id.value for r in rows)
     shape, _ = _atom_shape(major_atom, ctx, major_rot)
     if shape[0] == 'ellipsoid':
         primitive = AdpEllipsoid(
@@ -425,6 +427,7 @@ def _build_bonds(
 
 
 def _cell_edges(matrix: np.ndarray) -> CellEdges:
+    """Return the twelve Cartesian edges of the unit cell."""
     corners = {
         tuple(c): _vec3(matrix @ np.array(c, dtype=float)) for c in product((0, 1), repeat=3)
     }
@@ -438,6 +441,7 @@ def _cell_edges(matrix: np.ndarray) -> CellEdges:
 
 
 def _axis_triad(matrix: np.ndarray) -> AxisTriad:
+    """Return the a/b/c axis arrows anchored at the origin."""
     lengths = [float(np.linalg.norm(matrix[:, i])) for i in range(3)]
     extra = 0.3 * max(lengths)
     arrows = []
@@ -498,7 +502,7 @@ def build_scene(
     cell = structure.cell
     matrix = ecr.orthogonalization_matrix(*_cell_lengths_angles(cell))
     sg = structure.space_group
-    ops = ecr.symmetry_operators(sg.name_h_m.value, sg.it_coordinate_system_code.value)
+    ops = ecr.symmetry_operators(sg.name_h_m.value, sg.coord_system_code.value)
     sites = list(structure.atom_sites)
 
     ctx = _RenderContext(
@@ -514,7 +518,7 @@ def build_scene(
     if 'bonds' in features:
         geom = getattr(structure, 'geom', None)
         geom_min = geom.min_bond_distance_cutoff.value if geom is not None else 0.0
-        geom_incr = geom.bond_distance_incr.value if geom is not None else DEFAULT_BOND_INCR
+        geom_incr = geom.bond_distance_inc.value if geom is not None else DEFAULT_BOND_INCR
         bonds = tuple(_build_bonds(scene_atoms, geom_min, geom_incr))
 
     show_atoms = 'atoms' in features

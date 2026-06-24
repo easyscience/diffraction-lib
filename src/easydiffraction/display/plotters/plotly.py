@@ -14,6 +14,8 @@ import base64
 import json
 import uuid
 from dataclasses import dataclass
+from functools import cache
+from importlib import resources
 
 import darkdetect
 import numpy as np
@@ -56,6 +58,34 @@ from easydiffraction.utils.environment import FigureEmbedMode
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
 from easydiffraction.utils.environment import resolve_figure_embed_mode
+
+# Live notebooks self-host the Plotly runtime and the shared figure
+# loader (both ship in the wheel) instead of fetching Plotly from a CDN.
+# They are injected once per kernel session by the first inline figure
+# (tracked by ``PlotlyPlotter._live_runtime_injected``, a class
+# attribute that resets with each new kernel process).
+_PLOTLY_RUNTIME_ASSET = 'vendor/plotly/plotly-cartesian.min.js'
+_FIGURE_LOADER_ASSET = 'assets/ed-figures.js'
+
+
+@cache
+def _packaged_asset(relative_path: str) -> str:
+    """
+    Read a packaged display asset bundled in the wheel.
+
+    Parameters
+    ----------
+    relative_path : str
+        Path under ``easydiffraction.display.plotters`` (POSIX-style).
+
+    Returns
+    -------
+    str
+        The asset's text contents.
+    """
+    package = resources.files('easydiffraction.display.plotters')
+    return package.joinpath(*relative_path.split('/')).read_text(encoding='utf-8')
+
 
 DEFAULT_COLORS = {
     'meas': 'rgb(31, 119, 180)',
@@ -134,6 +164,9 @@ FIXED_ASPECT_WRAPPER_CLASS_NAME = 'ed-fixed-aspect-plotly-wrapper'
 THEME_SYNC_META_KEY = 'ed_plotly_theme_sync'
 THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY = 'axis_frame_shape_indexes'
 THEME_SYNC_CORRELATION_HEATMAP_KEY = 'correlation_heatmap'
+# Name tag on the top-left metrics box so the theme-switch script can
+# re-theme its background and border (not just its font colour).
+_METRICS_ANNOTATION_NAME = 'ed-metrics-box'
 
 
 def _typed_arrays_to_float32(value: object) -> object:
@@ -281,8 +314,12 @@ class PlotlyPlotter(PlotterBase):
     """Interactive plotter using Plotly for notebooks and browsers."""
 
     _supports_graphical_heatmap: bool = True
+    # Whether the self-hosted runtime + loader were already injected
+    # this kernel session (live-notebook path). Resets each new process.
+    _live_runtime_injected: bool = False
 
     def __init__(self) -> None:
+        """Set the default Plotly template and renderer."""
         if hasattr(pio, 'templates'):
             pio.templates.default = self._default_template_name()
         if in_pycharm():
@@ -433,21 +470,25 @@ class PlotlyPlotter(PlotterBase):
 
     @staticmethod
     def _background_color_for_template(template: str) -> str | None:
+        """Return the background colour for a Plotly template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.background if theme_colors is not None else None
 
     @staticmethod
     def _axis_frame_color_for_template(template: str) -> str | None:
+        """Return the axis-frame colour for a Plotly template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.axis_frame if theme_colors is not None else None
 
     @staticmethod
     def _inner_tick_grid_color_for_template(template: str) -> str | None:
+        """Return the inner tick/grid colour for a template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.inner_tick_grid if theme_colors is not None else None
 
     @staticmethod
     def _legend_background_color_for_template(template: str) -> str | None:
+        """Return the legend background colour for a template."""
         theme_colors = display_theme_colors_for_template(template)
         return theme_colors.legend_background if theme_colors is not None else None
 
@@ -777,27 +818,47 @@ class PlotlyPlotter(PlotterBase):
         padded = [f'{HOVER_HORIZONTAL_PAD}{line}{HOVER_HORIZONTAL_PAD}' for line in lines]
         return '<br>'.join(padded) + extra
 
-    @staticmethod
-    def _powder_meas_vs_calc_hover_data(plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
-        """Return shared hover values for composite powder traces."""
-        residual_values = (
-            np.asarray(plot_spec.y_resid)
-            if plot_spec.y_resid is not None
-            else np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
-        )
-        if plot_spec.y_bkg is None:
-            return np.column_stack((
-                np.asarray(plot_spec.y_meas),
-                np.asarray(plot_spec.y_calc),
-                residual_values,
-            ))
+    @classmethod
+    def _powder_hover_columns(
+        cls,
+        plot_spec: PowderMeasVsCalcSpec,
+    ) -> list[tuple[np.ndarray, str, str]]:
+        """
+        Return ordered ``(values, label, color)`` for the hover tooltip.
 
-        return np.column_stack((
-            np.asarray(plot_spec.y_meas),
-            np.asarray(plot_spec.y_bkg),
-            np.asarray(plot_spec.y_calc),
-            residual_values,
-        ))
+        The measured and residual entries are omitted for a
+        calculated-only pattern (no measured scan), keeping the
+        customdata columns and the hover template aligned by
+        construction.
+        """
+        calc_label = plot_spec.y_calc_name or 'Icalc'
+        meas_label = plot_spec.y_meas_name or 'Imeas'
+        # Mirror the residual trace name: a plain "Residual" when custom
+        # curve labels are set (the calc-comparison view), otherwise the
+        # default "Imeas - Icalc" difference label.
+        custom_labels = plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None
+        resid_label = 'Residual' if custom_labels else f'{meas_label} - {calc_label}'
+
+        columns: list[tuple[np.ndarray, str, str]] = []
+        has_meas = plot_spec.y_meas is not None
+        if has_meas:
+            columns.append((np.asarray(plot_spec.y_meas), meas_label, DEFAULT_COLORS['meas']))
+        if plot_spec.y_bkg is not None:
+            columns.append((np.asarray(plot_spec.y_bkg), 'Ibkg', DEFAULT_COLORS['bkg']))
+        columns.append((np.asarray(plot_spec.y_calc), calc_label, DEFAULT_COLORS['calc']))
+
+        residual = plot_spec.y_resid
+        if residual is None and has_meas:
+            residual = np.asarray(plot_spec.y_meas) - np.asarray(plot_spec.y_calc)
+        if residual is not None:
+            columns.append((np.asarray(residual), resid_label, DEFAULT_COLORS['resid']))
+        return columns
+
+    @classmethod
+    def _powder_meas_vs_calc_hover_data(cls, plot_spec: PowderMeasVsCalcSpec) -> np.ndarray:
+        """Return shared hover values for composite powder traces."""
+        columns = cls._powder_hover_columns(plot_spec)
+        return np.column_stack([values for values, _, _ in columns])
 
     @classmethod
     def _powder_meas_vs_calc_hover_template(
@@ -810,43 +871,10 @@ class PlotlyPlotter(PlotterBase):
         Each line is colored to match its curve and padded away from the
         tooltip frame through the shared hover formatter.
         """
-        calc_label = plot_spec.y_calc_name or 'Icalc'
-        if plot_spec.y_bkg is None:
-            return cls._format_hover_lines([
-                'x: %{x:,.2f}',
-                cls._hover_color_span(
-                    'Imeas: %{customdata[0]:,.2f}',
-                    DEFAULT_COLORS['meas'],
-                ),
-                cls._hover_color_span(
-                    f'{calc_label}: %{{customdata[1]:,.2f}}',
-                    DEFAULT_COLORS['calc'],
-                ),
-                cls._hover_color_span(
-                    f'Imeas - {calc_label}: %{{customdata[2]:,.2f}}',
-                    DEFAULT_COLORS['resid'],
-                ),
-            ])
-
-        return cls._format_hover_lines([
-            'x: %{x:,.2f}',
-            cls._hover_color_span(
-                'Imeas: %{customdata[0]:,.2f}',
-                DEFAULT_COLORS['meas'],
-            ),
-            cls._hover_color_span(
-                'Ibkg: %{customdata[1]:,.2f}',
-                DEFAULT_COLORS['bkg'],
-            ),
-            cls._hover_color_span(
-                f'{calc_label}: %{{customdata[2]:,.2f}}',
-                DEFAULT_COLORS['calc'],
-            ),
-            cls._hover_color_span(
-                f'Imeas - {calc_label}: %{{customdata[3]:,.2f}}',
-                DEFAULT_COLORS['resid'],
-            ),
-        ])
+        lines = ['x: %{x:,.2f}']
+        for index, (_, label, color) in enumerate(cls._powder_hover_columns(plot_spec)):
+            lines.append(cls._hover_color_span(f'{label}: %{{customdata[{index}]:,.2f}}', color))
+        return cls._format_hover_lines(lines)
 
     @staticmethod
     def _get_single_crystal_trace(
@@ -955,606 +983,48 @@ class PlotlyPlotter(PlotterBase):
             ],
         }
 
-    @staticmethod
-    def _modebar_legend_toggle_post_script() -> str:
+    @classmethod
+    def _html_post_script(cls, fig: object) -> str:
         """
-        Return client-side code for a legend-toggle modebar button.
+        Return the loader-delegating post script for a Plotly figure.
+
+        Self-contained HTML (reports) reuses the shared
+        ``ed-figures.js`` behaviour — theme sync, resize, and the
+        legend-toggle button — instead of carrying an inline copy, so
+        the loader stays the single source of truth. The loader is
+        embedded once per page by :meth:`_standalone_loader_script`;
+        this script hands the rendered graph div to its exposed entry
+        points. ``{plot_id}`` is substituted by Plotly's ``to_html``;
+        the JSON payloads pass through unchanged.
         """
-        return r"""
-const graphDiv = document.getElementById('{plot_id}');
-if (!graphDiv) {
-    return;
-}
-
-const parseColor = function (colorValue) {
-    if (!colorValue) {
-        return null;
-    }
-
-    const rgbMatch = colorValue.match(/^rgba?\(([^)]+)\)$/);
-    if (rgbMatch) {
-        const channels = rgbMatch[1].split(',').slice(0, 3).map((value) => Number(value.trim()));
-        if (channels.every((value) => Number.isFinite(value))) {
-            return {red: channels[0], green: channels[1], blue: channels[2]};
-        }
-    }
-
-    const hexMatch = colorValue.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
-    if (!hexMatch) {
-        return null;
-    }
-
-    const normalizedHex = hexMatch[1].length === 3
-        ? hexMatch[1].split('').map((value) => value + value).join('')
-        : hexMatch[1];
-    return {
-        red: Number.parseInt(normalizedHex.slice(0, 2), 16),
-        green: Number.parseInt(normalizedHex.slice(2, 4), 16),
-        blue: Number.parseInt(normalizedHex.slice(4, 6), 16),
-    };
-};
-
-const resolveLegendButtonFill = function (opacity) {
-    const referencePath = graphDiv.querySelector('.modebar-btn path');
-    const referenceFill = referencePath ? window.getComputedStyle(referencePath).fill : null;
-    const fontColor = graphDiv._fullLayout && graphDiv._fullLayout.font
-        ? graphDiv._fullLayout.font.color
-        : null;
-    const parsedColor = (
-        parseColor(referenceFill)
-        || parseColor(fontColor)
-        || {red: 68, green: 68, blue: 68}
-    );
-    return (
-        'rgba('
-        + parsedColor.red
-        + ', '
-        + parsedColor.green
-        + ', '
-        + parsedColor.blue
-        + ', '
-        + opacity
-        + ')'
-    );
-};
-
-const updateLegendButtonAppearance = function (legendVisible) {
-    const legendButton = graphDiv.querySelector('[data-legend-toggle="true"]');
-    if (!legendButton) {
-        return;
-    }
-
-    const legendIconPath = legendButton.querySelector('path');
-    if (!legendIconPath) {
-        return;
-    }
-
-    legendButton.classList.toggle('active', legendVisible);
-    legendButton.setAttribute('aria-pressed', String(legendVisible));
-    legendIconPath.setAttribute(
-        'style',
-        'fill: ' + resolveLegendButtonFill(legendVisible ? 0.7 : 0.3) + ';',
-    );
-};
-
-const applyLegendVisibility = function (legendVisible) {
-    const legend = graphDiv.querySelector('.legend');
-    if (legend) {
-        legend.style.display = legendVisible ? 'inline' : 'none';
-        legend.style.visibility = legendVisible ? 'visible' : 'hidden';
-        legend.style.pointerEvents = legendVisible ? '' : 'none';
-    }
-
-    if (graphDiv.layout) {
-        graphDiv.layout.showlegend = legendVisible;
-    }
-
-    if (graphDiv._fullLayout) {
-        graphDiv._fullLayout.showlegend = legendVisible;
-    }
-};
-
-const readLegendVisibility = function () {
-    if (graphDiv.dataset.legendVisible === 'true') {
-        return true;
-    }
-
-    if (graphDiv.dataset.legendVisible === 'false') {
-        return false;
-    }
-
-    const legend = graphDiv.querySelector('.legend');
-    if (legend) {
+        theme = json.dumps(cls._ed_theme_payload())
+        theme_sync = json.dumps(cls._ed_theme_sync_payload(fig))
+        has_legend = 'true' if cls._has_visible_legend(fig) else 'false'
         return (
-            window.getComputedStyle(legend).display !== 'none'
-            && window.getComputedStyle(legend).visibility !== 'hidden'
-        );
-    }
-
-    if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean') {
-        return graphDiv.layout.showlegend;
-    }
-
-    if (graphDiv._fullLayout && typeof graphDiv._fullLayout.showlegend === 'boolean') {
-        return graphDiv._fullLayout.showlegend;
-    }
-
-    return true;
-};
-
-const syncLegendVisibility = function (legendVisible) {
-    const resolvedLegendVisible = typeof legendVisible === 'boolean'
-        ? legendVisible
-        : readLegendVisibility();
-    graphDiv.dataset.legendVisible = String(resolvedLegendVisible);
-    applyLegendVisibility(resolvedLegendVisible);
-    updateLegendButtonAppearance(resolvedLegendVisible);
-    return resolvedLegendVisible;
-};
-
-const toggleLegend = function (event) {
-    if (event) {
-        event.preventDefault();
-        event.stopPropagation();
-    }
-
-    const currentValue = readLegendVisibility();
-    const nextValue = !currentValue;
-    syncLegendVisibility(nextValue);
-};
-
-const installLegendToggleButton = function () {
-    const modebar = graphDiv.querySelector('.modebar');
-    if (!modebar) {
-        return;
-    }
-
-    if (!modebar.querySelector('.modebar-group')) {
-        return;
-    }
-
-    let legendButton = modebar.querySelector('[data-legend-toggle="true"]');
-    if (!legendButton) {
-        const legendButtonGroup = document.createElement('div');
-        legendButtonGroup.className = 'modebar-group';
-
-        legendButton = document.createElement('a');
-        legendButton.className = 'modebar-btn';
-        legendButton.href = 'javascript:void(0)';
-        legendButton.setAttribute('data-title', 'Toggle legend');
-        legendButton.setAttribute('data-legend-toggle', 'true');
-        legendButton.setAttribute('aria-label', 'Toggle legend');
-        legendButton.setAttribute('role', 'button');
-        legendButton.setAttribute('tabindex', '0');
-        legendButton.innerHTML = [
-            '<svg viewBox="0 0 1000 1000"'
-            + ' class="icon" height="1em" width="1em"'
-            + ' aria-hidden="true">',
-            '<path d="M120 160H240V280H120z M120 440H240V560H120z '
-            + 'M120 720H240V840H120z M320 200H880V240H320z '
-            + 'M320 480H880V520H320z M320 760H880V800H320z"></path>',
-            '</svg>',
-        ].join('');
-
-        legendButtonGroup.appendChild(legendButton);
-        modebar.appendChild(legendButtonGroup);
-    }
-
-    legendButton.onclick = toggleLegend;
-    legendButton.onkeydown = function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-            toggleLegend(event);
-        }
-    };
-
-    syncLegendVisibility();
-};
-
-if (graphDiv.on) {
-    graphDiv.on('plotly_afterplot', installLegendToggleButton);
-    graphDiv.on('plotly_relayout', function (eventData) {
-        if (eventData && typeof eventData.showlegend === 'boolean') {
-            syncLegendVisibility(eventData.showlegend);
-            return;
-        }
-
-        syncLegendVisibility();
-    });
-}
-syncLegendVisibility();
-window.requestAnimationFrame(installLegendToggleButton);
-"""
-
-    @staticmethod
-    def _theme_sync_post_script() -> str:
-        """
-        Return client-side code for host dark/light theme changes.
-        """
-        script = r"""
-const graphDiv = document.getElementById('{plot_id}');
-if (!graphDiv || !window.Plotly) {
-    return;
-}
-
-// Theme this figure was rendered with (Python-detected), used as the
-// fallback when the host page exposes no detectable theme attribute --
-// e.g. some Jupyter front-ends -- so icons match the baked plot instead
-// of defaulting to light.
-const bakedThemeLayout = graphDiv._fullLayout || graphDiv.layout || {};
-const bakedTheme = bakedThemeLayout.plot_bgcolor === '__DARK_BACKGROUND_COLOR__'
-    ? 'dark'
-    : 'light';
-
-const hostTheme = function () {
-    const materialScheme = (
-        (document.body && document.body.getAttribute('data-md-color-scheme'))
-        || (
-            document.documentElement
-            && document.documentElement.getAttribute('data-md-color-scheme')
+            "var graphDiv = document.getElementById('{plot_id}');\n"
+            'if (!graphDiv || !window.edFigures || !window.edFigures.watchTheme) {\n'
+            '    return;\n'
+            '}\n'
+            f'window.edFigures.watchTheme(graphDiv, {theme}, {theme_sync});\n'
+            'window.edFigures.watchResize(graphDiv);\n'
+            f'if ({has_legend}) {{\n'
+            '    window.edFigures.installLegendToggle(graphDiv);\n'
+            '}'
         )
-    );
-    if (materialScheme === 'slate') {
-        return 'dark';
-    }
-    if (materialScheme === 'default') {
-        return 'light';
-    }
-
-    const jupyterThemeLight = (
-        (document.body && document.body.getAttribute('data-jp-theme-light'))
-        || (
-            document.documentElement
-            && document.documentElement.getAttribute('data-jp-theme-light')
-        )
-    );
-    if (jupyterThemeLight === 'false') {
-        return 'dark';
-    }
-    if (jupyterThemeLight === 'true') {
-        return 'light';
-    }
-    return bakedTheme;
-};
-
-const themeColors = function (theme) {
-    if (theme === 'dark') {
-        return {
-            background: '__DARK_BACKGROUND_COLOR__',
-            paperBackground: '__PAPER_BACKGROUND_COLOR__',
-            foreground: '__DARK_FOREGROUND_COLOR__',
-            axisFrame: '__DARK_AXIS_FRAME_COLOR__',
-            innerTickGrid: '__DARK_INNER_TICK_GRID_COLOR__',
-            hoverBackground: '__DARK_HOVER_BACKGROUND_COLOR__',
-            legend: '__DARK_LEGEND_BACKGROUND_COLOR__',
-        };
-    }
-    return {
-        background: '__LIGHT_BACKGROUND_COLOR__',
-        paperBackground: '__PAPER_BACKGROUND_COLOR__',
-        foreground: '__LIGHT_FOREGROUND_COLOR__',
-        axisFrame: '__LIGHT_AXIS_FRAME_COLOR__',
-        innerTickGrid: '__LIGHT_INNER_TICK_GRID_COLOR__',
-        hoverBackground: '__LIGHT_HOVER_BACKGROUND_COLOR__',
-        legend: '__LIGHT_LEGEND_BACKGROUND_COLOR__',
-    };
-};
-
-const correlationColorscale = function (colors) {
-    return [
-        [0.0, '#d73027'],
-        [0.5, colors.background],
-        [1.0, '#4575b4'],
-    ];
-};
-
-const themeSyncMeta = function () {
-    const meta = (
-        (graphDiv.layout && graphDiv.layout.meta)
-        || (graphDiv._fullLayout && graphDiv._fullLayout.meta)
-    );
-    if (!meta || typeof meta !== 'object') {
-        return {};
-    }
-    const themeSync = meta.__THEME_SYNC_META_KEY__;
-    if (!themeSync || typeof themeSync !== 'object') {
-        return {};
-    }
-    return themeSync;
-};
-
-const axisNames = function () {
-    const names = new Set(['xaxis', 'yaxis']);
-    [graphDiv.layout, graphDiv._fullLayout].forEach(function (layout) {
-        if (!layout) {
-            return;
-        }
-        Object.keys(layout).forEach(function (key) {
-            if (/^[xyz]axis[0-9]*$/.test(key)) {
-                names.add(key);
-            }
-        });
-    });
-    return names;
-};
-
-const applyAnnotationTheme = function (update, colors) {
-    const annotations = (
-        (graphDiv.layout && graphDiv.layout.annotations)
-        || (graphDiv._fullLayout && graphDiv._fullLayout.annotations)
-        || []
-    );
-    for (let index = 0; index < annotations.length; index += 1) {
-        update['annotations[' + index + '].font.color'] = colors.foreground;
-    }
-};
-
-const applyAxisFrameShapeTheme = function (update, colors, themeSync) {
-    const shapeIndexes = themeSync.__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__;
-    if (!Array.isArray(shapeIndexes)) {
-        return;
-    }
-    shapeIndexes.forEach(function (shapeIndex) {
-        if (!Number.isInteger(shapeIndex) || shapeIndex < 0) {
-            return;
-        }
-        update['shapes[' + shapeIndex + '].line.color'] = colors.axisFrame;
-    });
-};
-
-const correlationHeatmapTraceIndexes = function (themeSync) {
-    if (themeSync.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ !== true) {
-        return [];
-    }
-    const traces = graphDiv.data || [];
-    const indexes = [];
-    traces.forEach(function (trace, index) {
-        if (trace && trace.type === 'heatmap') {
-            indexes.push(index);
-        }
-    });
-    return indexes;
-};
-
-const restyleCorrelationHeatmaps = function (colors, themeSync) {
-    const colorscale = correlationColorscale(colors);
-    return correlationHeatmapTraceIndexes(themeSync).map(function (traceIndex) {
-        return window.Plotly.restyle(
-            graphDiv,
-            {colorscale: [colorscale]},
-            [traceIndex],
-        );
-    });
-};
-
-const rgbaFromColor = function (color, alpha) {
-    const hexMatch = color.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
-    let red;
-    let green;
-    let blue;
-    if (hexMatch) {
-        let hex = hexMatch[1];
-        if (hex.length === 3) {
-            hex = hex.split('').map(function (part) {
-                return part + part;
-            }).join('');
-        }
-        red = parseInt(hex.slice(0, 2), 16);
-        green = parseInt(hex.slice(2, 4), 16);
-        blue = parseInt(hex.slice(4, 6), 16);
-    } else {
-        const parts = color.match(/(\d+(?:\.\d+)?)/g);
-        if (!parts || parts.length < 3) {
-            return color;
-        }
-        red = Number(parts[0]);
-        green = Number(parts[1]);
-        blue = Number(parts[2]);
-    }
-    return 'rgba(' + red + ', ' + green + ', ' + blue + ', ' + alpha + ')';
-};
-
-const installModebarIconStyle = function (theme, colors) {
-    // Plotly paints modebar icon fills with non-important inline styles
-    // (and re-paints on hover), and the host plot id can start with a
-    // digit, so an id-based rule is invalid. A class-based !important
-    // rule with direct colors reliably themes every icon, inactive and
-    // hovered, in both light and dark hosts.
-    graphDiv.classList.add('ed-plotly-themed-modebar');
-    const styleId = 'ed-plotly-modebar-icon-style';
-    let style = document.getElementById(styleId);
-    if (!style) {
-        style = document.createElement('style');
-        style.id = styleId;
-        document.head.appendChild(style);
-    }
-    const inactive = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.55);
-    const active = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.9);
-    style.textContent = (
-        '.ed-plotly-themed-modebar .modebar-btn path { fill: ' + inactive + ' !important; }'
-        + '.ed-plotly-themed-modebar .modebar-btn:hover path,'
-        + '.ed-plotly-themed-modebar .modebar-btn.active path { fill: ' + active + ' !important; }'
-    );
-};
-
-const applyTheme = function () {
-    const theme = hostTheme();
-    const colors = themeColors(theme);
-    const syncMeta = themeSyncMeta();
-    installModebarIconStyle(theme, colors);
-
-    if (graphDiv.dataset.edPlotlyTheme === theme) {
-        return;
-    }
-    graphDiv.dataset.edPlotlyTheme = theme;
-
-    const transparentPlot = syncMeta.__THEME_SYNC_CORRELATION_HEATMAP_KEY__ === true;
-    const modebarColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.62 : 0.42);
-    const modebarActiveColor = rgbaFromColor(colors.foreground, theme === 'dark' ? 0.95 : 0.85);
-    const update = {
-        paper_bgcolor: colors.paperBackground,
-        plot_bgcolor: transparentPlot ? colors.paperBackground : colors.background,
-        'modebar.bgcolor': colors.paperBackground,
-        'modebar.color': modebarColor,
-        'modebar.activecolor': modebarActiveColor,
-        'font.color': colors.foreground,
-        'title.font.color': colors.foreground,
-        'legend.bgcolor': colors.legend,
-        'legend.font.color': colors.foreground,
-        'hoverlabel.bgcolor': colors.hoverBackground,
-        'hoverlabel.bordercolor': colors.axisFrame,
-        'hoverlabel.font.color': colors.foreground,
-    };
-
-    axisNames().forEach(function (axisName) {
-        update[axisName + '.color'] = colors.foreground;
-        update[axisName + '.gridcolor'] = colors.innerTickGrid;
-        update[axisName + '.linecolor'] = colors.axisFrame;
-        update[axisName + '.zerolinecolor'] = colors.innerTickGrid;
-        update[axisName + '.title.font.color'] = colors.foreground;
-        update[axisName + '.tickfont.color'] = colors.foreground;
-    });
-    applyAnnotationTheme(update, colors);
-    applyAxisFrameShapeTheme(update, colors, syncMeta);
-
-    try {
-        const result = window.Plotly.relayout(graphDiv, update);
-        const restyleResults = restyleCorrelationHeatmaps(colors, syncMeta);
-        const pending = [result].concat(restyleResults).filter(function (item) {
-            return item && typeof item.then === 'function';
-        });
-        if (pending.length > 0) {
-            Promise.all(pending).then(function () {
-                window.Plotly.redraw(graphDiv);
-            });
-        } else {
-            window.Plotly.redraw(graphDiv);
-        }
-    } catch (_error) {
-        // Keep theme switching from breaking interaction with the figure.
-    }
-};
-
-if (graphDiv.on) {
-    graphDiv.on('plotly_afterplot', applyTheme);
-}
-
-if (window.MutationObserver) {
-    const themeObserver = new MutationObserver(function () {
-        graphDiv.dataset.edPlotlyTheme = '';
-        applyTheme();
-    });
-    const attributeFilter = [
-        'data-md-color-scheme',
-        'data-jp-theme-light',
-        'data-jp-theme-name',
-    ];
-    themeObserver.observe(document.documentElement, {
-        attributes: true,
-        attributeFilter: attributeFilter,
-    });
-    if (document.body) {
-        themeObserver.observe(document.body, {
-            attributes: true,
-            attributeFilter: attributeFilter,
-        });
-    }
-}
-
-applyTheme();
-"""
-        return (
-            script
-            .replace('__THEME_SYNC_META_KEY__', THEME_SYNC_META_KEY)
-            .replace(
-                '__THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY__',
-                THEME_SYNC_AXIS_FRAME_SHAPE_INDEXES_KEY,
-            )
-            .replace(
-                '__THEME_SYNC_CORRELATION_HEATMAP_KEY__',
-                THEME_SYNC_CORRELATION_HEATMAP_KEY,
-            )
-            .replace('__PAPER_BACKGROUND_COLOR__', PAPER_BACKGROUND_COLOR)
-            .replace('__DARK_BACKGROUND_COLOR__', DARK_BACKGROUND_COLOR)
-            .replace('__DARK_FOREGROUND_COLOR__', DARK_FOREGROUND_COLOR)
-            .replace('__DARK_AXIS_FRAME_COLOR__', DARK_AXIS_FRAME_COLOR)
-            .replace('__DARK_INNER_TICK_GRID_COLOR__', DARK_INNER_TICK_GRID_COLOR)
-            .replace('__DARK_HOVER_BACKGROUND_COLOR__', DARK_HOVER_BACKGROUND_COLOR)
-            .replace('__DARK_LEGEND_BACKGROUND_COLOR__', DARK_LEGEND_BACKGROUND_COLOR)
-            .replace('__LIGHT_BACKGROUND_COLOR__', LIGHT_BACKGROUND_COLOR)
-            .replace('__LIGHT_FOREGROUND_COLOR__', LIGHT_FOREGROUND_COLOR)
-            .replace('__LIGHT_AXIS_FRAME_COLOR__', LIGHT_AXIS_FRAME_COLOR)
-            .replace('__LIGHT_INNER_TICK_GRID_COLOR__', LIGHT_INNER_TICK_GRID_COLOR)
-            .replace('__LIGHT_HOVER_BACKGROUND_COLOR__', LIGHT_HOVER_BACKGROUND_COLOR)
-            .replace('__LIGHT_LEGEND_BACKGROUND_COLOR__', LIGHT_LEGEND_BACKGROUND_COLOR)
-        )
-
-    @staticmethod
-    def _resize_sync_post_script() -> str:
-        """
-        Return client-side code to resize hidden-tab Plotly outputs.
-        """
-        return r"""
-const graphDiv = document.getElementById('{plot_id}');
-if (!graphDiv || !window.Plotly || !window.Plotly.Plots) {
-    return;
-}
-
-let pendingResize = false;
-const resizePlot = function () {
-    if (pendingResize) {
-        return;
-    }
-    pendingResize = true;
-    window.requestAnimationFrame(function () {
-        pendingResize = false;
-        if (!graphDiv.isConnected || graphDiv.offsetParent === null) {
-            return;
-        }
-        window.Plotly.Plots.resize(graphDiv);
-    });
-};
-
-const scheduleResize = function () {
-    resizePlot();
-    window.setTimeout(resizePlot, 50);
-    window.setTimeout(resizePlot, 250);
-};
-
-if (window.ResizeObserver) {
-    const resizeObserver = new ResizeObserver(scheduleResize);
-    resizeObserver.observe(graphDiv);
-    if (graphDiv.parentElement) {
-        resizeObserver.observe(graphDiv.parentElement);
-    }
-}
-
-document.addEventListener('visibilitychange', function () {
-    if (!document.hidden) {
-        scheduleResize();
-    }
-});
-window.addEventListener('focus', scheduleResize);
-window.addEventListener('pageshow', scheduleResize);
-scheduleResize();
-"""
 
     @classmethod
-    def _html_post_script(cls, fig: object) -> str | None:
-        """Return concatenated HTML post scripts for a Plotly figure."""
-        scripts: list[str] = [
-            cls._theme_sync_post_script(),
-            cls._resize_sync_post_script(),
-        ]
-        if cls._has_visible_legend(fig):
-            scripts.append(cls._modebar_legend_toggle_post_script())
-        return '\n'.join(cls._scoped_html_post_script(script) for script in scripts)
+    def _standalone_loader_script(cls) -> str:
+        """
+        Return the shared figure loader wrapped in a ``<script>`` tag.
 
-    @staticmethod
-    def _scoped_html_post_script(script: str) -> str:
+        Embedded once in a self-contained HTML page (alongside the
+        Plotly bundle) so each figure's post script can delegate to
+        ``window.edFigures``. The loader's IIFE is idempotent and, with
+        no ``.ed-figure`` placeholders present, its activation pass is a
+        no-op.
         """
-        Return one HTML post script wrapped in its own block scope.
-        """
-        return '{\n' + script.strip() + '\n}'
+        loader = _packaged_asset(_FIGURE_LOADER_ASSET)
+        return f'<script type="text/javascript">{loader}</script>'
 
     @staticmethod
     def _figure_meta(fig: object) -> dict[str, object] | None:
@@ -1712,6 +1182,7 @@ scheduleResize();
         """Return whether a figure exposes at least one legend entry."""
 
         def _trace_value(trace: object, field_name: str) -> object:
+            """Return a trace field from attribute or kwargs."""
             value = getattr(trace, field_name, None)
             if value is not None:
                 return value
@@ -1760,21 +1231,62 @@ scheduleResize();
             fig.show(config=config)
             return
 
-        # Docs execution sets SHARED, baking a lazy placeholder into
-        # the cell HTML. Live Jupyter stays INLINE (eager, CDN).
+        # The docs site (SHARED) bakes a lazy placeholder into the page,
+        # which loads the runtime once and the loader scans for it.
         if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
-            html_fig = self.serialize_html(
-                fig,
-                include_plotlyjs=False,
-                mode=FigureEmbedMode.SHARED,
-            )
-        else:
-            html_fig = self.serialize_html(
-                fig,
-                include_plotlyjs='cdn',
-                mode=FigureEmbedMode.INLINE,
-            )
-        display(HTML(html_fig))
+            display(HTML(self._serialize_html_shared(fig)))
+            return
+
+        # Live notebooks render through one HTML output: a target div
+        # plus a single <script> that, the first time per kernel
+        # session, carries the self-hosted Plotly bundle and the shared
+        # loader (inline — no async CDN race), then renders this
+        # figure's spec into the target. One output and one script
+        # element keep the cell's visual footprint to just the plot.
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = self._figure_height(fig)
+        target_html = (
+            '<div class="ed-figure" data-ed-figure="plotly">'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '</div>'
+        )
+        render_js = (
+            f'if (window.edFigures) {{ '
+            f'window.edFigures.renderSpec("{plot_id}", {self._figure_spec_json(fig)}); }}'
+        )
+        script = (
+            '<script type="text/javascript">'
+            f'{self._live_runtime_bootstrap_js()}{render_js}'
+            '</script>'
+        )
+        display(HTML(self._wrap_html_figure(fig, target_html) + script))
+
+    @classmethod
+    def _live_runtime_bootstrap_js(cls) -> str:
+        """
+        Return one-time runtime + loader JavaScript for live notebooks.
+
+        On the first call in a kernel session this returns the
+        self-hosted Plotly bundle and the shared ``ed-figures.js``
+        loader as raw JavaScript (for a Javascript output); later calls
+        return an empty string. Running inline means the loader never
+        races an async runtime download.
+
+        Returns
+        -------
+        str
+            The bootstrap JavaScript, or ``''`` once already injected
+            this session.
+        """
+        if cls._live_runtime_injected:
+            return ''
+        cls._live_runtime_injected = True
+        runtime = _packaged_asset(_PLOTLY_RUNTIME_ASSET)
+        loader = _packaged_asset(_FIGURE_LOADER_ASSET)
+        # The leading ';' guards against the runtime's last statement
+        # swallowing the loader IIFE through automatic semicolon rules.
+        return f'{runtime}\n;\n{loader}\n;\n'
 
     @staticmethod
     def _ed_theme_payload() -> dict:
@@ -1830,17 +1342,14 @@ scheduleResize();
         return DEFAULT_HEIGHT * PLOTLY_HEIGHT_PER_UNIT
 
     @classmethod
-    def _serialize_html_shared(cls, fig: object) -> str:
+    def _figure_spec_json(cls, fig: object) -> str:
         """
-        Serialize a figure as a lazy SHARED-mode placeholder.
+        Serialize a figure to the JSON spec the loader renders.
 
-        Emits a skeleton plus the figure spec as ``application/json``
-        for the shared ``ed-figures.js`` loader to render on demand. No
-        Plotly bundle or per-figure post-script is embedded; the runtime
-        loads once per page and the loader owns theme-sync, resize, and
-        legend. Bulk float64 arrays are downcast to float32 (visually
-        lossless, ~7 significant figures) to roughly halve the embedded
-        data.
+        Carries the trace data, layout, config, and the theme/legend
+        metadata the loader needs. Bulk float64 arrays are downcast to
+        float32 (visually lossless, ~7 significant figures) to roughly
+        halve the embedded data.
 
         Parameters
         ----------
@@ -1850,7 +1359,8 @@ scheduleResize();
         Returns
         -------
         str
-            Placeholder HTML carrying the figure spec.
+            The figure spec as a JSON string, with ``<`` escaped so it
+            is safe inside a ``<script>`` element.
         """
         figure_dict = _typed_arrays_to_float32(fig.to_plotly_json())
         spec = {
@@ -1862,7 +1372,30 @@ scheduleResize();
             'edHasLegend': cls._has_visible_legend(fig),
         }
         # Escape '<' so the JSON cannot terminate the <script> element.
-        spec_json = json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+        return json.dumps(spec, cls=PlotlyJSONEncoder).replace('<', '\\u003c')
+
+    @classmethod
+    def _serialize_html_shared(cls, fig: object) -> str:
+        """
+        Serialize a figure as a placeholder for the shared loader.
+
+        Emits the figure spec as ``application/json`` for the shared
+        ``ed-figures.js`` loader to render on demand (used by the docs
+        site). No Plotly bundle or per-figure post-script is embedded;
+        the runtime loads once per page and the loader owns theme-sync,
+        resize, and legend.
+
+        Parameters
+        ----------
+        fig : object
+            Plotly figure to serialize.
+
+        Returns
+        -------
+        str
+            Placeholder HTML carrying the figure spec.
+        """
+        spec_json = cls._figure_spec_json(fig)
         plot_id = f'ed-fig-{uuid.uuid4().hex}'
         height = cls._figure_height(fig)
         html_fig = (
@@ -1883,6 +1416,7 @@ scheduleResize();
         fig: object,
         *,
         include_plotlyjs: bool | str,
+        include_helper_loader: bool = True,
         mode: FigureEmbedMode = FigureEmbedMode.STANDALONE,
         force_template: str | None = None,
         axis_frame_color: str | None = None,
@@ -1897,6 +1431,13 @@ scheduleResize();
             Plotly figure to serialize.
         include_plotlyjs : bool | str
             Plotly JavaScript inclusion mode passed to Plotly.
+        include_helper_loader : bool, default=True
+            Whether to embed the shared ``ed-figures.js`` loader that
+            the eager post script delegates to (theme sync, resize,
+            legend). Defaults to ``True`` so a self-contained snippet
+            keeps those controls even when Plotly itself is provided
+            externally (``include_plotlyjs=False``). A multi-figure page
+            embeds it once and passes ``False`` for later figures.
         mode : FigureEmbedMode, default=FigureEmbedMode.STANDALONE
             Embedding mode. ``SHARED`` emits a lazy placeholder for the
             docs loader; ``INLINE``/``STANDALONE`` serialize eagerly.
@@ -1955,7 +1496,15 @@ scheduleResize();
             config=cls._get_config(),
             post_script=cls._html_post_script(fig),
         )
-        return cls._wrap_html_figure(fig, html_fig)
+        wrapped = cls._wrap_html_figure(fig, html_fig)
+        # Embed the shared loader so the eager post script has a
+        # ``window.edFigures`` to delegate to. Decoupled from
+        # ``include_plotlyjs`` (Plotly may be supplied externally): a
+        # multi-figure page sets ``include_helper_loader=False`` for
+        # later figures so the loader is embedded only once.
+        if include_helper_loader:
+            wrapped = f'{cls._standalone_loader_script()}\n{wrapped}'
+        return wrapped
 
     @classmethod
     def _apply_background_color(
@@ -2180,7 +1729,7 @@ scheduleResize();
         color: str,
     ) -> object:
         """
-        Create a hover-capable Bragg tick trace for one linked phase.
+        Create a Bragg tick hover trace for one linked structure.
 
         Only the Miller-index line is colored to match the phase tick
         marker; the phase name and x line use the default tooltip text
@@ -2194,7 +1743,7 @@ scheduleResize();
             index_k = int(tick_set.k[idx])
             index_l = int(tick_set.ell[idx])
             lines = [
-                tick_set.phase_id,
+                tick_set.structure_id,
                 f'x: {float(x_value):,.2f}',
                 cls._hover_color_span(
                     f'Miller indices: ({index_h} {index_k} {index_l})',
@@ -2215,7 +1764,7 @@ scheduleResize();
                 'line': {'width': BRAGG_TICK_MARKER_LINE_WIDTH},
                 'color': color,
             },
-            name=f'Bragg peaks: {tick_set.phase_id}',
+            name=f'Bragg peaks: {tick_set.structure_id}',
             text=hover_text,
             hovertemplate='%{text}',
         )
@@ -2394,12 +1943,11 @@ scheduleResize();
         """
         Return an explicit y-range for the main powder intensity row.
         """
-        y_meas = np.asarray(plot_spec.y_meas)
         y_calc = np.asarray(plot_spec.y_calc)
-        if min(y_meas.size, y_calc.size) == 0:
+        if y_calc.size == 0:
             return 0.0, 1.0
 
-        main_series = cls._main_intensity_series(plot_spec, y_meas=y_meas, y_calc=y_calc)
+        main_series = cls._main_intensity_series(plot_spec, y_calc=y_calc)
 
         main_y_min = float(min(np.min(series) for series in main_series))
         main_y_max = float(max(np.max(series) for series in main_series))
@@ -2415,11 +1963,14 @@ scheduleResize();
         cls,
         plot_spec: PowderMeasVsCalcSpec,
         *,
-        y_meas: np.ndarray,
         y_calc: np.ndarray,
     ) -> list[np.ndarray]:
-        main_series = [y_meas, y_calc]
+        """Collect all intensity series shown in the main row."""
+        # The measured series is optional: a calculated-only pattern has
+        # no measured scan, so it is skipped from the y-range entirely.
+        main_series = [y_calc]
         for values in (
+            plot_spec.y_meas,
             plot_spec.y_bkg,
             plot_spec.predictive_lower_95,
             plot_spec.predictive_upper_95,
@@ -2436,6 +1987,7 @@ scheduleResize();
         main_series: list[np.ndarray],
         values: np.ndarray | None,
     ) -> None:
+        """Append values to the series list when non-empty."""
         if values is None:
             return
 
@@ -2445,6 +1997,7 @@ scheduleResize();
 
     @staticmethod
     def _predictive_draw_array(values: object | None) -> np.ndarray | None:
+        """Return predictive draws as a 2D array, or None if absent."""
         if values is None:
             return None
 
@@ -2551,8 +2104,95 @@ scheduleResize();
 
         return fig
 
+    def build_and_show_calc_comparison(
+        self,
+        *,
+        plot_spec: PowderMeasVsCalcSpec,
+        reference_label: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate calculated-pattern comparison.
+
+        Reuses the composite measured-vs-calculated figure, then
+        restyles the two main curves so the reference reads as a solid
+        line and the candidate as overlaid markers, and adds an optional
+        metrics box in the top-left corner.
+
+        Parameters
+        ----------
+        plot_spec : PowderMeasVsCalcSpec
+            Composite spec with the reference as ``y_meas`` and the
+            candidate as ``y_calc`` (no Bragg ticks or background).
+        reference_label : str
+            Legend name for the reference curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_powder_meas_vs_calc_figure(plot_spec=plot_spec)
+        self._restyle_calc_comparison(fig, reference_label=reference_label)
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
+
+    @staticmethod
+    def _restyle_calc_comparison(fig: object, *, reference_label: str) -> None:
+        """
+        Restyle the curves: reference solid line, candidate dashed line.
+        """
+        # Trace order is deterministic for a comparison spec (no Bragg,
+        # background, or predictive traces): reference first, candidate
+        # second, residual last.
+        fig.data[0].update(
+            name=reference_label,
+            mode='lines',
+            marker=None,
+            error_y=None,
+            line={'color': DEFAULT_COLORS['meas'], 'width': MEASURED_LINE_WIDTH},
+        )
+        fig.data[1].update(
+            mode='lines',
+            marker=None,
+            line={
+                'color': DEFAULT_COLORS['calc'],
+                'width': CALCULATED_LINE_WIDTH,
+                'dash': 'dash',
+            },
+        )
+
+    @classmethod
+    def _add_metrics_annotation(cls, fig: object, lines: tuple[str, ...]) -> None:
+        """
+        Add a legend-style metrics box in the main panel's top-left.
+        """
+        # Anchor at the top-left corner with equal pixel margins so the
+        # left and top gaps match regardless of the panel aspect ratio.
+        fig.add_annotation(
+            # Tagged so the theme-switch script re-themes this box's
+            # background and border, not just its font colour.
+            name=_METRICS_ANNOTATION_NAME,
+            text='<br>'.join(lines),
+            xref='x domain',
+            yref='y domain',
+            x=0.0,
+            y=1.0,
+            xshift=8,
+            yshift=-8,
+            xanchor='left',
+            yanchor='top',
+            align='left',
+            showarrow=False,
+            font={'size': 12},
+            bordercolor=cls._axis_frame_color(),
+            borderwidth=1,
+            borderpad=4,
+            bgcolor=cls._legend_background_color(),
+        )
+
     @staticmethod
     def _create_powder_composite_figure(layout: PowderCompositeRows) -> object:
+        """Create the shared-x subplot figure for the composite plot."""
         return make_subplots(
             rows=layout.row_count,
             cols=1,
@@ -2567,6 +2207,7 @@ scheduleResize();
         fig: object,
         plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
+        """Add the 95% predictive band traces to the main row."""
         if plot_spec.predictive_lower_95 is None or plot_spec.predictive_upper_95 is None:
             return
 
@@ -2586,23 +2227,26 @@ scheduleResize();
         hover_data: object,
         hover_template: str,
     ) -> None:
-        meas_trace = self._get_powder_trace(
-            plot_spec.x,
-            plot_spec.y_meas,
-            'meas',
-            customdata=hover_data,
-            hovertemplate=hover_template,
-        )
-        if plot_spec.y_meas_su is not None:
-            meas_trace.error_y = {
-                'type': 'data',
-                'array': plot_spec.y_meas_su,
-                'visible': True,
-                'color': DEFAULT_COLORS['meas'],
-                'thickness': MEASURED_ERROR_BAR_THICKNESS,
-                'width': MEASURED_ERROR_BAR_WIDTH,
-            }
-        fig.add_trace(meas_trace, row=1, col=1)
+        """Add measured, background, and calculated traces."""
+        # The measured trace is omitted for a calculated-only pattern.
+        if plot_spec.y_meas is not None:
+            meas_trace = self._get_powder_trace(
+                plot_spec.x,
+                plot_spec.y_meas,
+                'meas',
+                customdata=hover_data,
+                hovertemplate=hover_template,
+            )
+            if plot_spec.y_meas_su is not None:
+                meas_trace.error_y = {
+                    'type': 'data',
+                    'array': plot_spec.y_meas_su,
+                    'visible': True,
+                    'color': DEFAULT_COLORS['meas'],
+                    'thickness': MEASURED_ERROR_BAR_THICKNESS,
+                    'width': MEASURED_ERROR_BAR_WIDTH,
+                }
+            fig.add_trace(meas_trace, row=1, col=1)
 
         if plot_spec.y_bkg is not None:
             bkg_trace = self._get_powder_trace(
@@ -2633,6 +2277,7 @@ scheduleResize();
         fig: object,
         plot_spec: PowderMeasVsCalcSpec,
     ) -> None:
+        """Add capped posterior predictive draw traces."""
         predictive_draws = self._predictive_draw_array(plot_spec.predictive_draws)
         if predictive_draws is None:
             return
@@ -2662,6 +2307,7 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Add one Bragg tick trace per phase to the Bragg row."""
         if layout.bragg_row is None:
             return
 
@@ -2686,21 +2332,21 @@ scheduleResize();
         hover_data: object,
         hover_template: str,
     ) -> float | None:
+        """Add the residual trace and return its symmetric limit."""
         if layout.residual_row is None or plot_spec.y_resid is None:
             return None
 
         residual_limit = self._get_residual_limit(plot_spec)
-        fig.add_trace(
-            self._get_powder_trace(
-                plot_spec.x,
-                plot_spec.y_resid,
-                'resid',
-                customdata=hover_data,
-                hovertemplate=hover_template,
-            ),
-            row=layout.residual_row,
-            col=1,
+        resid_trace = self._get_powder_trace(
+            plot_spec.x,
+            plot_spec.y_resid,
+            'resid',
+            customdata=hover_data,
+            hovertemplate=hover_template,
         )
+        if plot_spec.y_meas_name is not None and plot_spec.y_calc_name is not None:
+            resid_trace.name = 'Residual'
+        fig.add_trace(resid_trace, row=layout.residual_row, col=1)
         return residual_limit
 
     def _configure_powder_composite_layout(
@@ -2710,6 +2356,7 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Configure the composite figure height, title, and legend."""
         fig.update_layout(
             height=self._composite_figure_height(layout),
             margin={
@@ -2741,6 +2388,7 @@ scheduleResize();
         main_y_range: tuple[float, float],
         residual_limit: float | None,
     ) -> None:
+        """Configure the main, Bragg, and residual axes."""
         self._configure_shared_composite_axes(
             fig=fig,
             row_count=layout.row_count,
@@ -2783,6 +2431,7 @@ scheduleResize();
         x_min: float | None,
         x_max: float | None,
     ) -> None:
+        """Apply shared x/y axis styling to every composite row."""
         axis_frame_color = self._axis_frame_color()
         for row_idx in range(1, row_count + 1):
             x_axis_kwargs = {
@@ -2817,10 +2466,11 @@ scheduleResize();
         plot_spec: PowderMeasVsCalcSpec,
         layout: PowderCompositeRows,
     ) -> None:
+        """Configure the Bragg row's phase-labelled y axis."""
         fig.update_yaxes(
             tickmode='array',
             tickvals=[float(idx + 1) for idx in range(len(plot_spec.bragg_tick_sets))],
-            ticktext=[tick_set.phase_id for tick_set in plot_spec.bragg_tick_sets],
+            ticktext=[tick_set.structure_id for tick_set in plot_spec.bragg_tick_sets],
             range=[float(len(plot_spec.bragg_tick_sets)) + 0.5, 0.5],
             showgrid=False,
             row=layout.bragg_row,
@@ -2840,6 +2490,7 @@ scheduleResize();
         layout: PowderCompositeRows,
         residual_limit: float,
     ) -> None:
+        """Configure the residual row's symmetric y axis and x title."""
         residual_tick_limit = self._get_display_tick_limit(residual_limit)
         fig.update_yaxes(
             range=[-residual_limit, residual_limit],
@@ -2983,6 +2634,62 @@ scheduleResize();
         )
 
         return self._get_figure(data, layout)
+
+    def build_and_show_reflection_comparison(
+        self,
+        *,
+        x_reference: object,
+        y_candidate: object,
+        axes_labels: object,
+        reference_label: str,
+        candidate_label: str,
+        title: str,
+        annotation_lines: tuple[str, ...] = (),
+    ) -> None:
+        """
+        Show a reference-vs-candidate single-crystal reflection scatter.
+
+        Reuses the single-crystal scatter — the reference on the x-axis,
+        the candidate on the y-axis, and a y=x reference line — then
+        corrects the hover labels and adds an optional metrics box in
+        the top-left corner. Both inputs are peak-normalised upstream so
+        they share one scale and points fall on the diagonal when the
+        engines agree.
+
+        Parameters
+        ----------
+        x_reference : object
+            Peak-normalised reference F² per reflection (x-axis).
+        y_candidate : object
+            Peak-normalised candidate F² per reflection (y-axis).
+        axes_labels : object
+            Pair of strings for the x and y titles.
+        reference_label : str
+            Short name of the reference, used in the hover text.
+        candidate_label : str
+            Short name of the candidate, used in the hover text.
+        title : str
+            Figure title.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation; omitted when
+            empty.
+        """
+        fig = self.build_single_crystal_figure(
+            x_calc=x_reference,
+            y_meas=y_candidate,
+            y_meas_su=np.zeros_like(np.asarray(y_candidate, dtype=float)),
+            axes_labels=axes_labels,
+            title=title,
+        )
+        fig.data[0].update(
+            error_y=None,
+            hovertemplate=(
+                f'{reference_label}: %{{x:.2f}}<br>{candidate_label}: %{{y:.2f}}<extra></extra>'
+            ),
+        )
+        if annotation_lines:
+            self._add_metrics_annotation(fig, annotation_lines)
+        self._show_figure(fig)
 
     def plot_scatter(
         self,

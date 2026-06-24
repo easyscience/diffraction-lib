@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Descriptor and fittable parameter classes for CIF values."""
 
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
 
     from easydiffraction.core.display_handler import DisplayHandler
     from easydiffraction.core.posterior import PosteriorParameterSummary
-    from easydiffraction.io.cif.handler import CifHandler
+    from easydiffraction.io.cif.handler import TagSpec
 
 # ======================================================================
 
@@ -94,6 +95,13 @@ class GenericDescriptorBase(GuardedBase):
         self._description = description
         self._display_handler = display_handler
 
+        # Optional zero-argument callback invoked after the value
+        # actually changes through the public setter. Owners (e.g. a
+        # data collection caching a derived view) wire this to drop
+        # caches that depend on this descriptor's value. Defaults to no
+        # notification.
+        self._on_change = None
+
         # Initial validated states
         # self._value = self._value_spec.validated(
         #    value_spec.value,
@@ -103,7 +111,7 @@ class GenericDescriptorBase(GuardedBase):
         # Assign default directly.
         # Skip validation — defaults are trusted.
         # Callable is needed for dynamic defaults like SpaceGroup
-        # it_coordinate_system_code, and similar cases.
+        # coord_system_code, and similar cases.
         self._value = value_spec.default_value()
 
     def __str__(self) -> str:
@@ -168,6 +176,11 @@ class GenericDescriptorBase(GuardedBase):
         if parent_owner is not None:
             parent_owner._need_categories_update = True
 
+        # Notify an owner that wired a change callback (e.g. a data
+        # collection invalidating a cache keyed on this value).
+        if self._on_change is not None:
+            self._on_change()
+
     def _set_value_from_minimizer(self, v: object) -> None:
         """
         Set the value from a minimizer, bypassing validation.
@@ -197,6 +210,11 @@ class GenericDescriptorBase(GuardedBase):
     def display_handler(self) -> DisplayHandler | None:
         """Optional labels and units for display contexts."""
         return self._display_handler
+
+    @property
+    def url(self) -> str:
+        """Online documentation URL for this persisted descriptor."""
+        return self._tags.url
 
     def resolve_display_name(self, context: str) -> str:
         """
@@ -380,7 +398,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.default
         self._fit_max_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=np.inf)
         self._fit_max = self._fit_max_spec.default
-        self._fit_bounds_uncertainty_multiplier: float | None = None
+        self._bounds_uncertainty_multiplier: float | None = None
         self._start_value_spec = AttributeSpec(data_type=DataTypes.NUMERIC, default=0.0)
         self._start_value = self._start_value_spec.default
         self._user_constrained_spec = self._BOOL_SPEC_TEMPLATE
@@ -526,7 +544,7 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_min = self._fit_min_spec.validated(
             v, name=f'{self.unique_name}.fit_min', current=self._fit_min
         )
-        self._fit_bounds_uncertainty_multiplier = None
+        self._bounds_uncertainty_multiplier = None
 
     @property
     def fit_max(self) -> float:
@@ -539,18 +557,18 @@ class GenericParameter(GenericNumericDescriptor):
         self._fit_max = self._fit_max_spec.validated(
             v, name=f'{self.unique_name}.fit_max', current=self._fit_max
         )
-        self._fit_bounds_uncertainty_multiplier = None
+        self._bounds_uncertainty_multiplier = None
 
     @property
-    def fit_bounds_uncertainty_multiplier(self) -> float | None:
+    def bounds_uncertainty_multiplier(self) -> float | None:
         """
         Multiplier used for uncertainty-derived fit bounds, if known.
         """
-        return self._fit_bounds_uncertainty_multiplier
+        return self._bounds_uncertainty_multiplier
 
-    def _set_fit_bounds_uncertainty_multiplier(self, value: float | None) -> None:
+    def _set_bounds_uncertainty_multiplier(self, value: float | None) -> None:
         """Set the cached uncertainty-derived fit-bounds multiplier."""
-        self._fit_bounds_uncertainty_multiplier = value
+        self._bounds_uncertainty_multiplier = value
 
     def set_fit_bounds_from_uncertainty(
         self,
@@ -616,7 +634,7 @@ class GenericParameter(GenericNumericDescriptor):
 
         self.fit_min = lower
         self.fit_max = upper
-        self._fit_bounds_uncertainty_multiplier = resolved_multiplier
+        self._bounds_uncertainty_multiplier = resolved_multiplier
 
 
 # ======================================================================
@@ -628,7 +646,7 @@ class StringDescriptor(GenericStringDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -636,14 +654,14 @@ class StringDescriptor(GenericStringDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericStringDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -664,7 +682,7 @@ class EnumDescriptor(StringDescriptor):
         *,
         name: str,
         enum: type[StrEnum],
-        cif_handler: CifHandler,
+        tags: TagSpec,
         description: str | None = None,
         default: str | None = None,
         display_handler: DisplayHandler | None = None,
@@ -679,7 +697,7 @@ class EnumDescriptor(StringDescriptor):
         enum : type[StrEnum]
             The ``(str, Enum)`` class whose members are the allowed
             values.
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         description : str | None, default=None
             Optional human-readable description.
@@ -699,7 +717,7 @@ class EnumDescriptor(StringDescriptor):
             name=name,
             description=description,
             value_spec=value_spec,
-            cif_handler=cif_handler,
+            tags=tags,
             display_handler=display_handler,
         )
 
@@ -738,7 +756,7 @@ class BoolDescriptor(GenericBoolDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -746,14 +764,14 @@ class BoolDescriptor(GenericBoolDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericBoolDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -765,7 +783,7 @@ class NumericDescriptor(GenericNumericDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -773,14 +791,14 @@ class NumericDescriptor(GenericNumericDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericNumericDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -792,7 +810,7 @@ class IntegerDescriptor(GenericIntegerDescriptor):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -800,14 +818,14 @@ class IntegerDescriptor(GenericIntegerDescriptor):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericIntegerDescriptor.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)
 
 
 # ======================================================================
@@ -819,7 +837,7 @@ class Parameter(GenericParameter):
     def __init__(
         self,
         *,
-        cif_handler: CifHandler,
+        tags: TagSpec,
         **kwargs: object,
     ) -> None:
         """
@@ -827,11 +845,11 @@ class Parameter(GenericParameter):
 
         Parameters
         ----------
-        cif_handler : CifHandler
+        tags : TagSpec
             Object that tracks CIF identifiers.
         **kwargs : object
             Forwarded to GenericParameter.
         """
         super().__init__(**kwargs)
-        self._cif_handler = cif_handler
-        self._cif_handler.attach(self)
+        self._tags = tags
+        self._tags.attach(self)

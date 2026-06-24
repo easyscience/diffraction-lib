@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Base class for objects owning flat CIF-like categories."""
 
 from __future__ import annotations
 
@@ -43,9 +44,19 @@ class CategoryOwner(GuardedBase):
         self,
         *,
         called_by_minimizer: bool = False,
+        force: bool = False,
     ) -> None:
-        """Run update hooks on all owned categories."""
-        if not called_by_minimizer and not self._need_categories_update:
+        """
+        Run update hooks on all owned categories.
+
+        ``force`` bypasses the dirty-flag short-circuit so an explicit
+        recompute refreshes categories even when this owner was not
+        itself edited. An experiment's calculated pattern depends on the
+        linked structures, but editing a structure marks only the
+        structure dirty; ``Analysis.calculate`` therefore forces the
+        experiment update so structure edits are reflected.
+        """
+        if not called_by_minimizer and not force and not self._need_categories_update:
             return
 
         for category in self.categories:

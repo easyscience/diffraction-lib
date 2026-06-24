@@ -18,7 +18,7 @@ from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class JointFitItem(CategoryItem):
@@ -28,30 +28,30 @@ class JointFitItem(CategoryItem):
     _category_entry_name = 'experiment_id'
 
     def __init__(self) -> None:
+        """Initialize the experiment id and weight descriptors."""
         super().__init__()
 
         self._experiment_id: StringDescriptor = StringDescriptor(
             name='experiment_id',
-            description='Experiment identifier',  # TODO
+            description='Experiment identifier',  # TODO: revisit description
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_joint_fit.experiment_id'],
-                iucr_name='_easydiffraction_joint_fit.experiment_id',
+            tags=TagSpec(
+                edi_names=['_joint_fit.experiment_id'],
+                cif_names=['_easydiffraction_joint_fit.experiment_id'],
             ),
         )
         self._weight: NumericDescriptor = NumericDescriptor(
             name='weight',
-            description='Weight factor',  # TODO
+            description='Weight factor',  # TODO: revisit description
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_joint_fit.weight'],
-                iucr_name='_easydiffraction_joint_fit.weight',
+            tags=TagSpec(
+                edi_names=['_joint_fit.weight'], cif_names=['_easydiffraction_joint_fit.weight']
             ),
         )
 
@@ -68,6 +68,7 @@ class JointFitItem(CategoryItem):
 
     @experiment_id.setter
     def experiment_id(self, value: str) -> None:
+        """Set the experiment identifier value."""
         self._experiment_id.value = value
 
     @property
@@ -83,6 +84,7 @@ class JointFitItem(CategoryItem):
 
     @weight.setter
     def weight(self, value: float) -> None:
+        """Set the joint-fit weight factor value."""
         self._weight.value = value
 
 

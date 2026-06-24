@@ -238,7 +238,7 @@ def test_emcee_run_solver_terminates_pool_when_interrupted(monkeypatch, tmp_path
     monkeypatch.setattr(
         minimizer,
         '_resolved_sidecar_path',
-        lambda: tmp_path / 'analysis' / 'results.h5',
+        lambda: tmp_path / 'analysis' / 'mcmc.h5',
     )
     monkeypatch.setattr(minimizer, '_validate_walker_count', lambda **kwargs: None)
     monkeypatch.setattr(

@@ -20,6 +20,6 @@ def test_project_load_reads_project_info(tmp_path):
 
     loaded = Project.load(str(tmp_path / 'proj'))
     assert loaded.name == 'myproj'
-    assert loaded.info.title == 'My Title'
-    assert loaded.info.description == 'A description'
-    assert loaded.info.path is not None
+    assert loaded.metadata.title == 'My Title'
+    assert loaded.metadata.description == 'A description'
+    assert loaded.metadata.path is not None

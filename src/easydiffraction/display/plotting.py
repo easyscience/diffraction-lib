@@ -40,6 +40,7 @@ from easydiffraction.display.plotters.plotly import (
 )
 from easydiffraction.display.plotters.plotly import TITLE_FONT_SIZE as PLOTLY_TITLE_FONT_SIZE
 from easydiffraction.display.plotters.plotly import PlotlyPlotter
+from easydiffraction.display.plotters.plotly import single_crystal_axis_range
 from easydiffraction.display.tables import TableRenderer
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.logging import console
@@ -81,7 +82,7 @@ class PosteriorPairPlotStyleEnum(StrEnum):
 
 
 DEFAULT_CORRELATION_THRESHOLD: float | None = None
-DEFAULT_CORRELATION_MAX_PARAMETERS = 6
+DEFAULT_CORRELATION_MAX_PARAMETERS = 5
 EXPECTED_COVAR_NDIM = 2
 DEFAULT_BRAGG_PEAKS_HEIGHT_FRACTION = 0.10
 DEFAULT_RESID_HEIGHT = DEFAULT_RESIDUAL_HEIGHT_FRACTION
@@ -152,7 +153,6 @@ POSTERIOR_PAIR_TARGET_CONTOUR_GRID_POINT_BUDGET = 73728
 POSTERIOR_PAIR_AUTO_MAX_CONTOUR_PARAMETERS = 6
 PAIR_PLOT_CELL_SIZE_PIXELS = 190
 PAIR_PLOT_MIN_CELL_SIZE_PIXELS = 90
-PAIR_PLOT_MIN_SIZE_PIXELS = 680
 PAIR_PLOT_MARGIN_PIXELS = 120
 PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS = 980
 PAIR_PLOT_SUBPLOT_SPACING = 0.01
@@ -163,7 +163,6 @@ POSTERIOR_PAIR_Y_TITLE_XSHIFT_PIXELS = 16
 POSTERIOR_PAIR_X_TITLE_YSHIFT_PIXELS = 10
 SQUARE_MATRIX_TITLE_YSHIFT_PIXELS = 12
 POSTERIOR_PAIR_GUIDE_LINE_COLOR = 'rgba(125, 140, 173, 0.18)'
-SQUARE_MATRIX_FIXED_ASPECT_RATIO = '1 / 1'
 SQUARE_MATRIX_FIXED_ASPECT_META_KEY = 'fixed_aspect_wrapper'
 SQUARE_MATRIX_LEFT_MARGIN_PIXELS = 40
 SQUARE_MATRIX_RIGHT_MARGIN_PIXELS = 24
@@ -275,6 +274,7 @@ class Plotter(RendererBase):
     # ------------------------------------------------------------------
 
     def __init__(self) -> None:
+        """Initialise default axis limits, height, and project ref."""
         super().__init__()
         # X-axis limits
         self._x_min = DEFAULT_MIN
@@ -303,10 +303,12 @@ class Plotter(RendererBase):
 
     @classmethod
     def _factory(cls) -> type[RendererFactoryBase]:  # type: ignore[override]
+        """Return the plotter engine factory."""
         return PlotterFactory
 
     @classmethod
     def _default_engine(cls) -> str:
+        """Return the default plotter engine name."""
         return PlotterEngineEnum.default().value
 
     # ------------------------------------------------------------------
@@ -635,7 +637,7 @@ class Plotter(RendererBase):
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -647,6 +649,8 @@ class Plotter(RendererBase):
         x: object | None = None,
         *,
         show_excluded: bool = False,
+        show_background: bool = False,
+        show_bragg: bool = False,
     ) -> None:
         """
         Plot calculated diffraction pattern for an experiment.
@@ -663,6 +667,12 @@ class Plotter(RendererBase):
             Optional explicit x-axis data to override stored values.
         show_excluded : bool, default=False
             Whether to show excluded fitting regions on supported plots.
+        show_background : bool, default=False
+            Whether to overlay the calculated background on the curve
+            (used by calculated-only powder views).
+        show_bragg : bool, default=False
+            Whether to add the Bragg-peaks row for a powder Bragg
+            pattern (renders the composite two-panel figure).
         """
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
@@ -670,13 +680,15 @@ class Plotter(RendererBase):
             x_min=x_min,
             x_max=x_max,
             show_excluded=show_excluded,
+            show_background=show_background,
+            show_bragg=show_bragg,
             x=x,
         )
         self._plot_calc_data(
             experiment,
             intensity_category_for(experiment),
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options,
         )
 
@@ -719,6 +731,171 @@ class Plotter(RendererBase):
         )
         self._plot_meas_vs_calc_request(expt_name=expt_name, plot_options=plot_options)
 
+    def plot_calc_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Overlay two calculated patterns with a residual panel.
+
+        The reference is drawn as a solid line and the candidate as
+        markers, both at their absolute scale (each page seeds the
+        FullProf scale), so the overlay shows real scale agreement. A
+        residual panel and an optional metrics annotation are included;
+        Bragg ticks and background are intentionally omitted.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the x grid and axis labels.
+        reference : np.ndarray
+            Reference intensities, drawn as a solid line.
+        candidate : np.ndarray
+            Candidate intensities, drawn as markers.
+        reference_label : str
+            Legend name for the reference curve.
+        candidate_label : str
+            Legend name for the candidate curve.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference``, ``candidate``, and the experiment x grid
+            do not all have the same length.
+        """
+        self._update_project_categories(expt_name)
+        experiment = self._project.experiments[expt_name]
+        x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
+            experiment.experiment_type,
+            None,
+        )
+        axes_labels = self._get_axes_labels(sample_form, scattering_type, x_axis)
+        x = np.asarray(intensity_category_for(experiment).x, dtype=float)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if not reference.shape == candidate.shape == x.shape:
+            msg = (
+                f"reference, candidate, and the '{expt_name}' x grid must have "
+                f'the same length (got {reference.shape}, {candidate.shape}, '
+                f'{x.shape}).'
+            )
+            raise ValueError(msg)
+
+        plot_spec = PowderMeasVsCalcSpec(
+            x=x,
+            y_meas=reference,
+            y_calc=candidate,
+            y_resid=reference - candidate,
+            bragg_tick_sets=(),
+            axes_labels=axes_labels,
+            title=title or f"Calculated pattern comparison for 🔬 '{expt_name}'",
+            residual_height_fraction=DEFAULT_RESID_HEIGHT,
+            bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+            height=self._composite_plot_height(),
+            y_calc_name=candidate_label,
+            y_meas_name=reference_label,
+        )
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_calc_comparison(
+                plot_spec=plot_spec,
+                reference_label=reference_label,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base composite
+        # without the styled overlay or metrics annotation.
+        self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+
+    def plot_reflection_comparison(
+        self,
+        *,
+        expt_name: str,
+        reference: np.ndarray,
+        candidate: np.ndarray,
+        reference_label: str,
+        candidate_label: str,
+        annotation_lines: tuple[str, ...] = (),
+        title: str | None = None,
+    ) -> None:
+        """
+        Scatter a reference against a candidate per-reflection F².
+
+        Plots the reference on the x-axis and the candidate on the
+        y-axis at their absolute scale against a y=x reference line,
+        with an optional metrics annotation. Points fall on the diagonal
+        when the two agree in absolute F². Intended for the
+        single-crystal external-reference Verification pages.
+
+        Parameters
+        ----------
+        expt_name : str
+            Experiment supplying the plot context (single crystal).
+        reference : np.ndarray
+            Reference F² per reflection (for example FullProf F2cal).
+        candidate : np.ndarray
+            Candidate F² per reflection (for example an engine).
+        reference_label : str
+            Axis and hover name for the reference.
+        candidate_label : str
+            Axis and hover name for the candidate.
+        annotation_lines : tuple[str, ...], default=()
+            Lines for the top-left metrics annotation.
+        title : str | None, default=None
+            Optional plot title.
+
+        Raises
+        ------
+        ValueError
+            If ``reference`` and ``candidate`` differ in length.
+        """
+        self._update_project_categories(expt_name)
+        reference = np.asarray(reference, dtype=float)
+        candidate = np.asarray(candidate, dtype=float)
+        if reference.shape != candidate.shape:
+            msg = (
+                f'reference and candidate must have the same length '
+                f'(got {reference.shape}, {candidate.shape}).'
+            )
+            raise ValueError(msg)
+
+        axes_labels = (
+            f'{reference_label} F²',
+            f'{candidate_label} F²',
+        )
+        plot_title = title or f"Reflection F² comparison for 🔬 '{expt_name}'"
+        if self.engine == PlotterEngineEnum.PLOTLY.value:
+            self._backend.build_and_show_reflection_comparison(
+                x_reference=reference,
+                y_candidate=candidate,
+                axes_labels=axes_labels,
+                reference_label=reference_label,
+                candidate_label=candidate_label,
+                title=plot_title,
+                annotation_lines=annotation_lines,
+            )
+            return
+        # Other engines (for example ASCII) render the base scatter
+        # without the styled metrics annotation.
+        self._backend.plot_single_crystal(
+            x_calc=reference,
+            y_meas=candidate,
+            y_meas_su=np.zeros_like(candidate),
+            axes_labels=axes_labels,
+            title=plot_title,
+            height=self.height,
+        )
+
     def _plot_meas_vs_calc_request(
         self,
         *,
@@ -742,10 +919,10 @@ class Plotter(RendererBase):
         """
         Plot a parameter's value across sequential fit results.
 
-        When a ``results.csv`` file exists in the project's
-        ``analysis/`` directory, data is read from CSV.  Otherwise,
-        falls back to in-memory parameter snapshots (produced by
-        ``fit()`` in single mode).
+        Data is read from the ``results.csv`` written by a sequential
+        fit in the project's ``analysis/`` directory. When no such file
+        exists, there is no parameter series to plot and a warning is
+        emitted.
 
         Parameters
         ----------
@@ -763,28 +940,25 @@ class Plotter(RendererBase):
             log.warning('Series plot target does not expose a CSV column name.')
             return
 
-        # Try CSV first (produced by fit_sequential or future fit)
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
-        if csv_path is not None:
-            self._plot_param_series_from_csv(
-                csv_path=csv_path,
-                column_names=column_names,
-                param_descriptor=param,
-                versus_path=versus,
+        if csv_path is None:
+            log.warning(
+                'No sequential results found to plot; run a sequential fit '
+                'to produce analysis/results.csv first.'
             )
-        else:
-            # Fallback: in-memory snapshots from fit() single mode
-            self.plot_param_series_from_snapshots(
-                column_names[0],
-                versus,
-                self._project.experiments,
-                self._project.analysis._parameter_snapshots,
-            )
+            return
+
+        self._plot_param_series_from_csv(
+            csv_path=csv_path,
+            column_names=column_names,
+            param_descriptor=param,
+            versus_path=versus,
+        )
 
     @staticmethod
     def _series_column_names(param: object) -> list[str]:
@@ -800,6 +974,38 @@ class Plotter(RendererBase):
             names.append(name)
 
         return names
+
+    @staticmethod
+    def _order_series_by_x(
+        x: list,
+        y: list,
+        sy: list,
+    ) -> tuple[list, list, list]:
+        """
+        Order series points by their x value.
+
+        Sequential results are recorded in file-processing order, which
+        is not necessarily ascending in the x quantity (for example a
+        temperature scan whose files sort lexicographically). Reordering
+        by x leaves the markers unchanged but makes the connecting line
+        follow the series. Non-numeric x values are placed last.
+
+        Parameters
+        ----------
+        x : list
+            x values.
+        y : list
+            y values.
+        sy : list
+            y uncertainties.
+
+        Returns
+        -------
+        tuple[list, list, list]
+            The three lists reordered by ascending x.
+        """
+        order = np.argsort(np.asarray(x, dtype=float), kind='stable').tolist()
+        return [x[i] for i in order], [y[i] for i in order], [sy[i] for i in order]
 
     @staticmethod
     def _numeric_series_values(values: object) -> list[float]:
@@ -823,9 +1029,8 @@ class Plotter(RendererBase):
         """
         Plot every fitted parameter across sequential fit results.
 
-        Iterates the fitted parameters recorded in ``results.csv`` (or,
-        when absent, in the in-memory parameter snapshots) and emits one
-        ``plot_param_series`` plot per parameter.
+        Iterates the fitted parameters recorded in ``results.csv`` and
+        emits one ``plot_param_series`` plot per parameter.
 
         Parameters
         ----------
@@ -835,7 +1040,7 @@ class Plotter(RendererBase):
             column is used as the x-axis. When ``None``, the experiment
             sequence number is used instead.
         """
-        unique_names = self._collect_fitted_param_unique_names()
+        unique_names = self._collect_fitted_parameter_unique_names()
         if not unique_names:
             log.warning('No fitted parameters found to plot.')
             return
@@ -849,35 +1054,31 @@ class Plotter(RendererBase):
                 continue
             self.plot_param_series(param=descriptor, versus=versus)
 
-    def _collect_fitted_param_unique_names(self) -> list[str]:
+    def _collect_fitted_parameter_unique_names(self) -> list[str]:
         """
-        Return fitted parameter unique names from CSV or snapshots.
+        Return fitted parameter unique names from ``results.csv``.
         """
         from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
 
         meta = set(_META_COLUMNS)
 
         csv_path = None
-        if self._project.info.path is not None:
-            candidate = pathlib.Path(self._project.info.path) / 'analysis' / 'results.csv'
+        if self._project.metadata.path is not None:
+            candidate = pathlib.Path(self._project.metadata.path) / 'analysis' / 'results.csv'
             if candidate.is_file():
                 csv_path = str(candidate)
 
-        if csv_path is not None:
-            df = pd.read_csv(csv_path)
-            return [
-                column
-                for column in df.columns
-                if column not in meta
-                and not column.startswith('diffrn.')
-                and not column.endswith('.uncertainty')
-            ]
-
-        snapshots = self._project.analysis._parameter_snapshots
-        if not snapshots:
+        if csv_path is None:
             return []
-        first_snapshot = next(iter(snapshots.values()))
-        return list(first_snapshot.keys())
+
+        df = pd.read_csv(csv_path)
+        return [
+            column
+            for column in df.columns
+            if column not in meta
+            and not column.startswith('diffrn.')
+            and not column.endswith('.uncertainty')
+        ]
 
     def _fitted_param_descriptors_by_unique_name(self) -> dict[str, object]:
         """Return descriptor map keyed by ``unique_name``."""
@@ -1117,7 +1318,7 @@ class Plotter(RendererBase):
             if parameter is None:
                 return None
 
-            current = getattr(parameter, 'fit_bounds_uncertainty_multiplier', None)
+            current = getattr(parameter, 'bounds_uncertainty_multiplier', None)
             if current is None or not np.isfinite(float(current)):
                 return None
 
@@ -1274,7 +1475,7 @@ class Plotter(RendererBase):
         self._update_project_categories(expt_name)
         experiment = self._project.experiments[expt_name]
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x,
         )
 
@@ -1424,7 +1625,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -1693,7 +1894,10 @@ class Plotter(RendererBase):
             ]
 
         for row in correlation_rows:
-            parameter_names.extend([row.param_unique_name_i.value, row.param_unique_name_j.value])
+            parameter_names.extend([
+                row.parameter_unique_name_i.value,
+                row.parameter_unique_name_j.value,
+            ])
         parameter_names = list(dict.fromkeys(parameter_names))
         if len(parameter_names) < MIN_POSTERIOR_PARAMETER_COUNT:
             return None
@@ -1706,8 +1910,8 @@ class Plotter(RendererBase):
         )
         wrote_any = False
         for row in correlation_rows:
-            i_name = row.param_unique_name_i.value
-            j_name = row.param_unique_name_j.value
+            i_name = row.parameter_unique_name_i.value
+            j_name = row.parameter_unique_name_j.value
             if i_name not in corr_df.index or j_name not in corr_df.index:
                 continue
             corr_df.loc[i_name, j_name] = float(row.correlation.value)
@@ -2455,20 +2659,6 @@ class Plotter(RendererBase):
             )
         )
 
-    @classmethod
-    def _posterior_pair_figure_height_pixels(cls, n_parameters: int) -> int:
-        """
-        Return the initial figure height for a responsive pair plot.
-        """
-        cell_size = cls._posterior_pair_cell_size_pixels(
-            n_parameters,
-            available_width_pixels=PAIR_PLOT_ESTIMATED_CONTAINER_WIDTH_PIXELS,
-        )
-        return max(
-            PAIR_PLOT_MIN_SIZE_PIXELS,
-            cell_size * n_parameters + PAIR_PLOT_MARGIN_PIXELS,
-        )
-
     @staticmethod
     def _posterior_pair_contour_panel_count(n_parameters: int) -> int:
         """Return the number of lower-triangle contour panels."""
@@ -2676,8 +2866,18 @@ class Plotter(RendererBase):
         sidecar_data = getattr(analysis, '_persisted_fit_state_sidecar', {})
         pair_caches = sidecar_data.get('pair_caches', {})
         for cache_data in pair_caches.values():
-            cache_x = str(cache_data.get('param_unique_name_x', ''))
-            cache_y = str(cache_data.get('param_unique_name_y', ''))
+            cache_x = str(
+                cache_data.get(
+                    'parameter_unique_name_x',
+                    cache_data.get('param_unique_name_x', ''),
+                )
+            )
+            cache_y = str(
+                cache_data.get(
+                    'parameter_unique_name_y',
+                    cache_data.get('param_unique_name_y', ''),
+                )
+            )
             if {cache_x, cache_y} != {x_parameter_name, y_parameter_name}:
                 continue
 
@@ -4085,12 +4285,17 @@ class Plotter(RendererBase):
             'su(I²meas): %{customdata[2]:,.2f}<extra></extra>'
         )
 
+        axis_min, axis_max = single_crystal_axis_range(
+            best_sample_prediction,
+            y_meas,
+            y_meas_su,
+        )
         fig = go.Figure(
             data=[trace],
             layout=PlotlyPlotter._get_layout(
                 f"Posterior predictive reflection check for experiment 🔬 '{expt_name}'",
                 axes_labels,
-                shapes=[PlotlyPlotter._get_diagonal_shape()],
+                shapes=[PlotlyPlotter._get_diagonal_shape(axis_min, axis_max)],
             ),
         )
         self._show_plot_figure(fig)
@@ -4166,7 +4371,7 @@ class Plotter(RendererBase):
         ctx = self._prepare_powder_context(
             pattern,
             expt_name,
-            experiment.type,
+            experiment.experiment_type,
             plot_options.x_min,
             plot_options.x_max,
             plot_options.x,
@@ -5357,12 +5562,66 @@ class Plotter(RendererBase):
             else ()
         )
 
+        y_bkg = self._optional_filtered_y_array(
+            getattr(pattern, 'intensity_bkg', None),
+            ctx,
+        )
+        if not self._show_background_enabled(plot_options, background_available=y_bkg is not None):
+            y_bkg = None
+
+        title = f"Diffraction pattern for experiment 🔬 '{expt_name}'"
+
+        # When Bragg reflections are available for a powder Bragg
+        # pattern, render the composite (main + Bragg row) figure with
+        # no measured series instead of the single panel — a
+        # calculated-only pattern still gets its Bragg-tick row.
+        _, _, sample_form, scattering_type, _ = self._resolve_x_axis(expt_type, plot_options.x)
+        bragg_tick_sets = ()
+        if (
+            sample_form == SampleFormEnum.POWDER
+            and scattering_type == ScatteringTypeEnum.BRAGG
+            and self._show_bragg_enabled(plot_options)
+            and np.asarray(ctx['x_filtered']).size
+        ):
+            bragg_tick_sets = self._extract_bragg_tick_sets(
+                experiment=experiment,
+                expt_name=expt_name,
+                x_axis=ctx['x_axis'],
+                x_min=ctx['x_min'],
+                x_max=ctx['x_max'],
+            )
+
+        if bragg_tick_sets:
+            plot_spec = PowderMeasVsCalcSpec(
+                x=ctx['x_filtered'],
+                y_meas=None,
+                y_calc=y_calc,
+                y_resid=None,
+                bragg_tick_sets=bragg_tick_sets,
+                axes_labels=ctx['axes_labels'],
+                title=title,
+                residual_height_fraction=DEFAULT_RESID_HEIGHT,
+                bragg_peaks_height_fraction=DEFAULT_BRAGG_ROW,
+                height=self._composite_plot_height(),
+                y_bkg=y_bkg,
+                excluded_ranges=excluded_ranges,
+                y_meas_su=None,
+            )
+            self._backend.plot_powder_meas_vs_calc(plot_spec=plot_spec)
+            return
+
+        y_series = [y_calc]
+        labels = ['calc']
+        if y_bkg is not None:
+            y_series.append(y_bkg)
+            labels.append('bkg')
+
         self._backend.plot_powder(
             x=ctx['x_filtered'],
-            y_series=[y_calc],
-            labels=['calc'],
+            y_series=y_series,
+            labels=labels,
             axes_labels=ctx['axes_labels'],
-            title=f"Diffraction pattern for experiment 🔬 '{expt_name}'",
+            title=title,
             height=self.height,
             excluded_ranges=excluded_ranges,
         )
@@ -5444,7 +5703,7 @@ class Plotter(RendererBase):
             X-range, residual, and x-axis selection options.
         """
         pattern = intensity_category_for(experiment)
-        expt_type = experiment.type
+        expt_type = experiment.experiment_type
 
         x_axis, _, sample_form, scattering_type, _ = self._resolve_x_axis(
             expt_type,
@@ -5710,6 +5969,9 @@ class Plotter(RendererBase):
         expt_name: str,
         x_axis: object,
     ) -> object | None:
+        """
+        Return Bragg tick x values for the requested x axis.
+        """
         x_name = getattr(x_axis, 'value', x_axis)
         if x_name == XAxisType.D_SPACING:
             return Plotter._bragg_tick_d_spacing(refln=refln, experiment=experiment)
@@ -5730,6 +5992,9 @@ class Plotter(RendererBase):
         name: str,
         expt_name: str,
     ) -> object | None:
+        """
+        Return a named reflection attribute, warning if absent.
+        """
         value = getattr(refln, name, None)
         if value is not None:
             return value
@@ -5746,9 +6011,12 @@ class Plotter(RendererBase):
         refln: object,
         expt_name: str,
     ) -> dict[str, np.ndarray] | None:
+        """
+        Collect required reflection arrays, warning on any missing.
+        """
         arrays: dict[str, np.ndarray] = {}
         for name in (
-            'phase_id',
+            'structure_id',
             'index_h',
             'index_k',
             'index_l',
@@ -5772,6 +6040,9 @@ class Plotter(RendererBase):
         x_min: float | None,
         x_max: float | None,
     ) -> np.ndarray:
+        """
+        Return a boolean mask of ticks within the x range.
+        """
         lower_bound = DEFAULT_MIN if x_min is None else min(x_min, x_max)
         upper_bound = DEFAULT_MAX if x_max is None else max(x_min, x_max)
         return (x_values >= lower_bound) & (x_values <= upper_bound)
@@ -5782,27 +6053,30 @@ class Plotter(RendererBase):
         arrays: dict[str, np.ndarray],
         mask: np.ndarray,
     ) -> tuple[BraggTickSet, ...]:
-        phase_ids = arrays['phase_id'][mask]
-        unique_phase_ids = []
-        for raw_phase_id in phase_ids:
+        """
+        Group masked reflection arrays into per-structure tick sets.
+        """
+        structure_ids = arrays['structure_id'][mask]
+        unique_structure_ids = []
+        for raw_structure_id in structure_ids:
             if not any(
-                np.array_equal(raw_phase_id, existing_phase_id)
-                for existing_phase_id in unique_phase_ids
+                np.array_equal(raw_structure_id, existing_structure_id)
+                for existing_structure_id in unique_structure_ids
             ):
-                unique_phase_ids.append(raw_phase_id)
+                unique_structure_ids.append(raw_structure_id)
 
         tick_sets = []
-        for raw_phase_id in unique_phase_ids:
-            phase_mask = mask & (arrays['phase_id'] == raw_phase_id)
+        for raw_structure_id in unique_structure_ids:
+            structure_mask = mask & (arrays['structure_id'] == raw_structure_id)
             tick_sets.append(
                 BraggTickSet(
-                    phase_id=str(raw_phase_id),
-                    x=arrays['x'][phase_mask],
-                    h=arrays['index_h'][phase_mask],
-                    k=arrays['index_k'][phase_mask],
-                    ell=arrays['index_l'][phase_mask],
-                    f_squared_calc=arrays['f_squared_calc'][phase_mask],
-                    f_calc=arrays['f_calc'][phase_mask],
+                    structure_id=str(raw_structure_id),
+                    x=arrays['x'][structure_mask],
+                    h=arrays['index_h'][structure_mask],
+                    k=arrays['index_k'][structure_mask],
+                    ell=arrays['index_l'][structure_mask],
+                    f_squared_calc=arrays['f_squared_calc'][structure_mask],
+                    f_calc=arrays['f_calc'][structure_mask],
                 )
             )
 
@@ -5827,7 +6101,7 @@ class Plotter(RendererBase):
                 refln.time_of_flight,
                 experiment.instrument.calib_d_to_tof_offset.value,
                 experiment.instrument.calib_d_to_tof_linear.value,
-                experiment.instrument.calib_d_to_tof_quad.value,
+                experiment.instrument.calib_d_to_tof_quadratic.value,
             )
         return refln.d_spacing
 
@@ -5904,83 +6178,13 @@ class Plotter(RendererBase):
 
         title = f"Parameter '{column_name}' across fit results"
 
+        x, y, sy = self._order_series_by_x(x, y, sy)
+
         self._backend.plot_scatter(
             x=x,
             y=y,
             sy=sy,
             axes_labels=[x_label, y_label],
-            title=title,
-            height=self.height,
-        )
-
-    def plot_param_series_from_snapshots(
-        self,
-        unique_name: str,
-        versus_path: str | None,
-        experiments: object,
-        parameter_snapshots: dict[str, dict[str, dict]],
-    ) -> None:
-        """
-        Plot a parameter's value from in-memory snapshots.
-
-        This is a backward-compatibility method used when no CSV file is
-        available (e.g. after ``fit()`` in single mode, before PR 13
-        adds CSV output to the existing fit loop).
-
-        Parameters
-        ----------
-        unique_name : str
-            Unique name of the parameter to plot.
-        versus_path : str | None
-            Persisted diffrn path for the x-axis.
-        experiments : object
-            Experiments collection for accessing diffrn conditions.
-        parameter_snapshots : dict[str, dict[str, dict]]
-            Per-experiment parameter value snapshots.
-        """
-        x = []
-        y = []
-        sy = []
-        axes_labels = []
-        title = ''
-
-        for idx, expt_name in enumerate(parameter_snapshots, start=1):
-            experiment = experiments[expt_name]
-            diffrn = experiment.diffrn
-
-            x_axis_param = self._resolve_diffrn_descriptor(
-                diffrn,
-                self._versus_field_name(versus_path),
-            )
-
-            if x_axis_param is not None and x_axis_param.value is not None:
-                value = x_axis_param.value
-            else:
-                value = idx
-            x.append(value)
-
-            param_data = parameter_snapshots[expt_name][unique_name]
-            y.append(param_data['value'])
-            sy.append(param_data['uncertainty'])
-
-            if x_axis_param is not None:
-                axes_labels = [
-                    self._versus_axis_label(versus_path, x_axis_param),
-                    f'Parameter value ({param_data["units"]})',
-                ]
-            else:
-                axes_labels = [
-                    'Experiment No.',
-                    f'Parameter value ({param_data["units"]})',
-                ]
-
-            title = f"Parameter '{unique_name}' across fit results"
-
-        self._backend.plot_scatter(
-            x=x,
-            y=y,
-            sy=sy,
-            axes_labels=axes_labels,
             title=title,
             height=self.height,
         )
@@ -6024,6 +6228,7 @@ class PlotterFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
+        """Return the ASCII and Plotly plotter engine registry."""
         return {
             PlotterEngineEnum.ASCII.value: {
                 'description': PlotterEngineEnum.ASCII.description(),

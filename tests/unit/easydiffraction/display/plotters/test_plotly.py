@@ -150,7 +150,10 @@ def test_get_trace_and_plot(monkeypatch):
     assert trace.kwargs['y'] == y
     assert trace.kwargs['line']['width'] == pp.CALCULATED_LINE_WIDTH
 
-    # Exercise plot_powder (non-PyCharm, display path)
+    # Exercise plot_powder; rendering itself is covered separately, so
+    # stub it and assert the built figure reaches the display step.
+    shown_figs = []
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', lambda self, fig: shown_figs.append(fig))
     plotter.plot_powder(
         x,
         y_series=[y],
@@ -159,9 +162,7 @@ def test_get_trace_and_plot(monkeypatch):
         title='t',
         height=None,
     )
-
-    # One HTML display call expected
-    assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+    assert len(shown_figs) == 1
 
 
 def test_single_panel_height_matches_composite_main_row():
@@ -214,221 +215,143 @@ def test_composite_x_range_is_tight():
     assert pp.PlotlyPlotter._composite_x_range(np.array([])) == (None, None)
 
 
-def test_show_figure_adds_legend_toggle_script_to_html_output(monkeypatch):
+def test_html_post_script_delegates_to_shared_loader():
+    import plotly.graph_objects as go
+
     import easydiffraction.display.plotters.plotly as pp
 
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    # A named trace gives the figure a visible legend, so the legend
+    # toggle is requested. The STANDALONE (report) serializer no longer
+    # inlines theme/resize/legend logic; it delegates to the shared
+    # ed-figures.js loader through ``window.edFigures``, which stays the
+    # single source of that behaviour.
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+    post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    captured = {}
+    # Plotly's to_html substitutes the plot id token at render time.
+    assert "document.getElementById('{plot_id}')" in post_script
+    assert 'window.edFigures.watchTheme(graphDiv,' in post_script
+    assert 'window.edFigures.watchResize(graphDiv)' in post_script
+    assert 'window.edFigures.installLegendToggle(graphDiv)' in post_script
+    # The baked theme payload carries both the light and dark colours
+    # the loader picks between.
+    assert f'"background": "{pp.LIGHT_BACKGROUND_COLOR}"' in post_script
+    assert f'"background": "{pp.DARK_BACKGROUND_COLOR}"' in post_script
+    assert f'"legend": "{pp.DARK_LEGEND_BACKGROUND_COLOR}"' in post_script
+    assert f'"axisFrame": "{pp.LIGHT_AXIS_FRAME_COLOR}"' in post_script
+    # The legend trace makes the toggle active rather than gated off.
+    assert 'if (true) {' in post_script
 
-    class DummyFig:
-        def update_xaxes(self, **kwargs):
-            pass
 
-        def update_yaxes(self, **kwargs):
-            pass
+def test_html_post_script_gates_legend_toggle_without_legend():
+    import plotly.graph_objects as go
 
-        def show(self, **kwargs):
-            captured['show_called'] = True
+    import easydiffraction.display.plotters.plotly as pp
 
-    class DummyScatter:
-        def __init__(self, **kwargs):
-            self.kwargs = kwargs
+    # No visible legend (unnamed, non-legend trace) → the legend toggle
+    # is gated off, but theme sync and resize delegation are always
+    # present.
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1], y=[1, 2], showlegend=False))
+    post_script = pp.PlotlyPlotter._html_post_script(fig)
 
-    class DummyGO:
-        class Scatter(DummyScatter):
-            pass
+    assert 'window.edFigures.watchTheme(graphDiv,' in post_script
+    assert 'window.edFigures.watchResize(graphDiv)' in post_script
+    assert 'if (false) {' in post_script
 
-        class Figure(DummyFig):
-            def __init__(self, data=None, layout=None):
-                self.data = data
-                self.layout = layout
 
-        class Layout:
-            def __init__(self, **kwargs):
-                self.kwargs = kwargs
+def test_shared_loader_owns_theme_resize_and_legend_behaviour():
+    import easydiffraction.display.plotters.plotly as pp
 
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['config'] = config
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
+    # ed-figures.js is the single source for theme sync, resize, and the
+    # legend toggle. It must detect both mkdocs Material and JupyterLab
+    # host themes, re-theme the metrics box background/border (not just
+    # its font), and expose the entry points the standalone path calls.
+    loader = pp._packaged_asset(pp._FIGURE_LOADER_ASSET)
 
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
+    assert 'data-md-color-scheme' in loader
+    assert 'data-jp-theme-light' in loader
+    assert "var METRICS_ANNOTATION_NAME = 'ed-metrics-box';" in loader
+    assert 'annotation.name === METRICS_ANNOTATION_NAME' in loader
+    assert "].bgcolor'] = colors.legend;" in loader
+    assert "].bordercolor'] = colors.axisFrame;" in loader
+    assert 'window.edFigures.watchTheme = watchTheme;' in loader
+    assert 'window.edFigures.watchResize = watchResize;' in loader
+    assert 'window.edFigures.installLegendToggle = installLegendToggle;' in loader
 
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
 
-    monkeypatch.setattr(pp, 'go', DummyGO)
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
+def test_serialize_html_standalone_embeds_loader_once():
+    import plotly.graph_objects as go
 
-    plotter = pp.PlotlyPlotter()
-    plotter.plot_powder(
-        [0, 1, 2],
-        y_series=[[1, 2, 3]],
-        labels=['calc'],
-        axes_labels=['x', 'y'],
-        title='t',
-        height=None,
+    import easydiffraction.display.plotters.plotly as pp
+    from easydiffraction.utils.environment import FigureEmbedMode
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
+
+    marker = 'window.edFigures.watchTheme = watchTheme;'
+
+    # A self-contained figure embeds the loader by default.
+    embedded = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=True,
+        mode=FigureEmbedMode.STANDALONE,
     )
+    assert marker in embedded
+    assert 'window.edFigures.watchTheme(graphDiv,' in embedded
 
-    assert captured.get('show_called') is not True
-    assert captured['config']['displayModeBar'] is True
-    assert captured['config']['displaylogo'] is False
-    assert captured['config']['responsive'] is True
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'data-md-color-scheme' in captured['post_script']
-    assert 'graphDiv.dataset.edPlotlyTheme' in captured['post_script']
-    assert f"background: '{pp.DARK_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"background: '{pp.LIGHT_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"axisFrame: '{pp.DARK_AXIS_FRAME_COLOR}'" in captured['post_script']
-    assert f"axisFrame: '{pp.LIGHT_AXIS_FRAME_COLOR}'" in captured['post_script']
-    assert f"innerTickGrid: '{pp.DARK_INNER_TICK_GRID_COLOR}'" in captured['post_script']
-    assert f"innerTickGrid: '{pp.LIGHT_INNER_TICK_GRID_COLOR}'" in captured['post_script']
-    assert f"hoverBackground: '{pp.DARK_HOVER_BACKGROUND_COLOR}'" in captured['post_script']
-    assert f"legend: '{pp.DARK_LEGEND_BACKGROUND_COLOR}'" in captured['post_script']
-    assert "'modebar.color'" in captured['post_script']
-    assert "'modebar.activecolor'" in captured['post_script']
-    assert 'rgbaFromColor' in captured['post_script']
-    # Modebar icons are also themed via a class-based !important rule so
-    # they stay visible regardless of Plotly's inline fills.
-    assert 'ed-plotly-themed-modebar' in captured['post_script']
-    assert 'const correlationColorscale = function (colors) {' in captured['post_script']
-    assert 'const themeSync = meta.ed_plotly_theme_sync;' in captured['post_script']
-    assert 'const applyAnnotationTheme = function (update, colors) {' in captured['post_script']
-    assert 'const shapeIndexes = themeSync.axis_frame_shape_indexes;' in captured['post_script']
-    assert 'if (themeSync.correlation_heatmap !== true) {' in captured['post_script']
-    assert 'window.Plotly.restyle(' in captured['post_script']
-    assert 'window.Plotly.relayout(graphDiv, update)' in captured['post_script']
-    assert 'Promise.all(pending).then(function () {' in captured['post_script']
-    assert 'window.Plotly.Plots.resize(graphDiv)' in captured['post_script']
-    assert "document.addEventListener('visibilitychange'" in captured['post_script']
-    assert "window.addEventListener('focus', scheduleResize);" in captured['post_script']
-    assert 'new ResizeObserver(scheduleResize)' in captured['post_script']
-    assert 'data-legend-toggle="true"' in captured['post_script']
-    assert 'Toggle legend' in captured['post_script']
-    assert 'graphDiv.dataset.legendVisible' in captured['post_script']
-    assert 'const applyLegendVisibility = function (legendVisible) {' in captured['post_script']
-    assert "legend.style.display = legendVisible ? 'inline' : 'none';" in captured['post_script']
-    assert 'const readLegendVisibility = function () {' in captured['post_script']
-    assert (
-        "if (graphDiv.layout && typeof graphDiv.layout.showlegend === 'boolean')"
-        in captured['post_script']
+    # A later figure on the same page opts out, reusing the
+    # already-defined window.edFigures.
+    reused = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        include_helper_loader=False,
+        mode=FigureEmbedMode.STANDALONE,
     )
-    assert "legendButton.classList.toggle('active', legendVisible);" in captured['post_script']
-    assert "graphDiv.on('plotly_relayout', function (eventData) {" in captured['post_script']
-    assert 'legendButton.onclick = toggleLegend;' in captured['post_script']
-    assert 'resolveLegendButtonFill(legendVisible ? 0.7 : 0.3)' in captured['post_script']
-    assert "legendButtonGroup.className = 'modebar-group';" in captured['post_script']
-    assert 'modebar.appendChild(legendButtonGroup);' in captured['post_script']
-    assert 'legendButton.innerHTML' in captured['post_script']
-    assert 'height="1em" width="1em"' in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
+    assert marker not in reused
+    assert 'window.edFigures.watchTheme(graphDiv,' in reused
 
 
-def test_show_figure_skips_legend_toggle_script_without_legend(monkeypatch):
+def test_serialize_html_standalone_loader_decoupled_from_plotlyjs():
+    import plotly.graph_objects as go
+
     import easydiffraction.display.plotters.plotly as pp
+    from easydiffraction.utils.environment import FigureEmbedMode
 
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=[0, 1, 2], y=[1, 2, 3], name='calc'))
 
-    captured = {}
+    marker = 'window.edFigures.watchTheme = watchTheme;'
 
-    class DummyTrace:
-        def __init__(self, name=None, showlegend=None, visible=None):
-            self.name = name
-            self.showlegend = showlegend
-            self.visible = visible
-
-    class DummyFig:
-        def __init__(self):
-            self.data = [DummyTrace(name=None, showlegend=False)]
-            self.layout = type('DummyLayout', (), {'showlegend': None})()
-
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter._show_figure(DummyFig())
-
-    assert captured.get('show_called') is not True
-    assert captured['post_script'] is not None
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'data-legend-toggle="true"' not in captured['post_script']
-    assert captured['displayed_html'] == '<div>plot</div>'
+    # External-Plotly standalone snippet: Plotly is supplied elsewhere
+    # (include_plotlyjs=False), but the helper loader must still be
+    # embedded by default so theme sync, resize, and the legend toggle
+    # are not silently lost.
+    html = pp.PlotlyPlotter.serialize_html(
+        fig,
+        include_plotlyjs=False,
+        mode=FigureEmbedMode.STANDALONE,
+    )
+    assert marker in html
+    assert 'window.edFigures.watchTheme(graphDiv,' in html
 
 
-def test_show_figure_wraps_fixed_aspect_html(monkeypatch):
+def test_wrap_html_figure_wraps_fixed_aspect():
     import easydiffraction.display.plotters.plotly as pp
-
-    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
-
-    captured = {}
 
     class DummyLayout:
-        def __init__(self):
-            self.meta = {
-                'fixed_aspect_wrapper': {
-                    'aspect_ratio': '1 / 1',
-                }
-            }
-            self.showlegend = False
+        meta = {'fixed_aspect_wrapper': {'aspect_ratio': '1 / 1'}}
 
     class DummyFig:
-        def __init__(self):
-            self.data = []
-            self.layout = DummyLayout()
+        layout = DummyLayout()
 
-        def show(self, **kwargs):
-            captured['show_called'] = True
-
-    class DummyPIO:
-        @staticmethod
-        def to_html(fig, include_plotlyjs=None, full_html=None, config=None, post_script=None):
-            captured['post_script'] = post_script
-            return '<div>plot</div>'
-
-    def dummy_display(obj):
-        captured['displayed_html'] = obj.html
-
-    class DummyHTML:
-        def __init__(self, html):
-            self.html = html
-
-    monkeypatch.setattr(pp, 'pio', DummyPIO)
-    monkeypatch.setattr(pp, 'display', dummy_display)
-    monkeypatch.setattr(pp, 'HTML', DummyHTML)
-
-    plotter = pp.PlotlyPlotter()
-    plotter._show_figure(DummyFig())
-
-    assert captured.get('show_called') is not True
-    assert captured['post_script'] is not None
-    assert 'data-jp-theme-light' in captured['post_script']
-    assert 'aspect-ratio: 1 / 1;' in captured['displayed_html']
-    assert 'ed-fixed-aspect-plotly-wrapper' in captured['displayed_html']
-    assert '<div>plot</div>' in captured['displayed_html']
+    # The fixed-aspect wrapper is applied by _wrap_html_figure, used by
+    # both the live (single-output) and report serialization paths.
+    wrapped = pp.PlotlyPlotter._wrap_html_figure(DummyFig(), '<div>plot</div>')
+    assert 'aspect-ratio: 1 / 1;' in wrapped
+    assert 'ed-fixed-aspect-plotly-wrapper' in wrapped
+    assert '<div>plot</div>' in wrapped
 
 
 def test_plotly_single_crystal_trace_and_plot(monkeypatch):
@@ -512,7 +435,10 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
     assert shape['line']['color'] == pp.DIAGONAL_LINE_COLOR
     assert shape['line']['width'] == pp.DIAGONAL_LINE_WIDTH
 
-    # Exercise plot_single_crystal
+    # Exercise plot_single_crystal; rendering is covered separately, so
+    # stub it and assert the built figure reaches the display step.
+    shown_figs = []
+    monkeypatch.setattr(pp.PlotlyPlotter, '_show_figure', lambda self, fig: shown_figs.append(fig))
     plotter.plot_single_crystal(
         x_calc=x_calc,
         y_meas=y_meas,
@@ -521,8 +447,7 @@ def test_plotly_single_crystal_trace_and_plot(monkeypatch):
         title='SC Test',
         height=None,
     )
-    # One display call expected
-    assert dummy_display_calls['count'] == 1 or shown['count'] == 1
+    assert len(shown_figs) == 1
 
 
 def test_single_crystal_axis_range_unions_calc_and_meas_with_uncertainty():
@@ -569,7 +494,7 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
 
     trace = PlotlyPlotter._get_bragg_tick_trace(
         tick_set=BraggTickSet(
-            phase_id='phase-a',
+            structure_id='phase-a',
             x=np.array([1.5, 2.5]),
             h=np.array([1, 2]),
             k=np.array([0, 1]),
@@ -593,7 +518,6 @@ def test_get_bragg_tick_trace_includes_peak_metadata():
 
 def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -612,7 +536,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
         y_meas_su=np.array([0.2, 0.3, 0.4]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -621,7 +545,7 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
                 f_calc=np.array([10.0]),
             ),
             BraggTickSet(
-                phase_id='phase-b',
+                structure_id='phase-b',
                 x=np.array([2.5]),
                 h=np.array([2]),
                 k=np.array([1]),
@@ -709,7 +633,6 @@ def test_plot_powder_meas_vs_calc_creates_synced_three_panel_figure(monkeypatch)
 
 def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -727,7 +650,7 @@ def test_plot_powder_meas_vs_calc_adds_background_curve(monkeypatch):
         y_resid=np.array([1.0, 1.0, 0.5]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -808,7 +731,7 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
         y_resid=np.array([0.0, 0.0]),
         bragg_tick_sets=(
             BraggTickSet(
-                phase_id='phase-a',
+                structure_id='phase-a',
                 x=np.array([1.5]),
                 h=np.array([1]),
                 k=np.array([0]),
@@ -831,7 +754,7 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
         bragg_tick_sets=(
             single_phase.bragg_tick_sets[0],
             BraggTickSet(
-                phase_id='phase-b',
+                structure_id='phase-b',
                 x=np.array([2.5]),
                 h=np.array([2]),
                 k=np.array([1]),
@@ -856,7 +779,6 @@ def test_bragg_row_height_pixels_scale_linearly_with_phase_count():
 
 def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -870,7 +792,7 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
     def plot_spec(phase_count: int) -> PowderMeasVsCalcSpec:
         bragg_tick_sets = tuple(
             BraggTickSet(
-                phase_id=f'phase-{idx}',
+                structure_id=f'phase-{idx}',
                 x=np.array([1.0 + idx]),
                 h=np.array([idx + 1]),
                 k=np.array([0]),
@@ -918,7 +840,6 @@ def test_plot_powder_meas_vs_calc_grows_total_height_for_many_phases(monkeypatch
 
 def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -938,7 +859,7 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
             y_resid=np.array([1.0, 1.0, 0.5]),
             bragg_tick_sets=(
                 BraggTickSet(
-                    phase_id='phase-a',
+                    structure_id='phase-a',
                     x=np.array([1.5]),
                     h=np.array([1]),
                     k=np.array([0]),
@@ -963,7 +884,6 @@ def test_plot_powder_meas_vs_calc_uses_explicit_plotly_height_as_pixels(monkeypa
 def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
     """Top and residual rows keep a fixed pixel height."""
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import BraggTickSet
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
@@ -976,7 +896,7 @@ def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
 
     bragg_tick_sets = (
         BraggTickSet(
-            phase_id='phase-a',
+            structure_id='phase-a',
             x=np.array([1.5]),
             h=np.array([1]),
             k=np.array([0]),
@@ -1025,7 +945,6 @@ def test_plot_powder_meas_vs_calc_keeps_top_and_bottom_rows_fixed(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1069,7 +988,6 @@ def test_plot_powder_meas_vs_calc_skips_bragg_row_when_no_ticks(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1116,7 +1034,6 @@ def test_plot_powder_meas_vs_calc_styles_predictive_max_posterior_and_band(monke
 
 def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1171,7 +1088,6 @@ def test_plot_powder_meas_vs_calc_keeps_exact_residual_scale_match(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1210,7 +1126,6 @@ def test_plot_powder_meas_vs_calc_clips_large_residual_spikes(monkeypatch):
 
 def test_plot_powder_meas_vs_calc_accepts_empty_filtered_range(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
-
     from easydiffraction.display.plotters.base import PowderMeasVsCalcSpec
 
     captured = {}
@@ -1267,9 +1182,9 @@ def test_typed_arrays_to_float32_transcodes_and_preserves_shape():
 
 
 def test_serialize_html_shared_is_lazy_placeholder_with_float32():
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
 
+    import easydiffraction.display.plotters.plotly as pp
     from easydiffraction.utils.environment import FigureEmbedMode
 
     fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=np.arange(3000.0)))
@@ -1289,9 +1204,9 @@ def test_serialize_html_shared_is_lazy_placeholder_with_float32():
 
 
 def test_serialize_html_inline_is_eager_self_contained():
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
 
+    import easydiffraction.display.plotters.plotly as pp
     from easydiffraction.utils.environment import FigureEmbedMode
 
     fig = go.Figure(go.Scatter(x=np.arange(10.0), y=np.arange(10.0)))
@@ -1301,7 +1216,10 @@ def test_serialize_html_inline_is_eager_self_contained():
         mode=FigureEmbedMode.INLINE,
     )
 
-    assert 'data-ed-figure' not in html
+    # Eager INLINE output is not the lazy SHARED placeholder. (The
+    # embedded loader mentions the placeholder selector in a string, so
+    # match the actual placeholder div, not the bare attribute.)
+    assert '<div class="ed-figure" data-ed-figure="plotly">' not in html
     # Eager render embeds the plot div / runtime call.
     assert 'plotly-graph-div' in html or 'newPlot' in html
 
@@ -1328,9 +1246,10 @@ def test_typed_arrays_to_float32_leaves_integer_specs_untouched():
 def test_typed_arrays_to_float32_roundtrips_through_plotly():
     import base64
 
-    import easydiffraction.display.plotters.plotly as pp
     import plotly.graph_objects as go
     import plotly.io as pio
+
+    import easydiffraction.display.plotters.plotly as pp
 
     expected = np.arange(3000.0) * 1.5
     fig = go.Figure(go.Scatter(x=np.arange(3000.0), y=expected))

@@ -20,18 +20,18 @@ def test_fit_parameter_collection_serializes_expected_tags_and_values():
 
     collection = FitParameters()
     collection.create(
-        param_unique_name='lbco.cell.length_a',
+        parameter_unique_name='lbco.cell.length_a',
         fit_min=3.88,
         fit_max=3.90,
-        fit_bounds_uncertainty_multiplier=4.0,
+        bounds_uncertainty_multiplier=4.0,
         start_value=3.89,
         start_uncertainty=0.01,
     )
 
     cif_text = collection.as_cif
 
-    assert '_fit_parameter.param_unique_name' in cif_text
-    assert '_fit_parameter.fit_bounds_uncertainty_multiplier' in cif_text
+    assert '_fit_parameter.parameter_unique_name' in cif_text
+    assert '_fit_parameter.bounds_uncertainty_multiplier' in cif_text
     assert 'lbco.cell.length_a' in cif_text
 
 
@@ -61,22 +61,22 @@ def test_fit_parameter_correlations_normalize_pair_order_and_replace_duplicate_i
     correlations = FitParameterCorrelations()
     correlations.create(
         source_kind='posterior',
-        param_unique_name_i='z.param',
-        param_unique_name_j='a.param',
+        parameter_unique_name_i='z.param',
+        parameter_unique_name_j='a.param',
         correlation=0.87,
         id='1',
     )
     correlations.create(
         source_kind='posterior',
-        param_unique_name_i='b.param',
-        param_unique_name_j='c.param',
+        parameter_unique_name_i='b.param',
+        parameter_unique_name_j='c.param',
         correlation=0.55,
         id='1',
     )
 
     assert len(correlations) == 1
-    assert correlations['1'].param_unique_name_i.value == 'b.param'
-    assert correlations['1'].param_unique_name_j.value == 'c.param'
+    assert correlations['1'].parameter_unique_name_i.value == 'b.param'
+    assert correlations['1'].parameter_unique_name_j.value == 'c.param'
 
 
 def test_fit_parameter_correlations_rebuild_index_from_cif():
@@ -88,8 +88,8 @@ def test_fit_parameter_correlations_rebuild_index_from_cif():
 loop_
 _fit_parameter_correlation.id
 _fit_parameter_correlation.source_kind
-_fit_parameter_correlation.param_unique_name_i
-_fit_parameter_correlation.param_unique_name_j
+_fit_parameter_correlation.parameter_unique_name_i
+_fit_parameter_correlation.parameter_unique_name_j
 _fit_parameter_correlation.correlation
 2 posterior hrpt.scale lbco.cell.length_a 0.42
 """
@@ -108,7 +108,7 @@ def test_fit_parameter_posterior_summary_serializes_expected_tags():
 
     collection = FitParameters()
     collection.create(
-        param_unique_name='lbco.cell.length_a',
+        parameter_unique_name='lbco.cell.length_a',
         fit_min=3.88,
         fit_max=3.90,
     )
@@ -139,12 +139,8 @@ def test_fit_parameter_posterior_summary_serializes_expected_tags():
 
 
 def test_dream_sampler_settings_and_diagnostics_use_split_cif_fields():
-    from easydiffraction.analysis.categories.fit_result.bayesian import (
-        BayesianFitResult,
-    )
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.fit_result.bayesian import BayesianFitResult
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     minimizer = BumpsDreamMinimizer()
     minimizer.sampling_steps = 100
@@ -169,7 +165,7 @@ def test_fit_parameter_posteriors_preserve_row_order_from_cif():
 
     cif_text = """data_fit_state
 loop_
-_fit_parameter.param_unique_name
+_fit_parameter.parameter_unique_name
 _fit_parameter.posterior_best_sample_value
 _fit_parameter.posterior_median
 _fit_parameter.posterior_uncertainty
@@ -187,7 +183,7 @@ first.param 1.0 1.1 0.1 0.9 1.3 0.8 1.4 10 1.00
     posteriors = FitParameters()
     posteriors.from_cif(document.sole_block())
 
-    assert [row.param_unique_name.value for row in posteriors] == [
+    assert [row.parameter_unique_name.value for row in posteriors] == [
         'second.param',
         'first.param',
     ]

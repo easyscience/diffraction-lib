@@ -4,10 +4,13 @@
 
 from __future__ import annotations
 
+import math
 import multiprocessing
+import os
 import random
 import sys
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 from bumps.fitproblem import FitProblem
@@ -24,12 +27,14 @@ from easydiffraction.analysis.fit_helpers.bayesian import compute_convergence_di
 from easydiffraction.analysis.fit_helpers.bayesian import standard_deviations_from_summaries
 from easydiffraction.analysis.fit_helpers.bayesian import summarize_posterior_parameters
 from easydiffraction.analysis.fit_helpers.tracking import SamplerProgressUpdate
+from easydiffraction.analysis.minimizers.base import MinimizerFitOptions
 from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
 from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
 from easydiffraction.analysis.minimizers.enums import DreamPopulationInitializationEnum
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.utils.enums import VerbosityEnum
 from easydiffraction.utils.logging import log
 
 _BUMPS_DREAM_LOG = log
@@ -49,6 +54,132 @@ MAX_RANDOM_SEED = int(np.iinfo(np.uint32).max)
 TOTAL_PROGRESS_POINTS = 25
 DREAM_SAMPLE_ARRAY_NDIM = 3
 DREAM_DRIVER_FAILURES = (ArithmeticError, RuntimeError, TypeError, ValueError)
+
+# Top-level HDF5 group in the MCMC sidecar (mcmc.h5) holding the
+# resumable bumps-DREAM sampler state, alongside emcee's emcee_chain.
+DREAM_STATE_GROUP = 'dream_state'
+
+# Fork-inherited problem for parallel DREAM population evaluation.
+# bumps' MPMapper needs a picklable problem and an import-safe main
+# module, so it silently falls back to serial for cryspy problems run
+# from a notebook or script (spawn/forkserver start methods). Mirroring
+# the emcee minimizer, a fork-based pool inherits the problem through
+# this module global instead of pickling it, keeping evaluation
+# parallel where MPMapper cannot.
+_DREAM_WORKER_PROBLEM: object | None = None
+
+
+def _set_dream_worker_problem(problem: object | None) -> None:
+    """Set the fork-inherited DREAM worker problem."""
+    global _DREAM_WORKER_PROBLEM  # noqa: PLW0603
+    _DREAM_WORKER_PROBLEM = problem
+
+
+def _dream_nllf_worker(point: object) -> float:
+    """Evaluate one point's negative log-likelihood in a fork worker."""
+    if _DREAM_WORKER_PROBLEM is None:
+        msg = 'DREAM worker problem has not been initialized.'
+        raise RuntimeError(msg)
+    return _DREAM_WORKER_PROBLEM.nllf(point)
+
+
+class _DreamForkPoolMapper:
+    """
+    Fork-based population mapper matching the bumps mapper contract.
+    """
+
+    def __init__(self, pool: object) -> None:
+        """Store the fork pool used to evaluate the population."""
+        self.pool = pool
+
+    def __call__(self, points: object) -> list[float]:
+        """
+        Return the negative log-likelihood for each population point.
+        """
+        return self.pool.map(_dream_nllf_worker, list(points))
+
+
+def _write_dream_state_sidecar(
+    sidecar_path: Path,
+    state: object,
+    parameter_names: list[str],
+) -> None:
+    """
+    Persist a DREAM ``MCMCDraw`` state into the MCMC sidecar.
+
+    The state is written under ``/dream_state/state`` via the bumps
+    ``DreamFit.h5dump`` contract, with the fitted-parameter names stored
+    in a sibling ``/dream_state/param_names`` dataset so resume can
+    match by name (bumps does not preserve labels through its own
+    save/load).
+
+    Parameters
+    ----------
+    sidecar_path : Path
+        Path to the ``mcmc.h5`` sidecar file.
+    state : object
+        The bumps ``MCMCDraw`` object captured from ``driver.fitter``.
+    parameter_names : list[str]
+        Fitted-parameter names, in sampling order.
+    """
+    import h5py  # noqa: PLC0415
+    from bumps.fitters import DreamFit  # noqa: PLC0415
+
+    sidecar_path = Path(sidecar_path)
+    sidecar_path.parent.mkdir(parents=True, exist_ok=True)
+    with h5py.File(str(sidecar_path), 'a') as handle:
+        if DREAM_STATE_GROUP in handle:
+            del handle[DREAM_STATE_GROUP]
+        group = handle.create_group(DREAM_STATE_GROUP)
+        DreamFit.h5dump(group.create_group('state'), state)
+        group.create_dataset(
+            'param_names',
+            data=np.array(parameter_names, dtype=h5py.string_dtype(encoding='utf-8')),
+        )
+
+
+def _read_dream_state_sidecar(sidecar_path: Path) -> tuple[object, list[str]] | None:
+    """
+    Read a persisted DREAM state from the MCMC sidecar.
+
+    Returns the bumps ``MCMCDraw`` state and the stored fitted-parameter
+    names, or ``None`` when the sidecar or its ``dream_state`` group is
+    absent.
+
+    Parameters
+    ----------
+    sidecar_path : Path
+        Path to the ``mcmc.h5`` sidecar file.
+
+    Returns
+    -------
+    tuple[object, list[str]] | None
+        ``(state, param_names)`` when present, otherwise ``None``.
+
+    Raises
+    ------
+    ValueError
+        If the ``dream_state`` group is present but malformed.
+    """
+    import h5py  # noqa: PLC0415
+    from bumps.fitters import DreamFit  # noqa: PLC0415
+
+    sidecar_path = Path(sidecar_path)
+    if not sidecar_path.is_file():
+        return None
+    with h5py.File(str(sidecar_path), 'r') as handle:
+        if DREAM_STATE_GROUP not in handle:
+            return None
+        group = handle[DREAM_STATE_GROUP]
+        if 'state' not in group or 'param_names' not in group:
+            msg = f"Malformed '{DREAM_STATE_GROUP}' group in '{sidecar_path}'."
+            raise ValueError(msg)
+        state = DreamFit.h5load(group['state'])
+        param_names = [
+            name.decode('utf-8') if isinstance(name, bytes) else str(name)
+            for name in group['param_names'][()]
+        ]
+    return state, param_names
 
 
 @dataclass(slots=True)
@@ -89,12 +220,18 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         n_parameters: int,
         total_generations: int,
         burn_steps: int,
+        start_generation: int = 0,
     ) -> None:
+        """Precompute per-phase progress targets for reporting."""
         self._tracker = tracker
         self._n_points = n_points
         self._n_parameters = n_parameters
         self._total_generations = max(1, total_generations)
         self._burn_steps = max(0, burn_steps)
+        # On a resume run the chain already holds ``start_generation``
+        # generations, so progress is reported relative to that baseline
+        # (1..extra_steps) instead of the absolute generation count.
+        self._start_generation = min(max(0, start_generation), self._total_generations - 1)
         burn_target_count, sampling_target_count = self._phase_progress_point_counts(
             total_generations=self._total_generations,
             burn_steps=self._burn_steps,
@@ -105,12 +242,26 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
             target_count=burn_target_count,
         )
         self._sampling_targets = self._progress_targets(
-            start=self._burn_steps + 1,
+            start=max(self._burn_steps, self._start_generation) + 1,
             stop=self._total_generations,
             target_count=sampling_target_count,
         )
         self._next_burn_target_index = 0
         self._next_sampling_target_index = 0
+
+    def _reported_iteration(self, generation: int) -> int:
+        """Return the generation relative to the resume baseline."""
+        clamped_generation = min(generation, self._total_generations)
+        relative = max(1, clamped_generation - self._start_generation)
+        return min(relative, self._reported_total_iterations())
+
+    def _reported_total_iterations(self) -> int:
+        """Return the reported step total, excluding setup."""
+        # total_generations counts the bumps initial generation (the
+        # blank pre-processing row), which is setup rather than a step;
+        # exclude it (and, on resume, the already-saved generations) so
+        # the bar reads steps+burn (fresh) or extra_steps (resume).
+        return max(1, self._total_generations - self._start_generation - 1)
 
     @staticmethod
     def config_history(history: object) -> None:
@@ -128,8 +279,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         log_posterior = self._population_mean_log_posterior(history)
         self._tracker.track_sampler_progress(
             SamplerProgressUpdate(
-                iteration=generation,
-                total_iterations=self._total_generations,
+                iteration=self._reported_iteration(generation),
+                total_iterations=self._reported_total_iterations(),
                 phase=self._phase_name(generation),
                 progress_percent=self._progress_percent(generation),
                 log_posterior=log_posterior,
@@ -149,8 +300,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         reduced_chi2 = self._reduced_chi_square_from_nllf(best_nllf)
         self._tracker.track_sampler_progress(
             SamplerProgressUpdate(
-                iteration=generation,
-                total_iterations=self._total_generations,
+                iteration=self._reported_iteration(generation),
+                total_iterations=self._reported_total_iterations(),
                 phase=self._phase_name(generation),
                 progress_percent=self._progress_percent(generation),
                 log_posterior=self._population_mean_log_posterior(history),
@@ -252,9 +403,8 @@ class _DreamProgressMonitor(bumps_monitor.Monitor):
         return 'sampling'
 
     def _progress_percent(self, generation: int) -> float:
-        """Return DREAM progress as a percentage."""
-        clamped_generation = min(generation, self._total_generations)
-        return 100.0 * clamped_generation / self._total_generations
+        """Return DREAM progress over new generations, in percent."""
+        return 100.0 * self._reported_iteration(generation) / self._reported_total_iterations()
 
     @staticmethod
     def _population_mean_log_posterior(history: object) -> float:
@@ -289,12 +439,17 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         description='Bumps library with DREAM Bayesian sampling',
     )
 
+    # Set by Fitter._set_minimizer_sidecar_path when a project path is
+    # known; enables persisting/resuming the DREAM state in mcmc.h5.
+    _sidecar_path: Path | None = None
+
     def __init__(
         self,
         name: str = MinimizerTypeEnum.BUMPS_DREAM,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
     ) -> None:
+        """Initialize the DREAM minimizer with sampler defaults."""
         super().__init__(
             name=name,
             method=method,
@@ -315,6 +470,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
+        """Reject ``max_iterations``; DREAM uses ``steps`` instead."""
         del value
         sampler_name = self.type_info.description.partition('with ')[2].split()[0]
         msg = f"{sampler_name} sampler uses 'steps' instead of 'max_iterations'."
@@ -327,6 +483,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @steps.setter
     def steps(self, value: int) -> None:
+        """Set the number of DREAM generations after burn-in."""
         self._max_iterations = self._validated_positive_integer('steps', value)
 
     @property
@@ -336,6 +493,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @burn.setter
     def burn(self, value: int | None) -> None:
+        """Set explicit DREAM burn-in generations, or ``None``."""
         if value is None:
             self._burn = None
             return
@@ -348,6 +506,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @thin.setter
     def thin(self, value: int) -> None:
+        """Set the DREAM thinning interval."""
         self._thin = self._validated_positive_integer('thin', value)
 
     @property
@@ -357,7 +516,24 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @pop.setter
     def pop(self, value: int) -> None:
+        """Set the DREAM population multiplier."""
         self._pop = self._validated_positive_integer('pop', value)
+
+    @property
+    def chains(self) -> int:
+        """
+        Friendly alias for ``pop``, the DREAM population scale factor.
+
+        DREAM runs ``ceil(chains * n_parameters)`` parallel chains, so
+        ``chains`` is a per-parameter multiplier rather than an absolute
+        chain count.
+        """
+        return self.pop
+
+    @chains.setter
+    def chains(self, value: int) -> None:
+        """Set the DREAM population scale factor (alias for ``pop``)."""
+        self.pop = value
 
     @property
     def parallel(self) -> int:
@@ -366,6 +542,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @parallel.setter
     def parallel(self, value: int) -> None:
+        """Set the DREAM parallel worker count."""
         self._parallel = self._validated_non_negative_integer('parallel', value)
 
     @property
@@ -375,6 +552,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
     @init.setter
     def init(self, value: DreamPopulationInitializationEnum | str) -> None:
+        """Set the DREAM population initializer."""
         self._init = self._validated_init(value)
 
     def _resolve_random_seed(self, random_seed: int | None) -> int:
@@ -580,15 +758,18 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         steps: int,
         burn: int,
         n_parameters: int,
+        samples_override: int | None = None,
+        pop_override: int | None = None,
     ) -> dict[str, object]:
         """Build the sampler settings dictionary recorded in results."""
-        samples = steps * self.pop * n_parameters
+        pop = self.pop if pop_override is None else int(pop_override)
+        samples = steps * pop * n_parameters if samples_override is None else int(samples_override)
         return {
             'random_seed': int(random_seed),
             'steps': int(steps),
             'burn': int(burn),
             'thin': int(self.thin),
-            'pop': int(self.pop),
+            'pop': int(pop),
             'parallel': int(self.parallel),
             'init': self.init.value,
             'samples': int(samples),
@@ -596,6 +777,42 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             'outliers': DEFAULT_OUTLIER_TEST,
             'trim': DEFAULT_TRIM,
         }
+
+    def fit(
+        self,
+        parameters: list[object],
+        objective_function: object,
+        verbosity: VerbosityEnum = VerbosityEnum.FULL,
+        *,
+        options: MinimizerFitOptions | None = None,
+    ) -> BayesianFitResults:
+        """
+        Run DREAM sampling and return Bayesian fit results.
+
+        Overrides the base ``fit`` so bumps-DREAM supports resume:
+        ``resume`` and ``extra_steps`` are threaded into the solver,
+        which extends the saved chain instead of starting cold.
+        """
+        fit_options = options or MinimizerFitOptions()
+        if fit_options.use_physical_limits:
+            self._apply_physical_limits(parameters)
+
+        resolved_random_seed = self._resolve_random_seed(fit_options.random_seed)
+        minimizer_name = self.name or 'Unnamed Minimizer'
+        if self.method is not None and f'({self.method})' not in minimizer_name:
+            minimizer_name += f' ({self.method})'
+        self._start_tracking(minimizer_name, verbosity=verbosity)
+
+        try:
+            solver_args = self._prepare_solver_args(parameters)
+            solver_args['random_seed'] = resolved_random_seed
+            solver_args['resume'] = fit_options.resume
+            solver_args['extra_steps'] = fit_options.extra_steps
+            raw_result = self._run_solver(objective_function, **solver_args)
+            return self._finalize_fit(parameters, raw_result)
+        finally:
+            if fit_options.finalize_tracking:
+                self._stop_tracking()
 
     def _run_solver(
         self,
@@ -617,12 +834,30 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         object
             Normalized DREAM result stored in an ``OptimizeResult``.
         """
-        total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
+        resume = bool(kwargs.get('resume'))
+        resume_overrides: dict[str, object] = {}
+        fit_state = None
+        if resume:
+            resume_overrides, fit_state = self._prepare_dream_resume(
+                kwargs=kwargs,
+                extra_steps=kwargs.get('extra_steps'),
+            )
+            # Report progress over the new generations only (1..extra).
+            total_iterations = int(
+                resume_overrides['steps_override'] - resume_overrides['start_generation'] + 1
+            )
+        else:
+            total_iterations = int(self.steps + self._resolved_burn(self.steps) + 1)
         self.tracker.start_sampler_pre_processing(total_iterations=total_iterations)
-        context = self._prepare_run_context(objective_function=objective_function, kwargs=kwargs)
+        context = self._prepare_run_context(
+            objective_function=objective_function,
+            kwargs=kwargs,
+            **resume_overrides,
+        )
         driver_result = self._execute_driver(
             driver=context.driver,
             random_seed=int(context.sampler_settings['random_seed']),
+            fit_state=fit_state,
         )
         if driver_result.error is not None:
             return self._failure_result(
@@ -641,19 +876,143 @@ class BumpsDreamMinimizer(BumpsMinimizer):
 
         self.tracker.start_sampler_post_processing()
 
+        self._persist_dream_state(
+            raw_state=driver_result.raw_state,
+            parameter_names=context.parameter_names,
+        )
+
         return self._build_success_result(
             context=context,
             raw_state=driver_result.raw_state,
             best_nllf=driver_result.best_nllf,
         )
 
+    def _persist_dream_state(self, *, raw_state: object, parameter_names: object) -> None:
+        """
+        Write the DREAM sampler state to the sidecar when configured.
+        """
+        if self._sidecar_path is None:
+            return
+        _write_dream_state_sidecar(
+            Path(self._sidecar_path),
+            raw_state,
+            [str(name) for name in parameter_names],
+        )
+
+    def _prepare_dream_resume(
+        self,
+        *,
+        kwargs: dict[str, object],
+        extra_steps: object,
+    ) -> tuple[dict[str, object], object]:
+        """
+        Load and validate saved DREAM state for a resume run.
+
+        Returns the driver overrides (extending the chain by
+        ``extra_steps`` generations via the ring-buffer contract) and a
+        deep-copied ``fit_state`` for ``FitDriver.fit``. The deep copy
+        is required because bumps mutates the state in place.
+        """
+        import copy  # noqa: PLC0415
+
+        if not isinstance(extra_steps, int) or isinstance(extra_steps, bool) or extra_steps <= 0:
+            msg = 'Resuming a bumps-dream fit requires a positive integer extra_steps.'
+            raise ValueError(msg)
+        if self._sidecar_path is None:
+            msg = 'bumps-dream resume requires a saved project; no sidecar path is set.'
+            raise ValueError(msg)
+        loaded = _read_dream_state_sidecar(Path(self._sidecar_path))
+        if loaded is None:
+            msg = 'No saved bumps-dream chain to resume; run a fresh fit first.'
+            raise ValueError(msg)
+        state, saved_names = loaded
+
+        parameter_names = [str(name) for name in kwargs.get('parameter_names')]
+        n_parameters = len(parameter_names)
+        pop_scale = int(self.pop)
+        self._validate_dream_resume(
+            state=state,
+            saved_names=saved_names,
+            names=parameter_names,
+            pop_scale=pop_scale,
+            n_parameters=n_parameters,
+        )
+        current_steps = self._state_generations(
+            state=state, pop_scale=pop_scale, n_parameters=n_parameters
+        )
+        target_steps = current_steps + int(extra_steps)
+        overrides = {
+            'steps_override': target_steps,
+            'burn_override': 0,
+            'samples_override': target_steps * pop_scale * n_parameters,
+            'pop_override': pop_scale,
+            'start_generation': current_steps,
+        }
+        return overrides, copy.deepcopy(state)
+
+    @staticmethod
+    def _validate_dream_resume(
+        *,
+        state: object,
+        saved_names: list[str],
+        names: list[str],
+        pop_scale: int,
+        n_parameters: int,
+    ) -> None:
+        """
+        Reject a resume whose model does not match the saved chain.
+
+        Mismatched free-parameter count, names/order, or population are
+        all rejected — the population, in particular, cannot change on
+        resume (bumps resumes positionally into a fixed chain count).
+        """
+        if int(state.Nvar) != len(names):
+            msg = (
+                f'Saved bumps-dream chain has {int(state.Nvar)} parameters but the current '
+                f'model has {len(names)}. The free-parameter set must match to resume.'
+            )
+            raise ValueError(msg)
+        if saved_names and list(saved_names) != list(names):
+            msg = (
+                'Parameter names/order differ between the current model and the saved '
+                f'bumps-dream chain.\n  current: {names}\n  saved:   {list(saved_names)}'
+            )
+            raise ValueError(msg)
+        expected_npop = math.ceil(pop_scale * n_parameters)
+        if expected_npop != int(state.Npop):
+            msg = (
+                f'Requested population (chains={pop_scale}) would produce {expected_npop} '
+                f'chains, but the saved bumps-dream chain has {int(state.Npop)}. The '
+                'population cannot change on resume; reset chains/population_size to match '
+                'the saved chain.'
+            )
+            raise ValueError(msg)
+
+    @staticmethod
+    def _state_generations(*, state: object, pop_scale: int, n_parameters: int) -> int:
+        """Return the number of generations stored in a saved state."""
+        total_draws = int(state.draw().points.shape[0])
+        pop_size = max(pop_scale * n_parameters, 1)
+        return max(total_draws // pop_size, 1)
+
     def _prepare_run_context(
         self,
         *,
         objective_function: object,
         kwargs: dict[str, object],
+        steps_override: int | None = None,
+        burn_override: int | None = None,
+        samples_override: int | None = None,
+        pop_override: int | None = None,
+        start_generation: int = 0,
     ) -> _DreamRunContext:
-        """Prepare a driver and metadata for one DREAM solver run."""
+        """
+        Prepare a driver and metadata for one DREAM solver run.
+
+        The ``*_override`` arguments are set only on a resume run, where
+        they extend the saved chain (see ``_prepare_dream_resume``); a
+        fresh run leaves them ``None`` and uses the configured settings.
+        """
         bumps_params = kwargs.get('bumps_params')
         parameter_names = kwargs.get('parameter_names')
         parameter_display_names = kwargs.get('parameter_display_names')
@@ -664,23 +1023,24 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         fitness = _EasyDiffractionFitness(bumps_params, objective_function)
         fitness.nllf()
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
-        steps = self.steps
-        burn = self._resolved_burn(steps)
-        init = self.init
+        steps = self.steps if steps_override is None else int(steps_override)
+        burn = self._resolved_burn(self.steps) if burn_override is None else int(burn_override)
         sampler_settings = self._sampler_settings(
             random_seed=random_seed,
             steps=steps,
             burn=burn,
             n_parameters=len(bumps_params),
+            samples_override=samples_override,
+            pop_override=pop_override,
         )
         driver = self._build_driver(
             fitclass=fitclass,
             fitness=fitness,
             steps=steps,
             burn=burn,
-            init=init,
             sampler_settings=sampler_settings,
             n_parameters=len(bumps_params),
+            start_generation=start_generation,
         )
         starting_values = np.array([parameter.value for parameter in bumps_params], dtype=float)
         resolved_uncertainties = (
@@ -705,9 +1065,9 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         fitness: object,
         steps: int,
         burn: int,
-        init: DreamPopulationInitializationEnum,
         sampler_settings: dict[str, object],
         n_parameters: int,
+        start_generation: int = 0,
     ) -> FitDriver:
         """Build and clip the BUMPS DREAM driver."""
         total_generations = int(steps + burn + 1)
@@ -718,6 +1078,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             n_parameters=n_parameters,
             total_generations=total_generations,
             burn_steps=int(burn),
+            start_generation=int(start_generation),
         )
         mapper = self._build_mapper(problem)
         try:
@@ -729,8 +1090,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 steps=steps,
                 burn=burn,
                 thin=self.thin,
-                pop=self.pop,
-                init=init.value,
+                pop=int(sampler_settings['pop']),
+                init=self.init.value,
                 samples=sampler_settings['samples'],
                 alpha=DEFAULT_ALPHA,
                 outliers=DEFAULT_OUTLIER_TEST,
@@ -739,9 +1100,11 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             driver.clip()
         except KeyboardInterrupt:
             MPMapper.stop_mapper()
+            self._shutdown_fork_pool_mapper(mapper)
             raise
         except Exception:
             MPMapper.stop_mapper()
+            self._shutdown_fork_pool_mapper(mapper)
             raise
         else:
             return driver
@@ -751,6 +1114,56 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         if self.parallel == 1:
             return None
 
+        shared_display_handle = getattr(self.tracker, '_shared_display_handle', None)
+        activity_indicator = getattr(self.tracker, '_activity_indicator', None)
+        if shared_display_handle is not None:
+            self.tracker._set_shared_display_handle(None)
+        if activity_indicator is not None:
+            self.tracker._activity_indicator = None
+
+        try:
+            # Prefer a fork-based pool: it inherits the (unpicklable)
+            # cryspy problem instead of pickling it, so it parallelizes
+            # where bumps' MPMapper would fall back to serial.
+            fork_mapper = self._build_fork_pool_mapper(problem)
+            if fork_mapper is not None:
+                return fork_mapper
+            return self._build_process_pool_mapper(problem)
+        finally:
+            if activity_indicator is not None:
+                self.tracker._activity_indicator = activity_indicator
+            if shared_display_handle is not None:
+                self.tracker._set_shared_display_handle(shared_display_handle)
+
+    def _resolved_worker_count(self) -> int:
+        """
+        Return the worker count for parallel population evaluation.
+        """
+        if self.parallel > 0:
+            return self.parallel
+        return os.cpu_count() or 1
+
+    def _build_fork_pool_mapper(self, problem: FitProblem) -> object | None:
+        """
+        Return a fork-pool mapper, or ``None`` when fork is unusable.
+        """
+        if os.name == 'nt' or 'fork' not in multiprocessing.get_all_start_methods():
+            return None
+        worker_count = self._resolved_worker_count()
+        if worker_count <= 1:
+            return None
+
+        _set_dream_worker_problem(problem)
+        try:
+            context = multiprocessing.get_context('fork')
+            pool = context.Pool(worker_count)
+        except (OSError, ValueError, RuntimeError):
+            _set_dream_worker_problem(None)
+            return None
+        return _DreamForkPoolMapper(pool)
+
+    def _build_process_pool_mapper(self, problem: FitProblem) -> object | None:
+        """Return a bumps MPMapper, or ``None`` to run serially."""
         if self._requires_serial_mapper_for_spawn_main_module():
             self._warn_after_tracking(
                 'DREAM parallel evaluation requires an import-safe main '
@@ -758,13 +1171,6 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 'serial execution.'
             )
             return None
-
-        shared_display_handle = getattr(self.tracker, '_shared_display_handle', None)
-        activity_indicator = getattr(self.tracker, '_activity_indicator', None)
-        if shared_display_handle is not None:
-            self.tracker._set_shared_display_handle(None)
-        if activity_indicator is not None:
-            self.tracker._activity_indicator = None
 
         try:
             if not can_pickle(problem):
@@ -785,11 +1191,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
                 'serial execution.'
             )
             return None
-        finally:
-            if activity_indicator is not None:
-                self.tracker._activity_indicator = activity_indicator
-            if shared_display_handle is not None:
-                self.tracker._set_shared_display_handle(shared_display_handle)
+
+    @staticmethod
+    def _shutdown_fork_pool_mapper(mapper: object | None) -> None:
+        """Terminate a fork-pool mapper and clear the worker problem."""
+        pool = getattr(mapper, 'pool', None)
+        if pool is not None:
+            pool.terminate()
+            pool.join()
+        _set_dream_worker_problem(None)
 
     @staticmethod
     def _requires_serial_mapper_for_spawn_main_module() -> bool:
@@ -812,9 +1222,15 @@ class BumpsDreamMinimizer(BumpsMinimizer):
         )
 
     @staticmethod
-    def _execute_driver(*, driver: FitDriver, random_seed: int) -> _DreamDriverResult:
+    def _execute_driver(
+        *, driver: FitDriver, random_seed: int, fit_state: object | None = None
+    ) -> _DreamDriverResult:
         """
         Run the DREAM driver under a deterministic RNG-state guard.
+
+        ``fit_state`` is a deep-copied saved ``MCMCDraw`` on a resume
+        run (``None`` for a fresh run); it is passed to
+        ``FitDriver.fit`` so DREAM continues the existing chain.
         """
         numpy_rng = np.random.mtrand._rand
         numpy_state = numpy_rng.get_state()
@@ -823,7 +1239,8 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             validated_seed = BumpsDreamMinimizer._validated_random_seed_value(random_seed)
             numpy_rng.seed(validated_seed)
             random.seed(validated_seed)
-            best_values, best_nllf = driver.fit()
+            fit_kwargs = {} if fit_state is None else {'fit_state': fit_state}
+            best_values, best_nllf = driver.fit(**fit_kwargs)
         except DREAM_DRIVER_FAILURES as error:  # pragma: no cover - backend-specific
             return _DreamDriverResult(
                 best_values=None,
@@ -833,6 +1250,7 @@ class BumpsDreamMinimizer(BumpsMinimizer):
             )
         finally:
             MPMapper.stop_mapper()
+            BumpsDreamMinimizer._shutdown_fork_pool_mapper(getattr(driver, 'mapper', None))
             numpy_rng.set_state(numpy_state)
             random.setstate(python_state)
 

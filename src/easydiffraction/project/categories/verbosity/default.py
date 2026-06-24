@@ -7,7 +7,7 @@ from __future__ import annotations
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.variable import EnumDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.project.categories.verbosity.factory import VerbosityFactory
 from easydiffraction.utils.enums import VerbosityEnum
 
@@ -30,7 +30,7 @@ class Verbosity(CategoryItem):
             name='fit',
             enum=VerbosityEnum,
             description='Fitting process output verbosity',
-            cif_handler=CifHandler(names=['_verbosity.fit']),
+            tags=TagSpec(edi_names=['_verbosity.fit']),
         )
 
     @property

@@ -12,7 +12,7 @@ from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import IntegerDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class LeastSquaresMinimizerBase(MinimizerCategoryBase):
@@ -28,6 +28,7 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
     _result_descriptor_names: ClassVar[tuple[str, ...]] = ()
 
     def __init__(self) -> None:
+        """Initialize the max-iterations setting descriptor."""
         super().__init__()
         self._max_iterations = self._max_iterations_descriptor(self._default_max_iterations)
 
@@ -38,9 +39,9 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
             name='max_iterations',
             description='Maximum solver iterations.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(
-                names=['_minimizer.max_iterations'],
-                iucr_name='_easydiffraction_minimizer.max_iterations',
+            tags=TagSpec(
+                edi_names=['_minimizer.max_iterations'],
+                cif_names=['_easydiffraction_minimizer.max_iterations'],
             ),
             display_handler=DisplayHandler(
                 display_name='Maximum iterations',
@@ -55,4 +56,5 @@ class LeastSquaresMinimizerBase(MinimizerCategoryBase):
 
     @max_iterations.setter
     def max_iterations(self, value: int) -> None:
+        """Set the maximum solver iterations."""
         self._max_iterations.value = value

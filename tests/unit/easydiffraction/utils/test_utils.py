@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
+import os
+
 import numpy as np
 import pytest
 
@@ -225,6 +227,80 @@ def test_get_version_for_url_released(monkeypatch):
     assert MUT._get_version_for_url() == '0.8.0.post1'
 
 
+def test_parameter_docs_url_uses_grouped_docs_route(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    url = MUT.parameter_docs_url('_cell.length_a')
+
+    assert url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/structure/cell/#cell-length-a'
+    )
+
+
+def test_parameter_docs_url_maps_category_page_alias(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    url = MUT.parameter_docs_url('_excluded_regions.start')
+
+    assert url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/excluded_region/#excluded-region-start'
+    )
+
+
+def test_parameter_docs_url_maps_data_range_items(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0.post1')
+
+    twotheta_url = MUT.parameter_docs_url('_data_range.two_theta_min')
+    sthovl_url = MUT.parameter_docs_url('_data_range.sin_theta_over_lambda_max')
+
+    assert twotheta_url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/pd_meas/#pd-meas-2theta-range-min'
+    )
+    assert sthovl_url == (
+        'https://easyscience.github.io/diffraction-lib/0.8.0.post1/'
+        'user-guide/parameters/experiment/refln/#refln-sin-theta-over-lambda-range-max'
+    )
+
+
+def test_parameter_docs_blocks_match_docs_tree():
+    """Guard the owner-grouped route map against docs-tree drift."""
+    import pathlib
+
+    import easydiffraction.utils.utils as MUT
+
+    repo_root = pathlib.Path(__file__).resolve().parents[4]
+    params_dir = repo_root / 'docs' / 'docs' / 'user-guide' / 'parameters'
+
+    docs_pages = {
+        (owner_dir.name, page.stem)
+        for owner_dir in params_dir.iterdir()
+        if owner_dir.is_dir()
+        for page in owner_dir.glob('*.md')
+    }
+    mapped_pages = {
+        (block, category)
+        for block, categories in MUT._PARAMETER_DOCS_BLOCKS.items()
+        for category in categories
+    }
+
+    # Every grouped route must resolve to an existing reference page and
+    # vice versa, so runtime parameter URLs cannot drift from the docs.
+    assert mapped_pages == docs_pages
+
+    # Each mapped category resolves to its own owner/category route.
+    for block, category in mapped_pages:
+        assert MUT._parameter_docs_page(category) == f'{block}/{category}'
+
+
 @pytest.mark.filterwarnings('ignore:Failed to fetch tutorials index:UserWarning')
 def test_fetch_tutorials_index_returns_empty_on_error(monkeypatch):
     import easydiffraction.utils.utils as MUT
@@ -256,19 +332,19 @@ def test_list_tutorials_with_data(monkeypatch, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
             'description': 'A quick start tutorial',
         },
-        '2': {
-            'url': 'https://example.com/{version}/tutorials/ed-2/ed-2.ipynb',
+        'advanced': {
+            'url': 'https://example.com/{version}/tutorials/advanced.ipynb',
             'title': 'Advanced',
             'description': 'An advanced tutorial',
         },
     }
     monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
-    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+    monkeypatch.setattr(MUT, 'package_version', lambda name: '0.8.0')
     MUT.list_tutorials()
     out = capsys.readouterr().out
     assert 'Tutorials available for easydiffraction v0.8.0' in out
@@ -276,20 +352,37 @@ def test_list_tutorials_with_data(monkeypatch, capsys):
     assert 'Advanced' in out
 
 
+@pytest.mark.parametrize(
+    ('terminal_columns', 'expected_width'),
+    [(200, 100), (72, 72)],
+)
+def test_list_table_width_caps_at_max(monkeypatch, terminal_columns, expected_width):
+    import easydiffraction.utils.utils as MUT
+
+    # Accept arbitrary args so pytest's own ``get_terminal_size(fallback=...)``
+    # keeps working while this patch is active.
+    monkeypatch.setattr(
+        MUT.shutil,
+        'get_terminal_size',
+        lambda *args, **kwargs: os.terminal_size((terminal_columns, 24)),
+    )
+    assert MUT._list_table_width() == expected_width
+
+
 def test_download_tutorial_unknown_id(monkeypatch):
     import easydiffraction.utils.utils as MUT
 
-    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {'1': {}})
-    with pytest.raises(KeyError, match='Unknown tutorial id=99'):
-        MUT.download_tutorial(id=99)
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {'quick-start': {}})
+    with pytest.raises(KeyError, match="Unknown tutorial 'missing-tutorial'"):
+        MUT.download_tutorial('missing-tutorial')
 
 
 def test_download_tutorial_success(monkeypatch, tmp_path):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
             'description': 'A quick start tutorial',
         },
@@ -309,17 +402,63 @@ def test_download_tutorial_success(monkeypatch, tmp_path):
 
     monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
 
-    result = MUT.download_tutorial(id=1, destination=str(tmp_path))
-    assert result == str(tmp_path / 'ed-1.ipynb')
-    assert (tmp_path / 'ed-1.ipynb').exists()
+    result = MUT.download_tutorial('quick-start', destination=str(tmp_path))
+    assert result == str(tmp_path / 'quick-start.ipynb')
+    assert (tmp_path / 'quick-start.ipynb').exists()
+
+
+def test_download_tutorial_py_format_swaps_extension(monkeypatch, tmp_path):
+    import easydiffraction.utils.utils as MUT
+
+    fake_index = {
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start/quick-start.ipynb',
+            'title': 'Quick Start',
+        },
+    }
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: fake_index)
+    monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
+
+    requested_urls = []
+
+    class DummyResp:
+        def read(self):
+            return b'# quick-start script'
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    def fake_urlopen(url):
+        requested_urls.append(url)
+        return DummyResp()
+
+    monkeypatch.setattr(MUT, '_safe_urlopen', fake_urlopen)
+
+    result = MUT.download_tutorial('quick-start', destination=str(tmp_path), file_format='py')
+    assert result == str(tmp_path / 'quick-start.py')
+    assert (tmp_path / 'quick-start.py').exists()
+    # The notebook lives nested (tutorials/<name>/<name>.ipynb) but the
+    # .py source is published flat at tutorials/<name>.py.
+    assert requested_urls == ['https://example.com/0.8.0/tutorials/quick-start.py']
+
+
+def test_download_tutorial_unknown_format(monkeypatch):
+    import easydiffraction.utils.utils as MUT
+
+    monkeypatch.setattr(MUT, '_fetch_tutorials_index', lambda: {'quick-start': {}})
+    with pytest.raises(ValueError, match="Unknown tutorial format 'txt'"):
+        MUT.download_tutorial('quick-start', file_format='txt')
 
 
 def test_download_tutorial_uses_artifact_root(monkeypatch, tmp_path):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
         },
     }
@@ -340,9 +479,9 @@ def test_download_tutorial_uses_artifact_root(monkeypatch, tmp_path):
 
     monkeypatch.setattr(MUT, '_safe_urlopen', lambda url: DummyResp())
 
-    result = MUT.download_tutorial(id=1, destination='tutorials')
+    result = MUT.download_tutorial('quick-start', destination='tutorials')
 
-    expected_path = artifact_root / 'tutorials' / 'ed-1.ipynb'
+    expected_path = artifact_root / 'tutorials' / 'quick-start.ipynb'
     assert result == str(expected_path)
     assert expected_path.exists()
 
@@ -351,8 +490,8 @@ def test_download_tutorial_already_exists_no_overwrite(monkeypatch, tmp_path, ca
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
         },
     }
@@ -360,14 +499,14 @@ def test_download_tutorial_already_exists_no_overwrite(monkeypatch, tmp_path, ca
     monkeypatch.setattr(MUT, '_get_version_for_url', lambda: '0.8.0')
 
     # Create existing file
-    (tmp_path / 'ed-1.ipynb').write_text('existing content')
+    (tmp_path / 'quick-start.ipynb').write_text('existing content')
 
-    result = MUT.download_tutorial(id=1, destination=str(tmp_path), overwrite=False)
-    assert result == str(tmp_path / 'ed-1.ipynb')
+    result = MUT.download_tutorial('quick-start', destination=str(tmp_path), overwrite=False)
+    assert result == str(tmp_path / 'quick-start.ipynb')
     out = capsys.readouterr().out
     assert 'already present' in out
     # Content should not be changed
-    assert (tmp_path / 'ed-1.ipynb').read_text() == 'existing content'
+    assert (tmp_path / 'quick-start.ipynb').read_text() == 'existing content'
 
 
 def test_show_version_prints(capsys, monkeypatch):
@@ -393,12 +532,12 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
         },
-        '2': {
-            'url': 'https://example.com/{version}/tutorials/ed-2/ed-2.ipynb',
+        'advanced': {
+            'url': 'https://example.com/{version}/tutorials/advanced.ipynb',
             'title': 'Advanced',
         },
     }
@@ -419,8 +558,8 @@ def test_download_all_tutorials_success(monkeypatch, tmp_path, capsys):
 
     result = MUT.download_all_tutorials(destination=str(tmp_path))
     assert len(result) == 2
-    assert (tmp_path / 'ed-1.ipynb').exists()
-    assert (tmp_path / 'ed-2.ipynb').exists()
+    assert (tmp_path / 'quick-start.ipynb').exists()
+    assert (tmp_path / 'advanced.ipynb').exists()
 
 
 def test_download_all_tutorials_reports_resolved_artifact_root(
@@ -431,8 +570,8 @@ def test_download_all_tutorials_reports_resolved_artifact_root(
     import easydiffraction.utils.utils as MUT
 
     fake_index = {
-        '1': {
-            'url': 'https://example.com/{version}/tutorials/ed-1/ed-1.ipynb',
+        'quick-start': {
+            'url': 'https://example.com/{version}/tutorials/quick-start.ipynb',
             'title': 'Quick Start',
         },
     }
@@ -456,8 +595,8 @@ def test_download_all_tutorials_reports_resolved_artifact_root(
     result = MUT.download_all_tutorials(destination='tutorials')
 
     expected_dir = artifact_root / 'tutorials'
-    assert result == [str(expected_dir / 'ed-1.ipynb')]
-    assert (expected_dir / 'ed-1.ipynb').exists()
+    assert result == [str(expected_dir / 'quick-start.ipynb')]
+    assert (expected_dir / 'quick-start.ipynb').exists()
     out = capsys.readouterr().out
     assert 'Downloaded 1 tutorials' in out
     normalized_out = out.replace('\\', '/').replace('\n', '')

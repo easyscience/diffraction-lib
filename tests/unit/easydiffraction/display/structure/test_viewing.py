@@ -17,7 +17,6 @@ from easydiffraction.display.structure.scene import StructureScene
 from easydiffraction.display.structure.viewing import Viewer
 from easydiffraction.display.structure.viewing import ViewerFactory
 
-
 # ------------------------------------------------------------------
 #  Test doubles and fixtures
 # ------------------------------------------------------------------

@@ -58,7 +58,7 @@ def _add_atom(
     adp_iso=0.5,
 ):
     structure.atom_sites.create(
-        label=label,
+        id=label,
         type_symbol=type_symbol,
         fract_x=fract_x,
         fract_y=fract_y,
@@ -496,7 +496,7 @@ class TestBuildSceneBonds:
         )
         assert scene.bonds == ()
 
-    def test_bond_distance_incr_enables_distant_bond(self):
+    def test_bond_distance_inc_enables_distant_bond(self):
         # Two atoms 2.5 angstrom apart (beyond summed covalent radii)
         # bond only once the increment is generous enough.
         structure = _make_structure('stretch')
@@ -504,7 +504,7 @@ class TestBuildSceneBonds:
         _add_atom(structure, label='Fe2', type_symbol='Fe', fract_x=0.5, fract_y=0.0, fract_z=0.0)
         structure._sync_atom_site_aniso()
 
-        structure.geom.bond_distance_incr = 0.0
+        structure.geom.bond_distance_inc = 0.0
         scene_tight = build_scene(
             structure,
             style=StructureStyle(),
@@ -512,7 +512,7 @@ class TestBuildSceneBonds:
             features=frozenset({'bonds'}),
         )
 
-        structure.geom.bond_distance_incr = 5.0
+        structure.geom.bond_distance_inc = 5.0
         scene_loose = build_scene(
             structure,
             style=StructureStyle(),
@@ -646,13 +646,11 @@ class TestStructureStyleInputs:
     def test_default_color_scheme_is_jmol(self):
         assert StructureStyle().color_scheme.value == ColorSchemeEnum.JMOL.value
 
-    def test_atom_view_cif_handler_name(self):
-        assert StructureStyle().atom_view._cif_handler.names == ['_structure_style.atom_view']
+    def test_atom_view_tags_name(self):
+        assert StructureStyle().atom_view._tags.edi_names == ['_structure_style.atom_view']
 
-    def test_color_scheme_cif_handler_name(self):
-        assert StructureStyle().color_scheme._cif_handler.names == [
-            '_structure_style.color_scheme'
-        ]
+    def test_color_scheme_tags_name(self):
+        assert StructureStyle().color_scheme._tags.edi_names == ['_structure_style.color_scheme']
 
     def test_invalid_atom_view_rejected(self):
         with pytest.raises(ValueError, match='not a valid AtomViewEnum'):
@@ -686,3 +684,18 @@ class TestHelpers:
         result = MUT._vec3(np.array([1, 2, 3]))
         assert result == (1.0, 2.0, 3.0)
         assert all(isinstance(component, float) for component in result)
+
+
+def test_reciprocal_lengths_matches_shared_crystallography_helper():
+    from easydiffraction.crystallography.crystallography import reciprocal_cell_lengths
+
+    structure = Structure(name='test')
+    structure.cell.length_a = 5.0
+    structure.cell.length_b = 6.0
+    structure.cell.length_c = 8.0
+
+    got = MUT._reciprocal_lengths(structure.cell)
+    expected = reciprocal_cell_lengths(5.0, 6.0, 8.0, 90.0, 90.0, 90.0)
+
+    assert np.allclose(got, expected)
+    assert np.isclose(got[0], 1.0 / 5.0)

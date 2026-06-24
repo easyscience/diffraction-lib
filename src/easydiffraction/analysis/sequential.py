@@ -52,10 +52,10 @@ class SequentialFitTemplate:
     template can be pickled for ``ProcessPoolExecutor``.
     """
 
-    structure_cif: str
+    structure_cifs: list[str]
     experiment_cif: str
     initial_params: dict[str, float]
-    free_param_unique_names: list[str]
+    free_parameter_unique_names: list[str]
     alias_defs: list[dict[str, str]]
     constraint_defs: list[str]
     constraints_enabled: bool
@@ -126,14 +126,15 @@ def _fit_worker_success(
     finally:
         Project._loading = False
 
-    project.structures.add_from_cif_str(template.structure_cif)
+    for structure_cif in template.structure_cifs:
+        project.structures.add_from_cif_str(structure_cif)
     project.experiments.add_from_cif_str(template.experiment_cif)
     expt = next(iter(project.experiments.values()))
     expt._load_ascii_data_to_experiment(data_path)
     result.update(_extract_diffrn_values(expt, data_path, template.diffrn_extract_rules))
 
     _apply_param_overrides(project, template.initial_params)
-    _set_free_params(project, template.free_param_unique_names)
+    _set_free_params(project, template.free_parameter_unique_names)
     if template.constraints_enabled and template.alias_defs:
         _apply_constraints(
             project,
@@ -231,7 +232,7 @@ def _apply_constraints(
     project : object
         The worker's project instance.
     alias_defs : list[dict[str, str]]
-        Each dict has ``label`` and ``param_unique_name``.
+        Each dict has ``id`` and ``parameter_unique_name``.
     constraint_defs : list[str]
         Constraint expression strings.
     """
@@ -239,10 +240,10 @@ def _apply_constraints(
     by_name = {p.unique_name: p for p in all_params if hasattr(p, 'unique_name')}
 
     for alias_def in alias_defs:
-        param = by_name.get(alias_def['param_unique_name'])
+        param = by_name.get(alias_def['parameter_unique_name'])
         if param is not None:
             project.analysis.aliases.create(
-                label=alias_def['label'],
+                id=alias_def['id'],
                 param=param,
             )
 
@@ -363,7 +364,7 @@ def _collect_results(
 
     # Collect all free parameter values and uncertainties
     all_params = project.structures.parameters + project.experiments.parameters
-    free_set = set(template.free_param_unique_names)
+    free_set = set(template.free_parameter_unique_names)
     result['params'] = {}
     for p in all_params:
         if isinstance(p, Parameter) and p.unique_name in free_set:
@@ -404,7 +405,7 @@ def _build_csv_header(
     """
     header = list(_META_COLUMNS)
     header.extend(f'diffrn.{field}' for field in template.diffrn_field_names)
-    for name in template.free_param_unique_names:
+    for name in template.free_parameter_unique_names:
         header.extend((name, f'{name}.uncertainty'))
     return header
 
@@ -568,8 +569,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
     Parameters
     ----------
     project : object
-        The main project instance (must have exactly 1 structure and 1
-        experiment).
+        The main project instance (must have at least 1 structure and
+        exactly 1 experiment).
 
     Returns
     -------
@@ -585,7 +586,6 @@ def _build_template(project: object) -> SequentialFitTemplate:
     from easydiffraction.core.variable import NumericDescriptor  # noqa: PLC0415
     from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-    structure = next(iter(project.structures.values()))
     experiment = next(iter(project.experiments.values()))
 
     # Collect free parameter unique_names and initial values
@@ -600,8 +600,8 @@ def _build_template(project: object) -> SequentialFitTemplate:
     # Collect alias definitions
     alias_defs: list[dict[str, str]] = [
         {
-            'label': alias.label.value,
-            'param_unique_name': alias.param_unique_name.value,
+            'id': alias.id.value,
+            'parameter_unique_name': alias.parameter_unique_name.value,
         }
         for alias in project.analysis.aliases
     ]
@@ -638,10 +638,10 @@ def _build_template(project: object) -> SequentialFitTemplate:
             diffrn_field_names.append(field_name)
 
     return SequentialFitTemplate(
-        structure_cif=structure.as_cif,
+        structure_cifs=[structure.as_cif for structure in project.structures.values()],
         experiment_cif=experiment.as_cif,
         initial_params=initial_params,
-        free_param_unique_names=free_names,
+        free_parameter_unique_names=free_names,
         alias_defs=alias_defs,
         constraint_defs=constraint_defs,
         constraints_enabled=project.analysis.constraints.enabled,
@@ -1042,8 +1042,8 @@ def _check_seq_preconditions(project: object) -> list[str]:
     ValueError
         If preconditions are not met.
     """
-    if len(project.structures) != 1:
-        msg = f'Sequential fitting requires exactly 1 structure, found {len(project.structures)}.'
+    if len(project.structures) < 1:
+        msg = 'Sequential fitting requires at least 1 structure, found none.'
         raise ValueError(msg)
 
     if len(project.experiments) != 1:
@@ -1053,7 +1053,7 @@ def _check_seq_preconditions(project: object) -> list[str]:
         )
         raise ValueError(msg)
 
-    if project.info.path is None:
+    if project.metadata.path is None:
         msg = 'Project must be saved before sequential fitting. Call save_as() first.'
         raise ValueError(msg)
 
@@ -1091,7 +1091,7 @@ def _setup_csv_and_recovery(
     tuple[Path, list[str], set[str], SequentialFitTemplate]
         CSV path, header, already-fitted set, and updated template.
     """
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     csv_path.parent.mkdir(parents=True, exist_ok=True)
     header = _build_csv_header(template)
 

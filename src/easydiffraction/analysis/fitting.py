@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Fitter orchestrating model refinement via a pluggable minimizer."""
 
 from __future__ import annotations
 
@@ -16,6 +17,7 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.variable import Parameter
 from easydiffraction.datablocks.experiment.item.base import intensity_category_for
 from easydiffraction.utils.enums import VerbosityEnum
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.analysis.fit_helpers.reporting import FitResults
@@ -91,6 +93,7 @@ class Fitter:
     """Handles the fitting workflow using a pluggable minimizer."""
 
     def __init__(self, selection: str = MinimizerTypeEnum.default()) -> None:
+        """Initialize the fitter with the selected minimizer."""
         self.selection: str = selection
         self.engine: str = selection
         self.minimizer = MinimizerFactory.create(selection)
@@ -198,9 +201,13 @@ class Fitter:
         ------
         ValueError
             If resume is requested without the same free parameter set
-            used by the saved emcee chain.
+            used by the saved emcee chain, or if the joint-fit *weights*
+            are not a 1-D array of one finite, non-negative value per
+            experiment whose total is finite and positive.
         """
         fit_options = options or FitterFitOptions()
+        self._require_measured_data(experiments)
+        self._require_valid_weights(weights, experiments)
         # Enforce symmetry constraints (e.g. ADP) before collecting
         # free parameters so that components fixed by site symmetry are
         # excluded from the minimizer's parameter set.
@@ -218,7 +225,7 @@ class Fitter:
                 analysis._clear_persisted_fit_state()
                 analysis.fit_results = None
             self.results = None
-            print('⚠️ No parameters selected for fitting.')
+            log.warning('No parameters selected for fitting.')
             return
 
         if analysis is not None and not fit_options.resume:
@@ -261,14 +268,111 @@ class Fitter:
         finally:
             self.minimizer._stop_tracking()
 
+    @staticmethod
+    def _require_measured_data(experiments: list[ExperimentBase]) -> None:
+        """
+        Reject fitting any experiment that has no measured intensities.
+
+        A calculated-only experiment carries an absent (``NaN``)
+        measured array; fitting it would feed all-``NaN`` residuals to
+        the minimizer. Fitting requires a measured scan.
+
+        Parameters
+        ----------
+        experiments : list[ExperimentBase]
+            Experiments scheduled for fitting.
+
+        Raises
+        ------
+        ValueError
+            If any experiment lacks measured data.
+        """
+        for experiment in experiments:
+            has_measured = getattr(experiment, '_has_measured_data', None)
+            if callable(has_measured) and not has_measured():
+                name = getattr(experiment, 'name', '?')
+                msg = (
+                    f"Cannot fit experiment '{name}': it has no measured data. "
+                    'Fitting requires a measured scan; load measured data first. '
+                    '(Calculating a pattern without measured data is supported, '
+                    'but fitting against it is not.)'
+                )
+                raise ValueError(msg)
+
+    @staticmethod
+    def _require_valid_weights(
+        weights: np.ndarray | None,
+        experiments: list[ExperimentBase],
+    ) -> None:
+        """
+        Reject joint-fit weights that would corrupt the residuals.
+
+        Joint-fit weights are normalised by their total and applied as
+        ``sqrt(weight)`` per experiment. An invalid set (wrong shape,
+        negative, non-finite, or summing to a non-positive or non-finite
+        total) would feed ``nan`` or division-by-zero residuals to the
+        minimizer, so it is rejected up front.
+
+        Parameters
+        ----------
+        weights : np.ndarray | None
+            Per-experiment joint-fit weights, or ``None`` for equal
+            weights (always valid).
+        experiments : list[ExperimentBase]
+            Experiments scheduled for fitting; one weight per experiment
+            is required.
+
+        Raises
+        ------
+        ValueError
+            If *weights* is not a 1-D array of one finite, non-negative
+            value per experiment whose total is finite and positive.
+        """
+        if weights is None:
+            return
+        arr = np.asarray(weights, dtype=np.float64)
+        if arr.ndim != 1:
+            msg = (
+                'Joint-fit weights must be a 1-D array with one weight '
+                f'per experiment; got a {arr.ndim}-D array.'
+            )
+            raise ValueError(msg)
+        if arr.size != len(experiments):
+            msg = (
+                'Joint-fit weights must provide one weight per experiment; '
+                f'got {arr.size} weight(s) for {len(experiments)} experiment(s).'
+            )
+            raise ValueError(msg)
+        if not np.isfinite(arr).all():
+            msg = f'Joint-fit weights must all be finite numbers; got {arr.tolist()}.'
+            raise ValueError(msg)
+        if (arr < 0).any():
+            msg = f'Joint-fit weights must all be non-negative; got {arr.tolist()}.'
+            raise ValueError(msg)
+        # Overflow to inf is a valid outcome here (e.g. [1e308, 1e308]);
+        # it is caught by the isfinite check below, so silence the noisy
+        # low-level warning and surface only the clear error.
+        with np.errstate(over='ignore'):
+            total = arr.sum(dtype=np.float64)
+        if not np.isfinite(total) or total <= 0:
+            msg = (
+                'Joint-fit weights must sum to a finite positive total; '
+                f'got a total of {total} for {arr.tolist()}.'
+            )
+            raise ValueError(msg)
+
     def _set_minimizer_sidecar_path(self, analysis: object) -> None:
         """Set the analysis results sidecar path when supported."""
         if analysis is None or not hasattr(self.minimizer, '_sidecar_path'):
             return
 
-        project_info = getattr(getattr(analysis, 'project', None), 'info', None)
-        project_path = getattr(project_info, 'path', None)
-        sidecar_path = None if project_path is None else project_path / 'analysis' / 'results.h5'
+        from easydiffraction.io.results_sidecar import SIDECAR_FILE_NAME  # noqa: PLC0415
+
+        project_metadata = getattr(getattr(analysis, 'project', None), 'metadata', None)
+        project_path = getattr(project_metadata, 'path', None)
+        sidecar_path = (
+            None if project_path is None else project_path / 'analysis' / SIDECAR_FILE_NAME
+        )
         self.minimizer._sidecar_path = sidecar_path
 
     def _backfill_persisted_fitting_time(self, analysis: object) -> None:
@@ -288,7 +392,7 @@ class Fitter:
     ) -> None:
         """Ensure resume uses the same persisted free-parameter set."""
         persisted_names = [
-            item.param_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
+            item.parameter_unique_name.value for item in getattr(analysis, 'fit_parameters', [])
         ]
         if not persisted_names:
             return

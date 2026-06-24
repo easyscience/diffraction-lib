@@ -4,7 +4,7 @@
 
 Pytest runs with ``--import-mode=importlib``, which does not add the
 test directory to ``sys.path``. Insert it here so the test module can
-import the sibling ``analysis_cif_reader`` helper.
+import the sibling ``analysis_edi_reader`` helper.
 """
 
 from __future__ import annotations

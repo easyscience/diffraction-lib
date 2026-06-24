@@ -23,9 +23,35 @@ class TestPandasTableBackend:
     def test_build_renderable_returns_table_html(self):
         html = _backend().build_renderable(['left', 'right'], _indexed({'A': [1.0], 'B': [2.0]}))
         assert isinstance(html, str)
-        assert html.startswith('<table')
-        assert '<thead>' in html
+        assert '<table' in html
+        assert '<thead' in html
         assert '<tbody>' in html
+
+    def test_table_is_wrapped_in_horizontal_scroll_container(self):
+        """A wrapping ``overflow-x: auto`` div keeps wide tables scrolling.
+
+        Forcing ``display: table`` (below) drops Material's
+        ``inline-block``, which is what provided horizontal scrolling for
+        wide tables; the wrapper restores it.
+        """
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert html.startswith('<div style="overflow-x: auto')
+        assert html.rstrip().endswith('</div>')
+
+    def test_table_forces_display_table_for_border_collapse(self):
+        """``display: table`` defeats Material's ``inline-block`` rule.
+
+        Without it the table leaves the collapsing-border model and the
+        header divider darkens and stops short of the right edge.
+        """
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert 'border-collapse: collapse' in html
+        assert 'display: table' in html
+
+    def test_thead_zeroes_border_so_divider_matches_outer_border(self):
+        """Host opaque ``thead`` borders (JupyterLab) must not recolour it."""
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert '<thead style="border-bottom: 0">' in html
 
     def test_no_style_or_script_block_survives_untrusted_reopen(self):
         """All styling is inline -- no <style>/<script> to be stripped.
@@ -56,6 +82,11 @@ class TestPandasTableBackend:
         assert f'border: 1px solid {BORDER_COLOR}' in html
         assert f'border-bottom: 1px solid {BORDER_COLOR}' in html
 
+    def test_cells_do_not_wrap_so_wide_tables_scroll(self):
+        """Cells stay on one line; wide tables scroll, not fold to rows."""
+        html = _backend().build_renderable(['left'], _indexed({'A': [1.0]}))
+        assert 'white-space: nowrap' in html
+
     def test_per_column_alignment_is_inline(self):
         html = _backend().build_renderable(['left', 'right'], _indexed({'A': ['x'], 'B': ['y']}))
         assert 'text-align: left' in html
@@ -80,6 +111,23 @@ class TestPandasTableBackend:
         html = _backend().build_renderable(['left'], _indexed({'A': ['<b>&x']}))
         assert '&lt;b&gt;&amp;x' in html
         assert '<b>' not in html
+
+    def test_table_link_becomes_anchor(self):
+        from easydiffraction.display.links import TableLink
+
+        link = TableLink(
+            text='length_a',
+            url='https://example.test/docs?x=1&y=2',
+            title='Docs for length_a',
+        )
+
+        html = _backend().build_renderable(['left'], _indexed({'A': [link]}))
+
+        assert (
+            '<a href="https://example.test/docs?x=1&amp;y=2" '
+            'title="Docs for length_a" target="_blank" rel="noopener noreferrer">'
+            'length_a</a>'
+        ) in html
 
     def test_render_displays_inline_html(self, monkeypatch):
         import easydiffraction.display.tablers.pandas as mod

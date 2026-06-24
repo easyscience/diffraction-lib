@@ -11,20 +11,22 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
 from easydiffraction.datablocks.experiment.categories.data.factory import DataFactory
+from easydiffraction.datablocks.experiment.categories.data_range.factory import DataRangeFactory
 from easydiffraction.datablocks.experiment.categories.diffrn.factory import DiffrnFactory
 from easydiffraction.datablocks.experiment.categories.excluded_regions.factory import (
     ExcludedRegionsFactory,
 )
 from easydiffraction.datablocks.experiment.categories.extinction.factory import ExtinctionFactory
 from easydiffraction.datablocks.experiment.categories.instrument.factory import InstrumentFactory
-from easydiffraction.datablocks.experiment.categories.linked_crystal.factory import (
-    LinkedCrystalFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structure.factory import (
+    LinkedStructureFactory,
 )
-from easydiffraction.datablocks.experiment.categories.linked_phases.factory import (
-    LinkedPhasesFactory,
+from easydiffraction.datablocks.experiment.categories.linked_structures.factory import (
+    LinkedStructuresFactory,
 )
 from easydiffraction.datablocks.experiment.categories.peak.factory import PeakFactory
 from easydiffraction.datablocks.experiment.categories.refln.factory import ReflnFactory
@@ -41,7 +43,6 @@ if TYPE_CHECKING:
     from easydiffraction.datablocks.structure.collection import Structures
 
 MeasuredRange = tuple[float, float, float | None]
-_MEASURED_RANGE_UNIFORM_TOLERANCE = 0.01
 
 
 def intensity_category_for(experiment: object) -> object:
@@ -70,11 +71,11 @@ class ExperimentBase(DatablockItem):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
         super().__init__()
         self._name = name
-        self._type = type
+        self._experiment_type = experiment_type
         self._calculator = None
         self._identity.datablock_entry_name = lambda: self.name
 
@@ -89,16 +90,19 @@ class ExperimentBase(DatablockItem):
     def _attach_category_parents(self) -> None:
         """Link owned categories back to this experiment object."""
         for category in [
-            self._type,
+            self._experiment_type,
             getattr(self, '_diffrn', None),
             getattr(self, '_calculator_category', None),
             getattr(self, '_extinction', None),
-            getattr(self, '_linked_crystal', None),
+            getattr(self, '_absorption', None),
+            getattr(self, '_linked_structure', None),
             getattr(self, '_instrument', None),
             getattr(self, '_refln', None),
-            getattr(self, '_linked_phases', None),
+            getattr(self, '_linked_structures', None),
+            getattr(self, '_pref_orient', None),
             getattr(self, '_excluded_regions', None),
             getattr(self, '_data', None),
+            getattr(self, '_data_range', None),
             getattr(self, '_peak', None),
             getattr(self, '_background', None),
         ]:
@@ -112,12 +116,19 @@ class ExperimentBase(DatablockItem):
             return {'calculator': calculator}
         if category is getattr(self, '_extinction', None):
             return {'calculator': calculator}
+        if category is getattr(self, '_absorption', None):
+            return {
+                'calculator': calculator,
+                'sample_form': self.experiment_type.sample_form.value,
+                'scattering_type': self.experiment_type.scattering_type.value,
+                'beam_mode': self.experiment_type.beam_mode.value,
+            }
         if category is getattr(self, '_peak', None):
             return {
                 'calculator': calculator,
-                'sample_form': self.type.sample_form.value,
-                'scattering_type': self.type.scattering_type.value,
-                'beam_mode': self.type.beam_mode.value,
+                'sample_form': self.experiment_type.sample_form.value,
+                'scattering_type': self.experiment_type.scattering_type.value,
+                'beam_mode': self.experiment_type.beam_mode.value,
             }
         return {}
 
@@ -241,6 +252,42 @@ class ExperimentBase(DatablockItem):
             console.paragraph('Extinction type changed to')
             console.print(new_type)
 
+    def _swap_absorption(self, new_type: str) -> None:
+        """Switch the active absorption category."""
+        self._replace_absorption(new_type, announce=True)
+
+    def _replace_absorption(
+        self,
+        new_type: str,
+        *,
+        announce: bool,
+        strict: bool = True,
+    ) -> None:
+        """Replace the active absorption category."""
+        supported = AbsorptionFactory.supported_for(
+            **self._supported_filters_for(self.absorption),
+        )
+        supported_tags = [klass.type_info.tag for klass in supported]
+        if new_type not in supported_tags:
+            msg = (
+                f"Unsupported absorption type '{new_type}'. "
+                f'Supported: {supported_tags}. '
+                f"For more information, use 'absorption.show_supported()'"
+            )
+            if strict:
+                raise ValueError(msg)
+            log.warning(msg)
+            return
+
+        old_absorption = self._absorption
+        self._absorption = AbsorptionFactory.create(new_type)
+        old_absorption._parent = None
+        self._absorption._parent = self
+        self._absorption._type.value = new_type
+        if announce:
+            console.paragraph('Absorption type changed to')
+            console.print(new_type)
+
     @property
     def name(self) -> str:
         """Human-readable name of the experiment."""
@@ -259,38 +306,23 @@ class ExperimentBase(DatablockItem):
         self._name = new
 
     @property
-    def type(self) -> object:  # TODO: Consider another name
+    def experiment_type(self) -> object:
         """Experiment type: sample form, probe, beam mode."""
-        return self._type
+        return self._experiment_type
 
     @property
     def measured_range(self) -> MeasuredRange | None:
-        """Measured x-axis range as ``(min, max, inc)``."""
-        values = self._measured_x_values()
-        if values is None or values.size == 0:
-            return None
+        """
+        Active-axis range as ``(min, max, inc)``.
 
-        values = np.sort(values.astype(float, copy=False))
-        range_min = float(values[0])
-        range_max = float(values[-1])
-        if values.size == 1:
-            return (range_min, range_max, None)
-
-        increment = _representative_increment(values)
-        return (range_min, range_max, increment)
-
-    def _measured_x_values(self) -> np.ndarray | None:
-        """Return the measured x-axis values for this experiment."""
-        try:
-            category = intensity_category_for(self)
-        except AttributeError:
+        Backed by ``data_range``: the measured range when a measured
+        scan is present, and the stored or default calculation range
+        otherwise. This subsumes the former measured-only behaviour.
+        """
+        data_range = getattr(self, '_data_range', None)
+        if data_range is None:
             return None
-        values = getattr(category, 'unfiltered_x', None)
-        if values is None:
-            values = getattr(category, 'x', None)
-        if values is None:
-            return None
-        return np.asarray(values, dtype=float)
+        return (data_range.x_min, data_range.x_max, data_range.x_step)
 
     # ------------------------------------------------------------------
     #  Diffrn conditions (read-only, single type)
@@ -300,6 +332,50 @@ class ExperimentBase(DatablockItem):
     def diffrn(self) -> object:
         """Ambient conditions recorded during measurement."""
         return self._diffrn
+
+    # ------------------------------------------------------------------
+    #  Data range (fixed by experiment type)
+    # ------------------------------------------------------------------
+
+    @property
+    def data_range(self) -> object:
+        """
+        Reciprocal-space range used to calculate without measured data.
+        """
+        return self._data_range
+
+    def _has_measured_data(self) -> bool:
+        """
+        Return whether this experiment holds measured intensities.
+
+        Existence is judged on the unfiltered points, independent of any
+        excluded regions: the powder data collection exposes an
+        unfiltered predicate, while the single-crystal ``refln``
+        collection's ``intensity_meas`` already iterates all
+        reflections.
+        """
+        try:
+            category = intensity_category_for(self)
+        except AttributeError:
+            return False
+        checker = getattr(category, '_has_measured_intensities', None)
+        if callable(checker):
+            return checker()
+        values = getattr(category, 'intensity_meas', None)
+        if values is None:
+            return False
+        array = np.asarray(values, dtype=float)
+        return bool(array.size) and bool(np.any(np.isfinite(array)))
+
+    def _serializable_categories(self) -> list:
+        """
+        Omit ``data_range`` from CIF while a measured scan is present.
+        """
+        categories = super()._serializable_categories()
+        data_range = getattr(self, '_data_range', None)
+        if data_range is not None and self._has_measured_data():
+            return [category for category in categories if category is not data_range]
+        return categories
 
     def _restore_switchable_types(self, block: object) -> None:
         """
@@ -325,9 +401,9 @@ class ExperimentBase(DatablockItem):
         """Serialize this experiment to a CIF fragment."""
         return experiment_to_cif(self)
 
-    def show_as_cif(self) -> None:
-        """Pretty-print the experiment as CIF text."""
-        paragraph_title: str = f"Experiment 🔬 '{self.name}' as cif"
+    def show_as_text(self) -> None:
+        """Pretty-print the experiment as text."""
+        paragraph_title: str = f"Experiment 🔬 '{self.name}' as text"
         console.paragraph(paragraph_title)
         render_cif(self._cif_for_display())
 
@@ -369,7 +445,7 @@ class ExperimentBase(DatablockItem):
         from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
 
         return CalculatorFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
 
     def _resolve_calculator(self) -> None:
@@ -412,18 +488,6 @@ class ExperimentBase(DatablockItem):
         raise AttributeError(msg)
 
 
-def _representative_increment(values: np.ndarray) -> float | None:
-    """Return a representative increment for sorted x-axis values."""
-    steps = np.diff(values)
-    median_step = float(np.median(steps))
-    if median_step == 0:
-        return None
-    tolerance = abs(median_step) * _MEASURED_RANGE_UNIFORM_TOLERANCE
-    if np.max(np.abs(steps - median_step)) > tolerance:
-        return None
-    return median_step
-
-
 class ScExperimentBase(ExperimentBase):
     """Base class for all single crystal experiments."""
 
@@ -431,25 +495,30 @@ class ScExperimentBase(ExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
         self._extinction = ExtinctionFactory.create(ExtinctionFactory.default_tag())
-        self._linked_crystal_type: str = LinkedCrystalFactory.default_tag()
-        self._linked_crystal = LinkedCrystalFactory.create(self._linked_crystal_type)
+        self._linked_structure_type: str = LinkedStructureFactory.default_tag()
+        self._linked_structure = LinkedStructureFactory.create(self._linked_structure_type)
         self._instrument_type: str = InstrumentFactory.default_tag(
-            scattering_type=self.type.scattering_type.value,
-            beam_mode=self.type.beam_mode.value,
-            sample_form=self.type.sample_form.value,
+            scattering_type=self.experiment_type.scattering_type.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
         )
         self._instrument = InstrumentFactory.create(self._instrument_type)
         self._refln_type: str = ReflnFactory.default_tag(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-            scattering_type=self.type.scattering_type.value,
+            sample_form=self.experiment_type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
         self._refln = ReflnFactory.create(self._refln_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._resolve_calculator()
         self._attach_category_parents()
 
@@ -484,13 +553,13 @@ class ScExperimentBase(ExperimentBase):
             self._replace_extinction(extinction_tag, announce=False, strict=False)
 
     # ------------------------------------------------------------------
-    #  Linked crystal (read-only, single type)
+    #  Linked structure (read-only, single type)
     # ------------------------------------------------------------------
 
     @property
-    def linked_crystal(self) -> object:
-        """Linked crystal model for this experiment."""
-        return self._linked_crystal
+    def linked_structure(self) -> object:
+        """Linked structure model for this experiment."""
+        return self._linked_structure
 
     # ------------------------------------------------------------------
     #  Instrument (fixed at creation)
@@ -534,35 +603,40 @@ class PdExperimentBase(ExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
-        self._linked_phases_type: str = LinkedPhasesFactory.default_tag()
-        self._linked_phases = LinkedPhasesFactory.create(self._linked_phases_type)
+        self._linked_structures_type: str = LinkedStructuresFactory.default_tag()
+        self._linked_structures = LinkedStructuresFactory.create(self._linked_structures_type)
         self._excluded_regions_type: str = ExcludedRegionsFactory.default_tag()
         self._excluded_regions = ExcludedRegionsFactory.create(self._excluded_regions_type)
         self._data_type: str = DataFactory.default_tag(
-            sample_form=self.type.sample_form.value,
-            beam_mode=self.type.beam_mode.value,
-            scattering_type=self.type.scattering_type.value,
+            sample_form=self.experiment_type.sample_form.value,
+            beam_mode=self.experiment_type.beam_mode.value,
+            scattering_type=self.experiment_type.scattering_type.value,
         )
         self._data = DataFactory.create(self._data_type)
+        self._data_range_type: str = DataRangeFactory.default_tag(
+            beam_mode=self.experiment_type.beam_mode.value,
+            sample_form=self.experiment_type.sample_form.value,
+        )
+        self._data_range = DataRangeFactory.create(self._data_range_type)
         self._peak = PeakFactory.create(
             PeakFactory.default_tag(
-                scattering_type=self.type.scattering_type.value,
-                beam_mode=self.type.beam_mode.value,
+                scattering_type=self.experiment_type.scattering_type.value,
+                beam_mode=self.experiment_type.beam_mode.value,
             )
         )
         self._resolve_calculator()
         self._attach_category_parents()
 
-    def _get_valid_linked_phases(
+    def _get_valid_linked_structures(
         self,
         structures: Structures,
     ) -> list[Any]:
         """
-        Get valid linked phases for this experiment.
+        Get valid linked structures for this experiment.
 
         Parameters
         ----------
@@ -572,28 +646,28 @@ class PdExperimentBase(ExperimentBase):
         Returns
         -------
         list[Any]
-            A list of valid linked phases.
+            A list of valid linked structures.
         """
-        if not self.linked_phases:
-            print('Warning: No linked phases defined. Returning empty pattern.')
+        if not self.linked_structures:
+            log.warning('No linked structures defined. Returning empty pattern.')
             return []
 
-        valid_linked_phases = []
-        for linked_phase in self.linked_phases:
-            if linked_phase._identity.category_entry_name not in structures.names:
-                print(
-                    f"Warning: Linked phase '{linked_phase.id.value}' not "
+        valid_linked_structures = []
+        for linked_structure in self.linked_structures:
+            if linked_structure._identity.category_entry_name not in structures.names:
+                log.warning(
+                    f"Linked structure '{linked_structure.structure_id.value}' not "
                     f'found in Structures {structures.names}. Skipping it.'
                 )
                 continue
-            valid_linked_phases.append(linked_phase)
+            valid_linked_structures.append(linked_structure)
 
-        if not valid_linked_phases:
-            print(
-                'Warning: None of the linked phases found in Structures. Returning empty pattern.'
+        if not valid_linked_structures:
+            log.warning(
+                'None of the linked structures found in Structures. Returning empty pattern.'
             )
 
-        return valid_linked_phases
+        return valid_linked_structures
 
     @abstractmethod
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
@@ -613,9 +687,9 @@ class PdExperimentBase(ExperimentBase):
         """
 
     @property
-    def linked_phases(self) -> object:
-        """Collection of phases linked to this experiment."""
-        return self._linked_phases
+    def linked_structures(self) -> object:
+        """Collection of structures linked to this experiment."""
+        return self._linked_structures
 
     @property
     def excluded_regions(self) -> object:
@@ -720,8 +794,8 @@ class PdExperimentBase(ExperimentBase):
         Return the context that resolves local peak profile aliases.
         """
         return {
-            'scattering_type': self.type.scattering_type.value,
-            'beam_mode': self.type.beam_mode.value,
+            'scattering_type': self.experiment_type.scattering_type.value,
+            'beam_mode': self.experiment_type.beam_mode.value,
         }
 
     def _restore_switchable_types(self, block: object) -> None:

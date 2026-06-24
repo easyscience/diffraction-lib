@@ -15,9 +15,12 @@ build/
 # MkDocs
 docs/site/
 
-# Generated docs-serving copy of the canonical Three.js (synced from
-# src/ by `pixi run docs-sync-vendored-js`; the source of truth is src/)
+# Generated docs-serving copies of the canonical JS runtimes and the
+# shared figure loader (synced from src/ by `pixi run
+# docs-sync-vendored-js`; the source of truth is src/)
 docs/docs/assets/javascripts/vendor/threejs/
+docs/docs/assets/javascripts/vendor/plotly/
+docs/docs/assets/javascripts/ed-figures.js
 
 # Jupyter Notebooks
 .ipynb_checkpoints
@@ -59,3 +62,6 @@ CLAUDE.md
 /data/
 /projects/
 /tmp/
+
+# FullProf/CrysFML Fortran scratch unit files
+fort.*

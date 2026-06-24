@@ -73,7 +73,7 @@ class TestCreate:
     def test_create_default_has_expected_defaults(self):
         geom = GeomFactory.create('default')
         assert geom.min_bond_distance_cutoff.value == 0.0
-        assert geom.bond_distance_incr.value == 0.25
+        assert geom.bond_distance_inc.value == 0.25
 
 
 class TestCreateDefaultFor:

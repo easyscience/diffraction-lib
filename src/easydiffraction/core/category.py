@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Base classes for CIF category items and loop collections."""
 
 from __future__ import annotations
 
@@ -269,3 +270,13 @@ class CategoryCollection(CollectionBase):
             setattr(child_obj, attr, val)
 
         self.add(child_obj)
+
+    def clear(self) -> None:
+        """
+        Remove every item, then mark the parent datablock dirty.
+
+        Layers dirty-marking on :meth:`CollectionBase.clear`, mirroring
+        how :meth:`add` layers it on the base insert.
+        """
+        super().clear()
+        self._mark_parent_dirty()

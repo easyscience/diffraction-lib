@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Measured and calculated powder pattern data categories."""
 
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import tof_to_d
 from easydiffraction.utils.utils import twotheta_to_d
@@ -35,6 +36,10 @@ if TYPE_CHECKING:
 # Uncertainty values below this threshold are replaced with 1.0
 _MIN_UNCERTAINTY = 0.0001
 
+# Float tolerance so an x-grid whose span is an exact multiple of the
+# step keeps its final point instead of dropping it to rounding noise.
+_GRID_STEP_TOLERANCE = 1e-9
+
 
 class PdDataPointBaseMixin:
     """Single base data point mixin for powder diffraction data."""
@@ -42,8 +47,8 @@ class PdDataPointBaseMixin:
     def __init__(self) -> None:
         super().__init__()
 
-        self._point_id = StringDescriptor(
-            name='point_id',
+        self._id = StringDescriptor(
+            name='id',
             description='Identifier for this data point in the dataset',
             display_handler=DisplayHandler(
                 display_name='ID',
@@ -56,11 +61,7 @@ class PdDataPointBaseMixin:
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.point_id',
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.id'], cif_names=['_pd_data.point_id']),
         )
         self._d_spacing = NumericDescriptor(
             name='d_spacing',
@@ -76,7 +77,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_proc.d_spacing']),
+            tags=TagSpec(edi_names=['_data.d_spacing'], cif_names=['_pd_proc.d_spacing']),
         )
         self._intensity_meas = NumericDescriptor(
             name='intensity_meas',
@@ -89,11 +90,9 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total',
-                    '_pd_proc.intensity_norm',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas'],
+                cif_names=['_pd_meas.intensity_total', '_pd_proc.intensity_norm'],
             ),
         )
         self._intensity_meas_su = NumericDescriptor(
@@ -107,11 +106,9 @@ class PdDataPointBaseMixin:
                 default=1.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total_su',
-                    '_pd_proc.intensity_norm_su',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.intensity_meas_su'],
+                cif_names=['_pd_meas.intensity_total_su', '_pd_proc.intensity_norm_su'],
             ),
         )
         self._intensity_calc = NumericDescriptor(
@@ -125,7 +122,9 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_total']),
+            tags=TagSpec(
+                edi_names=['_data.intensity_calc'], cif_names=['_pd_calc.intensity_total']
+            ),
         )
         self._intensity_bkg = NumericDescriptor(
             name='intensity_bkg',
@@ -138,7 +137,7 @@ class PdDataPointBaseMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_calc.intensity_bkg']),
+            tags=TagSpec(edi_names=['_data.intensity_bkg'], cif_names=['_pd_calc.intensity_bkg']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -151,10 +150,8 @@ class PdDataPointBaseMixin:
                 default='incl',  # TODO: Make Enum
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.refinement_status',  # TODO: rename to calc_status
-                ]
+            tags=TagSpec(
+                edi_names=['_data.calc_status'], cif_names=['_pd_data.refinement_status']
             ),
         )
 
@@ -163,14 +160,14 @@ class PdDataPointBaseMixin:
     # ------------------------------------------------------------------
 
     @property
-    def point_id(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._point_id
+        return self._id
 
     @property
     def d_spacing(self) -> NumericDescriptor:
@@ -253,11 +250,9 @@ class PdCwlDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_proc.2theta_scan',
-                    '_pd_meas.2theta_scan',
-                ]
+            tags=TagSpec(
+                edi_names=['_data.two_theta'],
+                cif_names=['_pd_proc.2theta_scan', '_pd_meas.2theta_scan'],
             ),
         )
 
@@ -296,7 +291,9 @@ class PdTofDataPointMixin:
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_pd_meas.time_of_flight']),
+            tags=TagSpec(
+                edi_names=['_data.time_of_flight'], cif_names=['_pd_meas.time_of_flight']
+            ),
         )
 
     # ------------------------------------------------------------------
@@ -329,8 +326,8 @@ class PdCwlDataPoint(
 ):
     """Powder diffraction data point for CWL experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -343,8 +340,8 @@ class PdTofDataPoint(
 ):
     """Powder diffraction data point for time-of-flight experiments."""
 
-    _category_code = 'pd_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
@@ -367,10 +364,10 @@ class PdDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values: object) -> None:
-        """Set point IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set data-point IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.point_id._value = v
+            p.id._value = v
 
     def _set_intensity_meas(self, values: object) -> None:
         """Set measured intensity."""
@@ -399,6 +396,32 @@ class PdDataBase(CategoryCollection):
         for p, v in zip(self._calc_items, values, strict=True):
             p.intensity_bkg._value = v
 
+    def _invalidate_calc_cache(self) -> None:
+        """
+        Drop the cached included-point mask/list.
+
+        Called whenever the calc-status flags or the point set change,
+        so the cached ``_calc_mask`` / ``_calc_items`` are rebuilt on
+        next access.
+        """
+        self._calc_mask_cache = None
+        self._calc_items_cache = None
+
+    def _on_items_changed(self) -> None:
+        """
+        Invalidate the calc cache and wire per-point status callbacks.
+
+        Runs after every point add, replace, remove, and bulk-adopt (via
+        the base collection hook). It drops the cached included-point
+        view and (re)wires each point's ``calc_status`` descriptor so a
+        later public ``point.calc_status.value = ...`` write also
+        invalidates the cache, keeping ``_calc_mask`` / ``_calc_items``
+        correct after any public mutation.
+        """
+        self._invalidate_calc_cache()
+        for point in self._items:
+            point.calc_status._on_change = self._invalidate_calc_cache
+
     def _set_calc_status(self, values: object) -> None:
         """Set refinement status."""
         for p, v in zip(self._items, values, strict=True):
@@ -409,15 +432,126 @@ class PdDataBase(CategoryCollection):
             else:
                 msg = f'Invalid refinement status value: {v}. Expected boolean True/False.'
                 raise ValueError(msg)
+        self._invalidate_calc_cache()
 
     @property
     def _calc_mask(self) -> np.ndarray:
-        return self.calc_status == 'incl'
+        # Cached: depends only on calc_status (changed only via
+        # _set_calc_status) and the point set (rebuilt on creation) —
+        # both invalidate the cache. Stable during a fit, so this avoids
+        # rebuilding the full calc_status array on every iteration.
+        cache = getattr(self, '_calc_mask_cache', None)
+        if cache is None:
+            cache = self.calc_status == 'incl'
+            self._calc_mask_cache = cache
+        return cache
 
     @property
     def _calc_items(self) -> list:
         """Get only the items included in calculations."""
-        return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
+        cache = getattr(self, '_calc_items_cache', None)
+        if cache is None:
+            cache = [
+                item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask
+            ]
+            self._calc_items_cache = cache
+        return cache
+
+    # Grid generation when no measured scan exists
+
+    @staticmethod
+    def _grid_from_data_range(data_range: object, experiment_name: str) -> np.ndarray | None:
+        """
+        Return an evenly spaced x-grid from the data range.
+
+        Returns ``None`` when the range cannot be resolved at all (for
+        example no instrument to project defaults), leaving the calc
+        path to report its own "without measured data" error. Raises a
+        clear, named error for an inverted or degenerate range, which is
+        user input rather than a missing source.
+        """
+        x_min = data_range.x_min
+        x_max = data_range.x_max
+        x_step = data_range.x_step
+        if x_step is None or not (
+            np.isfinite(x_min) and np.isfinite(x_max) and np.isfinite(x_step)
+        ):
+            return None
+        if x_max <= x_min or x_step <= 0:
+            msg = (
+                f"Cannot build a calculation grid for experiment '{experiment_name}': "
+                f'the data range is empty or inverted (min={x_min}, max={x_max}, '
+                f'step={x_step}). Set data_range bounds with min < max and step > 0.'
+            )
+            raise ValueError(msg)
+        # Floor (with a small tolerance) so the last point never
+        # exceeds x_max — an overshoot could push 2θ past the 180°
+        # validator limit.
+        num = int(np.floor((x_max - x_min) / x_step + _GRID_STEP_TOLERANCE)) + 1
+        return x_min + np.arange(num) * x_step
+
+    def _has_measured_intensities(self) -> bool:
+        """
+        Return whether any point carries a finite measured intensity.
+
+        Iterates **all** points (unfiltered): whether a measured scan
+        exists is independent of which points are excluded from the
+        calculation. Using the exclusion-filtered ``intensity_meas``
+        here would misread a fully-excluded scan as "no measured data".
+        """
+        measured = np.fromiter(
+            (point.intensity_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
+
+    def _clear_generated_grid(self) -> None:
+        """
+        Drop an auto-generated grid so a changed range can rebuild it.
+
+        Only removes points that were generated from ``data_range``
+        (measured intensities absent / all ``NaN``); a measured scan is
+        never cleared.
+        """
+        if not self._items:
+            return
+        if self._has_measured_intensities():
+            return
+        self.clear()
+
+    def _skip_cif_serialization(self) -> bool:
+        """
+        Suppress the data loop for a generated (unmeasured) grid.
+
+        A calculated-only experiment holds generated points whose
+        measured intensities are absent (all ``NaN``); serialising them
+        would emit ``nan`` tokens and duplicate the ``data_range`` model
+        state. The grid is recomputable, so only ``data_range`` is
+        persisted. A measured scan serialises unchanged.
+        """
+        return bool(self._items) and not self._has_measured_intensities()
+
+    def _ensure_grid_from_data_range(self) -> None:
+        """
+        Build the calculation grid from ``data_range`` when unmeasured.
+
+        Runs only when no data points exist yet. Generated points carry
+        an absent (``NaN``) measured intensity so they are never drawn
+        or treated as a measured scan; the calculator still fills
+        ``intensity_calc`` over the populated x-grid.
+        """
+        if self._items:
+            return
+        data_range = getattr(self._parent, 'data_range', None)
+        if data_range is None:
+            return
+        experiment_name = getattr(self._parent, 'name', '?')
+        grid = self._grid_from_data_range(data_range, experiment_name)
+        if grid is None or grid.size == 0:
+            return
+        self._create_items_set_xcoord_and_id(grid)
+        self._set_intensity_meas(np.full(grid.size, np.nan))
 
     # Misc
 
@@ -426,6 +560,7 @@ class PdDataBase(CategoryCollection):
         *,
         called_by_minimizer: bool = False,
     ) -> None:
+        self._ensure_grid_from_data_range()
         experiment = self._parent
         experiments = experiment._parent
         project = experiments._parent
@@ -468,14 +603,14 @@ class PdDataBase(CategoryCollection):
         refln_records: list[PowderReflnRecord] = []
         missing_refln_records = False
 
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
+        for linked_structure in experiment._get_valid_linked_structures(structures):
+            structure_id = linked_structure._identity.category_entry_name
             structure = structures[structure_id]
             structure_scaled_calc, structure_refln_records = self._phase_result(
                 structure=structure,
                 experiment=experiment,
                 calculator=calculator,
-                linked_phase=linked_phase,
+                linked_structure=linked_structure,
                 called_by_minimizer=called_by_minimizer,
                 collect_refln_records=collect_refln_records,
             )
@@ -495,7 +630,7 @@ class PdDataBase(CategoryCollection):
         structure: object,
         experiment: object,
         calculator: object,
-        linked_phase: object,
+        linked_structure: object,
         called_by_minimizer: bool,
         collect_refln_records: bool,
     ) -> tuple[np.ndarray, list[PowderReflnRecord] | None]:
@@ -504,14 +639,14 @@ class PdDataBase(CategoryCollection):
             experiment,
             called_by_minimizer=called_by_minimizer,
         )
-        structure_scaled_calc = linked_phase.scale.value * structure_calc
+        structure_scaled_calc = linked_structure.scale.value * structure_calc
         if not collect_refln_records:
             return structure_scaled_calc, []
 
         structure_refln_records = calculator.last_powder_refln_records(
             structure,
             experiment,
-            phase_id=linked_phase.id.value,
+            structure_id=linked_structure.structure_id.value,
         )
         return structure_scaled_calc, structure_refln_records
 
@@ -632,13 +767,14 @@ class PdCwlData(PdDataBase):
 
         # Create items
         self._adopt_items([self._item_type() for _ in range(values.size)])
+        self._invalidate_calc_cache()  # point set changed
 
         # Set two-theta values
         for p, v in zip(self._items, values, strict=True):
             p.two_theta._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -718,13 +854,14 @@ class PdTofData(PdDataBase):
 
         # Create items
         self._adopt_items([self._item_type() for _ in range(values.size)])
+        self._invalidate_calc_cache()  # point set changed
 
         # Set time-of-flight values
         for p, v in zip(self._items, values, strict=True):
             p.time_of_flight._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # Misc
 
@@ -740,7 +877,7 @@ class PdTofData(PdDataBase):
             self.x,
             experiment.instrument.calib_d_to_tof_offset.value,
             experiment.instrument.calib_d_to_tof_linear.value,
-            experiment.instrument.calib_d_to_tof_quad.value,
+            experiment.instrument.calib_d_to_tof_quadratic.value,
         )
         self._set_d_spacing(d_spacing)
 

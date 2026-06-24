@@ -334,7 +334,7 @@ def test_render_html_report_uses_plotly_fit_style_order():
                 },
                 'bragg_tick_sets': (
                     BraggTickSet(
-                        phase_id='phase-a',
+                        structure_id='phase-a',
                         x=np.array([1.5]),
                         h=np.array([1]),
                         k=np.array([0]),
@@ -382,5 +382,8 @@ def test_report_figure_html_ignores_shared_env(monkeypatch):
         report_style=report_style_context(),
     )
 
-    assert 'data-ed-figure' not in html
+    # The eager report figure is not the lazy SHARED placeholder. (The
+    # embedded shared loader names the placeholder selector in a string,
+    # so match the actual placeholder div, not the bare attribute.)
+    assert '<div class="ed-figure" data-ed-figure="plotly">' not in html
     assert 'plotly-graph-div' in html or 'newPlot' in html

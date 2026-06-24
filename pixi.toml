@@ -31,9 +31,6 @@ macos = '14.0'
 #libc = { family = 'glibc', version = '2.35' }
 libc = '2.35'
 
-[pypi-dependencies]
-emcee = '>=3.1'
-
 # Non-default features:
 
 # Set specific Python versions to be used in CI testing.
@@ -52,12 +49,15 @@ nodejs = '*'      # Required for Prettier (non-Python formatting)
 jupyterlab = '*'  # Jupyter notebooks
 ipython = '*'     # Interactive Python shell
 pixi-kernel = '*' # Pixi Jupyter kernel
+ipykernel = '*'   # Jupyter kernel base; required for pixi-kernel
 gsl = '*'         # GNU Scientific Library; required for diffpy.pdffit2
 tectonic = '*'    # LaTeX engine for PDF report generation
+lychee = '*'      # Link checker for documentation
 
 [feature.dev.pypi-dependencies]
 pip = '*'
 #pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
+#cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "hotfix-3-cutoff-performance" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # User-like behavior for testing with pip-installed dependencies instead
@@ -106,19 +106,26 @@ user = { features = ['py-max', 'user'] }
 unit-tests = 'python -m pytest tests/unit/ --color=yes -v'
 functional-tests = 'python -m pytest tests/functional/ --color=yes -v'
 integration-tests = 'python -m pytest tests/integration/ --color=yes -n auto -v'
+# Run nightly-tier tests across the suite (benchmarks have their own task
+# because pytest-benchmark does not run under xdist).
+nightly-tests = 'python -m pytest tests/ -m nightly --ignore=tests/benchmarks --color=yes -n auto -v'
+# Performance benchmarks, per experiment type; writes benchmark.json for
+# the nightly CI artifact. Informational (no regression gate yet).
+benchmarks = 'python -m pytest tests/benchmarks/ --benchmark-only --benchmark-json=benchmark.json --color=yes -v'
 
-# Remove previously saved tutorial output projects (projects/ed_*) so the
-# tutorial-output checks cannot pass against a stale artifact from an earlier
-# run. Downloaded input projects (projects/ed-NN) are preserved.
+# Remove previously saved tutorial output projects (the slug-named
+# projects/* directories) so the tutorial-output checks cannot pass against a
+# stale artifact from an earlier run. Downloaded project archives
+# (projects/proj-*) are preserved so they need not be re-downloaded.
 clean-tutorial-projects = { cmd = 'python tools/clean_tutorial_projects.py', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 script-tests = { cmd = 'python -m pytest tools/test_scripts.py --color=yes -n auto -v', depends-on = [
   'clean-tutorial-projects',
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
-notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --color=yes -n auto -v', depends-on = [
+notebook-tests = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --nbmake-timeout=1200 --color=yes -n auto -v', depends-on = [
   'clean-tutorial-projects',
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
-# Parse the analysis.cif of every saved tutorial project and assert its
+# Parse the analysis.edi of every saved tutorial project and assert its
 # refined fit results against tests/tutorials/baseline.json. Run only after
 # the tutorials have been executed (script-tests or notebook-tests), so the
 # saved projects exist under tmp/tutorials/projects/.
@@ -132,12 +139,14 @@ notebook-tests-checked = { cmd = 'python -m pytest tests/tutorials/ --color=yes 
 ], env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
 test = { depends-on = ['unit-tests', 'functional-tests'] }
-test-all = { depends-on = [
-  'unit-tests',
-  'functional-tests',
-  'integration-tests',
-  'script-tests',
-] }
+
+# Full local gate before opening a PR: every static check, unit coverage,
+# all tests, tutorial execution + output verification (as scripts AND
+# notebooks), and a strict documentation build (which validates the built
+# site's nav/links). Steps run sequentially because the tutorial tasks
+# share tmp/tutorials/projects/. Slow but comprehensive — run `pixi run
+# fix` first to auto-format.
+all = 'pixi run check && pixi run unit-tests-coverage && pixi run functional-tests && pixi run integration-tests && pixi run script-tests-checked && pixi run notebook-tests-checked && pixi run docs-build-local'
 
 ###########
 # ✔️ Checks
@@ -145,13 +154,17 @@ test-all = { depends-on = [
 
 pyproject-check = 'python -m validate_pyproject pyproject.toml'
 docstring-lint-check = 'pydoclint --quiet src/'
-notebook-lint-check = 'nbqa ruff docs/docs/tutorials/'
-py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/'
-py-format-check = 'ruff format --check src/ tests/ docs/docs/tutorials/'
+notebook-lint-check = 'nbqa ruff docs/docs/tutorials/ docs/docs/verification/'
+py-lint-check = 'ruff check src/ tests/ docs/docs/tutorials/ docs/docs/verification/'
+py-format-check = 'ruff format --check src/ tests/ docs/docs/tutorials/ docs/docs/verification/'
 nonpy-format-check = 'npx prettier --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-check-modified = 'python tools/nonpy_prettier_modified.py'
 test-structure-check = 'python tools/test_structure_check.py'
-
+# Spelling over docs and source (config in [tool.codespell]).
+spell-check = 'codespell docs src tools README.md CONTRIBUTING.md'
+# Local/relative documentation link integrity (offline; external URL
+# checking is deferred, see issue 114). Config in lychee.toml.
+link-check = 'lychee --config lychee.toml docs/docs README.md CONTRIBUTING.md'
 check = 'pre-commit run --hook-stage manual --all-files'
 
 ##########
@@ -160,10 +173,10 @@ check = 'pre-commit run --hook-stage manual --all-files'
 
 docstring-transform = 'pixi run docstripy src/ -s=numpy -w'
 docstring-format-fix = 'format-docstring src/'
-notebook-lint-fix = 'nbqa ruff --fix docs/docs/tutorials/'
-py-lint-fix = 'ruff check --fix src/ tests/ docs/docs/tutorials/'
-py-lint-fix-unsafe = 'ruff check --fix --unsafe-fixes src/ tests/ docs/docs/tutorials/'
-py-format-fix = 'ruff format src/ tests/ docs/docs/tutorials/'
+notebook-lint-fix = 'nbqa ruff --fix docs/docs/tutorials/ docs/docs/verification/'
+py-lint-fix = 'ruff check --fix src/ tests/ docs/docs/tutorials/ docs/docs/verification/'
+py-lint-fix-unsafe = 'ruff check --fix --unsafe-fixes src/ tests/ docs/docs/tutorials/ docs/docs/verification/'
+py-format-fix = 'ruff format src/ tests/ docs/docs/tutorials/ docs/docs/verification/'
 nonpy-format-fix = 'npx prettier --write --list-different --config=prettierrc.toml --ignore-unknown .'
 nonpy-format-fix-modified = 'python tools/nonpy_prettier_modified.py --write'
 update-package-diagrams = 'python tools/generate_package_docs.py'
@@ -200,11 +213,7 @@ functional-tests-coverage = 'pixi run functional-tests --cov=src/easydiffraction
 integration-tests-coverage = 'pixi run integration-tests --cov=src/easydiffraction --cov-report=term-missing'
 docstring-coverage = 'interrogate -c pyproject.toml src/easydiffraction'
 
-cov = { depends-on = [
-  'docstring-coverage',
-  'unit-tests-coverage',
-  'integration-tests-coverage',
-] }
+cov = { depends-on = ['docstring-coverage', 'unit-tests-coverage'] }
 
 ########################
 # 📓 Notebook Management
@@ -215,11 +224,15 @@ tutorial = { cmd = 'python', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutori
 tutorial-benchmarks = { cmd = 'python tools/benchmark_tutorials.py', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 jupyter = { cmd = 'jupyter', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials' } }
 
-notebook-convert = 'jupytext docs/docs/tutorials/*.py --from py:percent --to ipynb'
-notebook-strip = 'nbstripout docs/docs/tutorials/*.ipynb'
-notebook-tweak = 'python tools/tweak_notebooks.py docs/docs/tutorials/'
-notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
-notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
+notebook-convert = 'jupytext docs/docs/tutorials/*.py docs/docs/verification/*.py --from py:percent --to ipynb'
+notebook-strip = 'nbstripout docs/docs/tutorials/*.ipynb docs/docs/verification/*.ipynb'
+notebook-tweak = 'python tools/tweak_notebooks.py docs/docs/tutorials/ docs/docs/verification/'
+notebook-exec = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
+notebook-exec-ci = { cmd = 'python -m pytest --nbmake docs/docs/tutorials/ docs/docs/verification/ --nbmake-timeout=1200 --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = '.', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
+# Execute and overwrite outputs for the verification notebooks only (the
+# verification-page subset of notebook-exec); nbmake runs every page, and
+# a known-bad page is gated by its in-notebook known_discrepancy flag.
+verification-exec = { cmd = 'python -m pytest --nbmake docs/docs/verification/ --overwrite --color=yes -n auto -v', env = { EASYDIFFRACTION_ARTIFACT_ROOT = 'tmp/tutorials', EASYDIFFRACTION_FIGURE_EMBED_MODE = 'shared' } }
 
 notebook-prepare = { depends-on = [
   'notebook-convert',
@@ -240,9 +253,14 @@ docs-serve = { cmd = 'pixi run docs-pre serve -f docs/mkdocs.yml', depends-on = 
   'docs-sync-vendored-js',
 ] }
 docs-serve-dirty = 'pixi run docs-serve --dirty'
-docs-build = { cmd = 'pixi run docs-pre build -f docs/mkdocs.yml', depends-on = [
+# Strict build (fails on broken nav / internal references); used for the
+# deploy and the CI docs check. Tutorials are not executed (mkdocs-jupyter
+# execute: false). docs-serve is intentionally left non-strict.
+docs-build = { cmd = 'pixi run docs-pre build --strict -f docs/mkdocs.yml', depends-on = [
   'docs-sync-vendored-js',
 ] }
+# Inherits --strict; --no-directory-urls makes the built site browsable
+# from disk (used by `all` so you can inspect it after verifying).
 docs-build-local = 'pixi run docs-build --no-directory-urls'
 
 docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'

@@ -93,13 +93,15 @@ def test_fitting_mode_show_supported_for_single_and_multiple_experiments(capsys)
     out_single = capsys.readouterr().out
     assert 'Fitting Mode types' in out_single
     assert 'single' in out_single
-    assert 'joint' in out_single
+    assert 'sequential' in out_single
+    assert 'joint' not in out_single
 
     multi = Analysis(project=_make_project_with_names(['e1', 'e2']))
     multi.fitting_mode.show_supported()
     out_multi = capsys.readouterr().out
     assert 'joint' in out_multi
-    assert 'sequential' in out_multi
+    assert 'single' not in out_multi
+    assert 'sequential' not in out_multi
 
 
 def test_minimizer_show_supported_prints(capsys):
@@ -218,8 +220,7 @@ def test_analysis_display_as_cif_and_constraints(monkeypatch, capsys):
     assert captured['columns_data'][0] == ['constraint_1', 'x = y + 1']
 
 
-def test_discover_helpers_and_snapshot_params():
-    from easydiffraction.analysis.analysis import Analysis
+def test_discover_helpers():
     from easydiffraction.analysis.analysis import _discover_method_rows
     from easydiffraction.analysis.analysis import _discover_property_rows
 
@@ -252,18 +253,3 @@ def test_discover_helpers_and_snapshot_params():
     assert next(row for row in property_rows if row[0] == 'beta')[1] == '✓'
     assert 'do_thing()' in [row[0] for row in method_rows]
     assert '_private()' not in [row[0] for row in method_rows]
-
-    analysis = Analysis(project=_make_project())
-
-    class FakeParam:
-        unique_name = 'p1'
-        value = 1.23
-        uncertainty = 0.01
-        units = 'A'
-
-    class FakeResults:
-        parameters = [FakeParam()]
-
-    analysis._snapshot_params('expt1', FakeResults())
-    assert analysis._parameter_snapshots['expt1']['p1']['value'] == 1.23
-    assert analysis._parameter_snapshots['expt1']['p1']['uncertainty'] == 0.01

@@ -5,11 +5,12 @@ from __future__ import annotations
 
 from typer.testing import CliRunner
 
+import easydiffraction as edi
+
 runner = CliRunner()
 
 
 def test_cli_version_invokes_show_version(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     called = {'ok': False}
@@ -18,7 +19,7 @@ def test_cli_version_invokes_show_version(monkeypatch):
         print('VERSION_OK')
         called['ok'] = True
 
-    monkeypatch.setattr(ed, 'show_version', fake_show_version)
+    monkeypatch.setattr(edi, 'show_version', fake_show_version)
 
     result = runner.invoke(main_mod.app, ['--version'])
 
@@ -37,20 +38,21 @@ def test_cli_help_shows_and_exits_zero():
 
 
 def test_cli_subcommands_call_utils(monkeypatch):
-    import easydiffraction as ed
     import easydiffraction.__main__ as main_mod
 
     calls: list[str] = []
-    monkeypatch.setattr(ed, 'list_tutorials', lambda: calls.append('LIST'))
+    monkeypatch.setattr(edi, 'list_tutorials', lambda: calls.append('LIST'))
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_all_tutorials',
         lambda destination='tutorials', overwrite=False: calls.append('DOWNLOAD_ALL'),
     )
     monkeypatch.setattr(
-        ed,
+        edi,
         'download_tutorial',
-        lambda id, destination='tutorials', overwrite=False: calls.append(f'DOWNLOAD_{id}'),
+        lambda id, destination='tutorials', file_format='ipynb', overwrite=False: calls.append(
+            f'DOWNLOAD_{id}'
+        ),
     )
 
     list_result = runner.invoke(main_mod.app, ['list-tutorials'])
@@ -69,14 +71,14 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     calls: list[str] = []
 
-    class FakeInfo:
+    class FakeMetadata:
         _path = '/some/path'
 
     class FakeExperiment:
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeMetadata()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -114,7 +116,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.cif').write_text('_project.id test\n')
+    (project_dir / 'project.edi').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 
@@ -128,14 +130,14 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     import easydiffraction.__main__ as main_mod
     from easydiffraction.project.project import Project
 
-    class FakeInfo:
+    class FakeMetadata:
         _path = '/some/path'
 
     class FakeExperiment:
         name = 'exp1'
 
     class FakeProject:
-        info = FakeInfo()
+        metadata = FakeMetadata()
         experiments = [FakeExperiment()]
 
         class _analysis:
@@ -172,11 +174,11 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     project_dir = tmp_path / 'proj'
     project_dir.mkdir()
-    (project_dir / 'project.cif').write_text('_project.id test\n')
+    (project_dir / 'project.edi').write_text('_metadata.name test\n')
 
     monkeypatch.setattr(Project, 'load', staticmethod(lambda path: fake_project))
 
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(project_dir)])
 
     assert result.exit_code == 0
-    assert fake_project.info._path is None
+    assert fake_project.metadata._path is None

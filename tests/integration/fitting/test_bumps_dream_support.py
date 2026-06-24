@@ -273,6 +273,9 @@ def test_build_mapper_falls_back_for_serial_and_unpicklable(monkeypatch):
 
     warnings: list[str] = []
     minimizer.parallel = 0
+    # Force the process-pool fallback path (no fork pool) to exercise the
+    # MPMapper/serial branch.
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.can_pickle', lambda problem: False
@@ -290,6 +293,7 @@ def test_build_mapper_temporarily_clears_shared_display_handle(monkeypatch):
 
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     handle = object()
     activity_indicator = object()
@@ -329,6 +333,7 @@ def test_build_mapper_allows_real_can_pickle_with_live_tracker_state(monkeypatch
 
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
     bumps_params = [BumpsParameter(value=1.0, name='alpha')]
 
@@ -353,6 +358,7 @@ def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
     minimizer = BumpsDreamMinimizer()
     minimizer.parallel = 0
     warnings: list[str] = []
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     _simulate_import_safe_spawn_main_module(monkeypatch)
 
     monkeypatch.setattr(
@@ -366,7 +372,7 @@ def test_build_mapper_falls_back_for_spawn_bootstrap_runtime_error(monkeypatch):
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     assert minimizer._build_mapper('problem') is None
@@ -389,6 +395,7 @@ def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeyp
     warnings: list[str] = []
     pickle_checks: list[object] = []
 
+    monkeypatch.setattr(minimizer, '_build_fork_pool_mapper', lambda problem: None)
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.multiprocessing.get_start_method',
         lambda allow_none=True: 'spawn',
@@ -408,7 +415,7 @@ def test_build_mapper_falls_back_before_starting_spawn_for_direct_script(monkeyp
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     assert minimizer._build_mapper('problem') is None
@@ -546,8 +553,7 @@ def test_build_driver_stops_mapper_when_driver_clip_fails():
                 fitness=SimpleNamespace(numpoints=lambda: 10),
                 steps=10,
                 burn=2,
-                init=minimizer.init,
-                sampler_settings={'samples': 40},
+                sampler_settings={'samples': 40, 'pop': 4},
                 n_parameters=1,
             )
 
@@ -588,12 +594,12 @@ def test_run_solver_failure_paths_return_failure_results(monkeypatch):
     monkeypatch.setattr(
         minimizer,
         '_prepare_run_context',
-        lambda *, objective_function, kwargs: context,
+        lambda *, objective_function, kwargs, **overrides: context,
     )
     monkeypatch.setattr(
         minimizer,
         '_execute_driver',
-        lambda *, driver, random_seed: _DreamDriverResult(
+        lambda *, driver, random_seed, fit_state=None: _DreamDriverResult(
             best_values=None,
             best_nllf=None,
             raw_state='state',
@@ -610,7 +616,7 @@ def test_run_solver_failure_paths_return_failure_results(monkeypatch):
     monkeypatch.setattr(
         minimizer,
         '_execute_driver',
-        lambda *, driver, random_seed: _DreamDriverResult(
+        lambda *, driver, random_seed, fit_state=None: _DreamDriverResult(
             best_values=np.array([1.0]),
             best_nllf=0.5,
             raw_state=None,
@@ -697,7 +703,7 @@ def test_build_success_result_handles_invalid_samples_and_warns_when_not_converg
     )
     monkeypatch.setattr(
         'easydiffraction.analysis.minimizers.bumps_dream.log.warning',
-        lambda message: warnings.append(message),
+        warnings.append,
     )
 
     successful = minimizer._build_success_result(

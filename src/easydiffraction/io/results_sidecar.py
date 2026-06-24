@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 SidecarPayload = dict[str, dict[str, object]]
-SIDECAR_FILE_NAME = 'results.h5'
+SIDECAR_FILE_NAME = 'mcmc.h5'
 _POSTERIOR_PARAMETER_SAMPLES_PATH = '/posterior/parameter_samples'
 _POSTERIOR_LOG_POSTERIOR_PATH = '/posterior/log_posterior'
 _POSTERIOR_DRAW_INDEX_PATH = '/posterior/draw_index'
@@ -27,6 +27,13 @@ _CANONICAL_GROUPS = (
     'distribution_cache',
     'pair_cache',
     'predictive',
+)
+# Raw, resumable sampler-state groups written per engine (emcee's live
+# HDF backend, DREAM's MCMCDraw dump). They are not rebuilt from memory
+# on save, so relocating a project must copy them across explicitly.
+_RAW_SAMPLER_STATE_GROUPS = (
+    'emcee_chain',
+    'dream_state',
 )
 _POSTERIOR_SAMPLE_NDIM = 3
 
@@ -69,6 +76,49 @@ def _warn_existing_sidecar_overwrite(sidecar_path: Path) -> None:
         f"Existing fit results sidecar '{sidecar_path}' will be overwritten "
         'when the new fit is saved.'
     )
+
+
+def carry_over_raw_sampler_state(
+    *,
+    source_analysis_dir: Path,
+    destination_analysis_dir: Path,
+) -> None:
+    """
+    Copy raw sampler-state groups into a relocated project's sidecar.
+
+    A project ``save_as`` rebuilds the derived sidecar arrays from
+    memory but cannot reconstruct the raw, resumable sampler state
+    (``emcee_chain`` / ``dream_state``). This copies those groups from
+    the source sidecar into the destination so a resume after load +
+    ``save_as`` still finds the chain to extend. No-op when the source
+    sidecar or its raw-state groups are absent.
+
+    Parameters
+    ----------
+    source_analysis_dir : Path
+        The ``analysis/`` directory of the previously saved project.
+    destination_analysis_dir : Path
+        The ``analysis/`` directory of the relocated project.
+    """
+    source_path = _sidecar_path(analysis_dir=source_analysis_dir)
+    if not source_path.is_file():
+        return
+
+    import h5py  # noqa: PLC0415
+
+    with h5py.File(source_path, 'r') as source_handle:
+        present_groups = [
+            group_name for group_name in _RAW_SAMPLER_STATE_GROUPS if group_name in source_handle
+        ]
+        if not present_groups:
+            return
+
+        destination_analysis_dir.mkdir(parents=True, exist_ok=True)
+        destination_path = _sidecar_path(analysis_dir=destination_analysis_dir)
+        with h5py.File(destination_path, 'a') as destination_handle:
+            for group_name in present_groups:
+                _delete_group_if_present(destination_handle, group_name)
+                source_handle.copy(group_name, destination_handle, name=group_name)
 
 
 def prepare_analysis_results_sidecar_for_new_fit(*, analysis_dir: Path) -> None:
@@ -310,7 +360,7 @@ def write_analysis_results_sidecar(
     analysis_dir: Path,
 ) -> None:
     """
-    Write persisted Bayesian arrays to ``analysis/results.h5``.
+    Write persisted Bayesian arrays to ``analysis/mcmc.h5``.
 
     Parameters
     ----------
@@ -409,7 +459,7 @@ def read_analysis_results_sidecar(
     analysis_dir: Path,
 ) -> None:
     """
-    Read persisted Bayesian arrays from ``analysis/results.h5``.
+    Read persisted Bayesian arrays from ``analysis/mcmc.h5``.
 
     Parameters
     ----------

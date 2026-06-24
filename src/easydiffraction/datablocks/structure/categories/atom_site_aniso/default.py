@@ -21,33 +21,89 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
     AtomSiteAnisoFactory,
 )
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
+
+
+class _AnisoAdpParameter(Parameter):
+    """
+    Aniso ADP component whose display units track ``adp_type``.
+
+    For ``adp_type == 'beta'`` the tensor components are dimensionless,
+    so display units are suppressed at resolve time. The stored unit
+    metadata is left unchanged (a single declared unit per the value
+    model); only the resolved display string is type-aware. All other
+    behaviour is inherited from :class:`Parameter`.
+    """
+
+    def resolve_display_units(self, context: str) -> str:
+        """
+        Return display units, suppressed for a beta-tensor owner.
+
+        Parameters
+        ----------
+        context : str
+            One of ``'latex'``, ``'html'``, or ``'gui'``.
+
+        Returns
+        -------
+        str
+            The inherited display units, or an empty string when the
+            owning atom uses the dimensionless ``beta`` ADP type.
+        """
+        from easydiffraction.datablocks.structure.categories.atom_sites.enums import (  # noqa: PLC0415
+            AdpTypeEnum,
+        )
+
+        units = super().resolve_display_units(context)
+        if self._owning_adp_type() == AdpTypeEnum.BETA.value:
+            return ''
+        return units
+
+    def _owning_adp_type(self) -> str | None:
+        """Return the owning atom's ``adp_type`` value, or ``None``."""
+        # Tolerant walk: display can resolve units before the
+        # param → aniso item → collection → structure → atom_site chain
+        # is fully wired (e.g. during construction or for a detached
+        # parameter). Any broken link falls back to the declared unit
+        # rather than raising in a display path.
+        aniso_item = getattr(self, '_parent', None)
+        atom_id = getattr(getattr(aniso_item, '_id', None), 'value', None)
+        collection = getattr(aniso_item, '_parent', None)
+        structure = getattr(collection, '_parent', None)
+        atom_sites = getattr(structure, 'atom_sites', None)
+        if atom_sites is None or atom_id is None:
+            return None
+        try:
+            atom = atom_sites[atom_id]
+        except (KeyError, TypeError):
+            return None
+        return getattr(getattr(atom, 'adp_type', None), 'value', None)
 
 
 class AtomSiteAniso(CategoryItem):
     """
     Single atom site anisotropic ADP entry.
 
-    Each entry mirrors an :class:`AtomSite` by label and holds six
-    tensor components whose physical meaning (B or U) is determined by
+    Each entry mirrors an :class:`AtomSite` by id and holds six tensor
+    components whose physical meaning (B or U) is determined by
     ``atom_site.adp_type``.
     """
 
     _category_code = 'atom_site_aniso'
-    _category_entry_name = 'label'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         """Initialise with default zero-valued tensor components."""
         super().__init__()
 
-        self._label = StringDescriptor(
-            name='label',
-            description='Atom-site label matching the parent atom_site entry.',
+        self._id = StringDescriptor(
+            name='id',
+            description='Atom-site id matching the parent atom_site entry.',
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_atom_site_aniso.label']),
+            tags=TagSpec(edi_names=['_atom_site_aniso.id'], cif_names=['_atom_site_aniso.label']),
         )
 
-        self._adp_11 = Parameter(
+        self._adp_11 = _AnisoAdpParameter(
             name='adp_11',
             description='Anisotropic ADP tensor component (1,1).',
             units='angstrom_squared',
@@ -61,14 +117,16 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_11'],
+                cif_names=[
                     '_atom_site_aniso.B_11',
                     '_atom_site_aniso.U_11',
-                ]
+                    '_atom_site_aniso.beta_11',
+                ],
             ),
         )
-        self._adp_22 = Parameter(
+        self._adp_22 = _AnisoAdpParameter(
             name='adp_22',
             description='Anisotropic ADP tensor component (2,2).',
             units='angstrom_squared',
@@ -82,14 +140,16 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_22'],
+                cif_names=[
                     '_atom_site_aniso.B_22',
                     '_atom_site_aniso.U_22',
-                ]
+                    '_atom_site_aniso.beta_22',
+                ],
             ),
         )
-        self._adp_33 = Parameter(
+        self._adp_33 = _AnisoAdpParameter(
             name='adp_33',
             description='Anisotropic ADP tensor component (3,3).',
             units='angstrom_squared',
@@ -103,14 +163,16 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_33'],
+                cif_names=[
                     '_atom_site_aniso.B_33',
                     '_atom_site_aniso.U_33',
-                ]
+                    '_atom_site_aniso.beta_33',
+                ],
             ),
         )
-        self._adp_12 = Parameter(
+        self._adp_12 = _AnisoAdpParameter(
             name='adp_12',
             description='Anisotropic ADP tensor component (1,2).',
             units='angstrom_squared',
@@ -124,14 +186,16 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_12'],
+                cif_names=[
                     '_atom_site_aniso.B_12',
                     '_atom_site_aniso.U_12',
-                ]
+                    '_atom_site_aniso.beta_12',
+                ],
             ),
         )
-        self._adp_13 = Parameter(
+        self._adp_13 = _AnisoAdpParameter(
             name='adp_13',
             description='Anisotropic ADP tensor component (1,3).',
             units='angstrom_squared',
@@ -145,14 +209,16 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_13'],
+                cif_names=[
                     '_atom_site_aniso.B_13',
                     '_atom_site_aniso.U_13',
-                ]
+                    '_atom_site_aniso.beta_13',
+                ],
             ),
         )
-        self._adp_23 = Parameter(
+        self._adp_23 = _AnisoAdpParameter(
             name='adp_23',
             description='Anisotropic ADP tensor component (2,3).',
             units='angstrom_squared',
@@ -166,11 +232,13 @@ class AtomSiteAniso(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=[
+            tags=TagSpec(
+                edi_names=['_atom_site_aniso.adp_23'],
+                cif_names=[
                     '_atom_site_aniso.B_23',
                     '_atom_site_aniso.U_23',
-                ]
+                    '_atom_site_aniso.beta_23',
+                ],
             ),
         )
 
@@ -179,13 +247,13 @@ class AtomSiteAniso(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def label(self) -> StringDescriptor:
-        """Label matching the parent atom_site entry."""
-        return self._label
+    def id(self) -> StringDescriptor:
+        """ID matching the parent atom_site entry."""
+        return self._id
 
-    @label.setter
-    def label(self, value: str) -> None:
-        self._label.value = value
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def adp_11(self) -> Parameter:
@@ -274,5 +342,5 @@ class AtomSiteAnisoCollection(CategoryCollection):
             AdpTypeEnum,
         )
 
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         return not any(atom.adp_type.value in aniso_types for atom in atom_sites)

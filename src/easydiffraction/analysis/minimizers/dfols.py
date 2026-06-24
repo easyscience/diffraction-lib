@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
+"""Derivative-free least-squares minimizer built on DFO-LS."""
 
 import numpy as np
 from dfols import solve
@@ -28,11 +28,25 @@ class DfolsMinimizer(MinimizerBase):
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
         **kwargs: object,
     ) -> None:
+        """Initialize the DFO-LS minimizer with default settings."""
         super().__init__(name=name, method=None, max_iterations=max_iterations)
         # Intentionally unused, accepted for API compatibility
         del kwargs
 
     def _prepare_solver_args(self, parameters: list[object]) -> dict[str, object]:  # noqa: PLR6301
+        """
+        Build the initial guess and bounds for the DFO-LS solver.
+
+        Parameters
+        ----------
+        parameters : list[object]
+            Parameters being optimized.
+
+        Returns
+        -------
+        dict[str, object]
+            Mapping with the initial point and bound arrays.
+        """
         x0 = []
         bounds_lower = []
         bounds_upper = []
@@ -44,6 +58,7 @@ class DfolsMinimizer(MinimizerBase):
         return {'x0': np.array(x0), 'bounds': bounds}
 
     def _run_solver(self, objective_function: object, **kwargs: object) -> object:
+        """Run the DFO-LS solver on the objective function."""
         x0 = kwargs.get('x0')
         bounds = kwargs.get('bounds')
         return solve(objective_function, x0=x0, bounds=bounds, maxfun=self.max_iterations)

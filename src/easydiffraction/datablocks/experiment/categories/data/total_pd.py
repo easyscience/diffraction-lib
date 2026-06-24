@@ -23,7 +23,8 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
+from easydiffraction.utils.logging import log
 
 
 class TotalDataPoint(CategoryItem):
@@ -34,24 +35,20 @@ class TotalDataPoint(CategoryItem):
     original measurement was CWL or TOF.
     """
 
-    _category_code = 'total_data'
-    _category_entry_name = 'point_id'
+    _category_code = 'data'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         super().__init__()
 
-        self._point_id = StringDescriptor(
-            name='point_id',
+        self._id = StringDescriptor(
+            name='id',
             description='Identifier for this data point in the dataset',
             value_spec=AttributeSpec(
                 default='0',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.point_id',  # TODO: Use total scattering CIF names
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.id'], cif_names=['_pd_data.point_id']),
         )
         self._r = NumericDescriptor(
             name='r',
@@ -65,11 +62,7 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_proc.r',  # TODO: Use PDF-specific CIF names
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.r'], cif_names=['_pd_proc.r']),
         )
         self._g_r_meas = NumericDescriptor(
             name='g_r_meas',
@@ -77,11 +70,7 @@ class TotalDataPoint(CategoryItem):
             value_spec=AttributeSpec(
                 default=0.0,
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total',  # TODO: Use PDF-specific CIF names
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.g_r_meas'], cif_names=['_pd_meas.intensity_total']),
         )
         self._g_r_meas_su = NumericDescriptor(
             name='g_r_meas_su',
@@ -90,10 +79,8 @@ class TotalDataPoint(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_meas.intensity_total_su',  # TODO: Use PDF-specific CIF names
-                ]
+            tags=TagSpec(
+                edi_names=['_data.g_r_meas_su'], cif_names=['_pd_meas.intensity_total_su']
             ),
         )
         self._g_r_calc = NumericDescriptor(
@@ -102,11 +89,7 @@ class TotalDataPoint(CategoryItem):
             value_spec=AttributeSpec(
                 default=0.0,
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_calc.intensity_total',  # TODO: Use PDF-specific CIF names
-                ]
-            ),
+            tags=TagSpec(edi_names=['_data.g_r_calc'], cif_names=['_pd_calc.intensity_total']),
         )
         self._calc_status = StringDescriptor(
             name='calc_status',
@@ -115,10 +98,8 @@ class TotalDataPoint(CategoryItem):
                 default='incl',
                 validator=MembershipValidator(allowed=['incl', 'excl']),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_pd_data.refinement_status',  # TODO: Use PDF-specific CIF names
-                ]
+            tags=TagSpec(
+                edi_names=['_data.calc_status'], cif_names=['_pd_data.refinement_status']
             ),
         )
 
@@ -127,14 +108,14 @@ class TotalDataPoint(CategoryItem):
     # ------------------------------------------------------------------
 
     @property
-    def point_id(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Identifier for this data point in the dataset.
 
         Reading this property returns the underlying
         ``StringDescriptor`` object.
         """
-        return self._point_id
+        return self._id
 
     @property
     def r(self) -> NumericDescriptor:
@@ -198,10 +179,10 @@ class TotalDataBase(CategoryCollection):
 
     # Should be set only once
 
-    def _set_point_id(self, values: object) -> None:
-        """Set point IDs."""
+    def _set_id(self, values: object) -> None:
+        """Set data-point IDs."""
         for p, v in zip(self._items, values, strict=True):
-            p.point_id._value = v
+            p.id._value = v
 
     def _set_g_r_meas(self, values: object) -> None:
         """Set measured G(r)."""
@@ -248,6 +229,15 @@ class TotalDataBase(CategoryCollection):
         called_by_minimizer: bool = False,
     ) -> None:
         experiment = self._parent
+        if not self._items:
+            msg = (
+                f"Cannot calculate experiment '{experiment.name}' without measured "
+                'data: total scattering (PDF) requires a measured r-grid. '
+                'Generating it from data_range is not yet supported. Load '
+                'measured data first.'
+            )
+            log.error(msg, exc_type=NotImplementedError)
+            return
         experiments = experiment._parent
         project = experiments._parent
         structures = project.structures
@@ -256,13 +246,13 @@ class TotalDataBase(CategoryCollection):
         initial_calc = np.zeros_like(self.x)
         calc = initial_calc
 
-        # TODO: refactor _get_valid_linked_phases to only be responsible
-        #  for returning list. Warning message should be defined here,
-        #  at least some of them.
+        # TODO: refactor _get_valid_linked_structures to only be
+        #  responsible for returning list. Warning message should be
+        #  defined here, at least some of them.
         # TODO: Adapt following the _update method in bragg_sc.py
-        for linked_phase in experiment._get_valid_linked_phases(structures):
-            structure_id = linked_phase._identity.category_entry_name
-            structure_scale = linked_phase.scale.value
+        for linked_structure in experiment._get_valid_linked_structures(structures):
+            structure_id = linked_structure._identity.category_entry_name
+            structure_scale = linked_structure.scale.value
             structure = structures[structure_id]
 
             structure_calc = calculator.calculate_pattern(
@@ -275,6 +265,21 @@ class TotalDataBase(CategoryCollection):
             calc += structure_scaled_calc
 
         self._set_g_r_calc(calc)
+
+    def _has_measured_intensities(self) -> bool:
+        """
+        Return whether any point carries a finite measured G(r) value.
+
+        Iterates **all** points (unfiltered) so a fully-excluded
+        measured scan is still recognised as measured data, matching the
+        powder Bragg predicate.
+        """
+        measured = np.fromiter(
+            (point.g_r_meas.value for point in self._items),
+            dtype=float,
+            count=len(self._items),
+        )
+        return bool(measured.size) and bool(np.any(np.isfinite(measured)))
 
     # ------------------------------------------------------------------
     #  Public properties
@@ -374,7 +379,7 @@ class TotalData(TotalDataBase):
             p.r._value = v
 
         # Set point IDs
-        self._set_point_id([str(i + 1) for i in range(values.size)])
+        self._set_id([str(i + 1) for i in range(values.size)])
 
     # ------------------------------------------------------------------
     #  Public properties

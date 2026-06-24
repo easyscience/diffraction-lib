@@ -30,6 +30,8 @@ PNG_MAGIC = b'\x89PNG\r\n\x1a\n'
 # A simple orthogonal 5x5x5 cell shared by most scenes.
 CUBIC_BASIS = ((5.0, 0.0, 0.0), (0.0, 5.0, 0.0), (0.0, 0.0, 5.0))
 
+pytestmark = pytest.mark.usefixtures('_fast_canvas')
+
 
 def _open(png: bytes) -> Image.Image:
     """Decode rendered PNG bytes into a Pillow image."""
@@ -117,6 +119,24 @@ def _full_scene() -> StructureScene:
     )
 
 
+@pytest.fixture
+def _fast_canvas(request, monkeypatch):
+    """Render at a small canvas to keep these renderer tests fast.
+
+    Almost every test checks render *behaviour* (PNG output, drawn vs
+    blank pixels, determinism), which is resolution-independent, so a
+    small canvas gives identical outcomes far faster — the production
+    1800x1800 buffer is ~80x more pixels. Size assertions read
+    ``MUT._CANVAS`` so they stay correct. ``test_axis_labels_follow_
+    rendered_arrow_tips`` opts out because it asserts exact label pixel
+    positions against the production ``_CANVAS`` (and it does no render,
+    so it is already fast).
+    """
+    if request.node.name == 'test_axis_labels_follow_rendered_arrow_tips':
+        return
+    monkeypatch.setattr(MUT, '_CANVAS', 200)
+
+
 def test_module_import():
     import easydiffraction.display.structure.renderers.raster as MUT
 
@@ -160,9 +180,9 @@ class TestRenderPngOutput:
         assert _open(png).format == 'PNG'
 
     def test_canvas_dimensions(self):
-        # The supersampled buffer is downsampled to a fixed 1800x1800 frame.
+        # The supersampled buffer is downsampled to a square _CANVAS frame.
         png = RasterStructureRenderer().render_png(_atom_scene(), features=frozenset({'atoms'}))
-        assert _open(png).size == (1800, 1800)
+        assert _open(png).size == (MUT._CANVAS, MUT._CANVAS)
 
     def test_rgb_mode(self):
         png = RasterStructureRenderer().render_png(_atom_scene(), features=frozenset({'atoms'}))
@@ -251,7 +271,7 @@ class TestRenderPngFeatures:
             _full_scene(), features=RasterStructureRenderer.SUPPORTED
         )
         assert png[:8] == PNG_MAGIC
-        assert _open(png).size == (1800, 1800)
+        assert _open(png).size == (MUT._CANVAS, MUT._CANVAS)
         assert _has_drawn_pixels(png)
 
 

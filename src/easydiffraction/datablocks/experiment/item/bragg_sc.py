@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Bragg single-crystal CWL and TOF experiment datablocks."""
 
 from __future__ import annotations
 
@@ -41,9 +42,9 @@ class CwlScExperiment(ScExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """
@@ -106,9 +107,9 @@ class TofScExperiment(ScExperimentBase):
         self,
         *,
         name: str,
-        type: ExperimentType,
+        experiment_type: ExperimentType,
     ) -> None:
-        super().__init__(name=name, type=type)
+        super().__init__(name=name, experiment_type=experiment_type)
 
     def _load_ascii_data_to_experiment(self, data_path: str) -> int:
         """

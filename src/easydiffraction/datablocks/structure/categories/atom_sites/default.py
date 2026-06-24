@@ -29,7 +29,7 @@ from easydiffraction.core.variable import StringDescriptor
 from easydiffraction.crystallography import crystallography as ecr
 from easydiffraction.datablocks.structure.categories.atom_sites.enums import AdpTypeEnum
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
 
 
@@ -42,7 +42,7 @@ class AtomSite(CategoryItem):
     """
 
     _category_code = 'atom_site'
-    _category_entry_name = 'label'
+    _category_entry_name = 'id'
 
     def __init__(self) -> None:
         """Initialise the atom site with default descriptor values."""
@@ -55,22 +55,28 @@ class AtomSite(CategoryItem):
         # compared in the update flow to decide whether to re-detect.
         self._wyckoff_coord_baseline: tuple[float, float, float] | None = None
         self._wyckoff_key_baseline: tuple[str, str | None] | None = None
+        # Resolved orbit-representative template, cached from the last
+        # detection. During a fit the letter and space group are fixed,
+        # so minimizer iterations reuse this and skip the lstsq orbit
+        # search (only the cheap per-iteration snap runs). None until
+        # first detection; invalidated when detection clears the site.
+        self._wyckoff_template_cache: str | None = None
 
-        self._label = StringDescriptor(
-            name='label',
+        self._id = StringDescriptor(
+            name='id',
             description='Unique identifier for the atom site.',
             display_handler=DisplayHandler(
-                display_name='Label',
-                latex_name='Label',
+                display_name='ID',
+                latex_name='ID',
             ),
             value_spec=AttributeSpec(
                 default='Si',
                 # TODO: the following pattern is valid for dict key
-                #  (keywords are not checked). CIF label is less strict.
-                #  Do we need conversion between CIF and internal label?
+                #  (keywords are not checked). CIF id is less strict.
+                #  Do we need conversion between CIF and internal id?
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(names=['_atom_site.label']),
+            tags=TagSpec(edi_names=['_atom_site.id'], cif_names=['_atom_site.label']),
         )
         self._type_symbol = StringDescriptor(
             name='type_symbol',
@@ -83,7 +89,7 @@ class AtomSite(CategoryItem):
                 default='Tb',
                 validator=MembershipValidator(allowed=self._type_symbol_allowed_values),
             ),
-            cif_handler=CifHandler(names=['_atom_site.type_symbol']),
+            tags=TagSpec(edi_names=['_atom_site.type_symbol']),
         )
         self._fract_x = Parameter(
             name='fract_x',
@@ -96,7 +102,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_x']),
+            tags=TagSpec(edi_names=['_atom_site.fract_x']),
         )
         self._fract_y = Parameter(
             name='fract_y',
@@ -109,7 +115,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_y']),
+            tags=TagSpec(edi_names=['_atom_site.fract_y']),
         )
         self._fract_z = Parameter(
             name='fract_z',
@@ -122,7 +128,7 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(names=['_atom_site.fract_z']),
+            tags=TagSpec(edi_names=['_atom_site.fract_z']),
         )
         self._wyckoff_letter = StringDescriptor(
             name='wyckoff_letter',
@@ -138,12 +144,9 @@ class AtomSite(CategoryItem):
                     allowed=lambda: self._wyckoff_letter_allowed_values,
                 ),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.Wyckoff_symbol',
-                    '_atom_site.Wyckoff_letter',
-                    '_atom_site.wyckoff_letter',
-                ]
+            tags=TagSpec(
+                edi_names=['_atom_site.wyckoff_letter'],
+                cif_names=['_atom_site.Wyckoff_symbol', '_atom_site.Wyckoff_letter'],
             ),
         )
         self._multiplicity = IntegerDescriptor(
@@ -155,7 +158,10 @@ class AtomSite(CategoryItem):
                 latex_name='Mult.',
             ),
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_atom_site.site_symmetry_multiplicity']),
+            tags=TagSpec(
+                edi_names=['_atom_site.multiplicity'],
+                cif_names=['_atom_site.site_symmetry_multiplicity'],
+            ),
         )
         self._occupancy = Parameter(
             name='occupancy',
@@ -169,7 +175,7 @@ class AtomSite(CategoryItem):
                 default=1.0,
                 validator=RangeValidator(ge=0.0, le=1.0),
             ),
-            cif_handler=CifHandler(names=['_atom_site.occupancy']),
+            tags=TagSpec(edi_names=['_atom_site.occupancy']),
         )
         self._adp_iso = Parameter(
             name='adp_iso',
@@ -185,11 +191,9 @@ class AtomSite(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=0.0, le=10.0),
             ),
-            cif_handler=CifHandler(
-                names=[
-                    '_atom_site.B_iso_or_equiv',
-                    '_atom_site.U_iso_or_equiv',
-                ]
+            tags=TagSpec(
+                edi_names=['_atom_site.adp_iso'],
+                cif_names=['_atom_site.B_iso_or_equiv', '_atom_site.U_iso_or_equiv'],
             ),
         )
         self._adp_type = EnumDescriptor(
@@ -201,7 +205,7 @@ class AtomSite(CategoryItem):
                 display_name='ADP type',
                 latex_name='ADP type',
             ),
-            cif_handler=CifHandler(names=['_atom_site.ADP_type', '_atom_site.adp_type']),
+            tags=TagSpec(edi_names=['_atom_site.adp_type'], cif_names=['_atom_site.ADP_type']),
         )
 
     # ------------------------------------------------------------------
@@ -248,7 +252,7 @@ class AtomSite(CategoryItem):
             return []
         positions = ecr.space_group_wyckoff_table(
             space_group.name_h_m.value,
-            space_group.it_coordinate_system_code.value,
+            space_group.coord_system_code.value,
         )
         if positions is None:
             return []
@@ -273,6 +277,9 @@ class AtomSite(CategoryItem):
         Convert ADP values when the type changes.
 
         Handles B ↔ U conversion using B = 8π²U and iso ↔ ani seeding.
+        Conversions to or from the dimensionless ``beta`` tensor are
+        cell-dependent and delegated to
+        :meth:`_convert_adp_values_beta`.
 
         Parameters
         ----------
@@ -283,6 +290,9 @@ class AtomSite(CategoryItem):
         """
         old_enum = AdpTypeEnum(old_type)
         new_enum = AdpTypeEnum(new_type)
+        if AdpTypeEnum.BETA in {old_enum, new_enum}:
+            self._convert_adp_values_beta(old_enum, new_enum)
+            return
         factor = 8.0 * math.pi**2
         old_is_b = old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}
         new_is_u = new_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
@@ -337,17 +347,49 @@ class AtomSite(CategoryItem):
 
     def _collapse_aniso_to_iso(self) -> None:
         """
-        Set adp_iso to the mean of the aniso diagonal.
+        Set adp_iso to the equivalent isotropic value from the tensor.
 
         Writes directly to ``_value`` to bypass range validation,
         because intermediate minimizer steps can produce negative
         anisotropic components whose mean falls outside the nominal
-        ``[0, 100]`` range.
+        ``[0, 100]`` range. For a beta atom the dimensionless diagonal
+        is mapped to U first (via the reciprocal cell), so the stored
+        equivalent is a real U magnitude consistent with the Uani type
+        rather than a dimensionless beta value.
         """
         aniso = self._get_aniso_entry()
         if aniso is None:
             return
-        self._adp_iso._value = (aniso.adp_11.value + aniso.adp_22.value + aniso.adp_33.value) / 3.0
+        if self._adp_type.value == AdpTypeEnum.BETA.value:
+            diag = self._beta_diagonal_as_u(aniso)
+        else:
+            diag = (aniso.adp_11.value, aniso.adp_22.value, aniso.adp_33.value)
+        self._adp_iso._value = (diag[0] + diag[1] + diag[2]) / 3.0
+
+    def _beta_diagonal_as_u(self, aniso: object) -> tuple[float, float, float]:
+        """
+        Return the U diagonal ``(U11, U22, U33)`` for a beta atom.
+
+        Maps the dimensionless beta diagonal back to U via the
+        reciprocal cell (``U_ii = beta_ii / (2*pi**2 * a*_i**2)``).
+
+        Parameters
+        ----------
+        aniso : object
+            The atom's :class:`AtomSiteAniso` entry holding beta values.
+
+        Returns
+        -------
+        tuple[float, float, float]
+            The equivalent U diagonal components.
+        """
+        a_star, b_star, c_star = self._reciprocal_lengths_for_conversion()
+        two_pi_sq = 2.0 * math.pi**2
+        return (
+            aniso.adp_11.value / (two_pi_sq * a_star * a_star),
+            aniso.adp_22.value / (two_pi_sq * b_star * b_star),
+            aniso.adp_33.value / (two_pi_sq * c_star * c_star),
+        )
 
     def _get_aniso_entry(self) -> object | None:
         """Return the matching AtomSiteAniso entry, or None."""
@@ -360,7 +402,7 @@ class AtomSite(CategoryItem):
         aniso_coll = getattr(structure, '_atom_site_aniso', None)
         if aniso_coll is None:
             return None
-        lbl = self._label.value
+        lbl = self._id.value
         if lbl in aniso_coll:
             return aniso_coll[lbl]
         return None
@@ -383,6 +425,136 @@ class AtomSite(CategoryItem):
                 p = getattr(aniso, attr)
                 p.value *= factor
 
+    def _convert_adp_values_beta(self, old_enum: AdpTypeEnum, new_enum: AdpTypeEnum) -> None:
+        """
+        Convert ADP values to or from the dimensionless beta tensor.
+
+        The beta transform is cell-dependent (``beta_ij = 2*pi**2 * U_ij
+        * a*_i * a*_j``), so it routes through the parent structure's
+        reciprocal cell and pivots on the U tensor. ``beta`` is always
+        anisotropic, so switching from an isotropic type seeds the
+        diagonal first and switching to an isotropic type collapses it
+        afterwards.
+
+        A reachable parent cell is required;
+        :meth:`_reciprocal_lengths_for_conversion` raises ``ValueError``
+        when none is available.
+
+        Parameters
+        ----------
+        old_enum : AdpTypeEnum
+            Previous ADP type.
+        new_enum : AdpTypeEnum
+            New ADP type.
+        """
+        factor = 8.0 * math.pi**2
+        two_pi_sq = 2.0 * math.pi**2
+        suffixes = ('11', '22', '33', '12', '13', '23')
+        a_star, b_star, c_star = self._reciprocal_lengths_for_conversion()
+        pairs = (
+            a_star * a_star,
+            b_star * b_star,
+            c_star * c_star,
+            a_star * b_star,
+            a_star * c_star,
+            b_star * c_star,
+        )
+        if new_enum is AdpTypeEnum.BETA:
+            self._convert_to_beta(old_enum, factor, two_pi_sq, suffixes, pairs)
+        else:
+            self._convert_from_beta(new_enum, factor, two_pi_sq, suffixes, pairs)
+
+    def _convert_to_beta(
+        self,
+        old_enum: AdpTypeEnum,
+        factor: float,
+        two_pi_sq: float,
+        suffixes: tuple[str, ...],
+        pairs: tuple[float, ...],
+    ) -> None:
+        """
+        Build a U tensor and map it to the dimensionless beta tensor.
+
+        Seeds the diagonal from the iso value first when coming from an
+        isotropic type, then applies ``beta_ij = 2*pi**2 * U_ij * a*_i *
+        a*_j``.
+        """
+        if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}:
+            self._seed_aniso_from_iso()
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        if old_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
+            for suffix in suffixes:
+                getattr(aniso, f'_adp_{suffix}').value /= factor
+        for suffix, pair in zip(suffixes, pairs, strict=True):
+            p = getattr(aniso, f'_adp_{suffix}')
+            p.value = two_pi_sq * p.value * pair
+
+    def _convert_from_beta(
+        self,
+        new_enum: AdpTypeEnum,
+        factor: float,
+        two_pi_sq: float,
+        suffixes: tuple[str, ...],
+        pairs: tuple[float, ...],
+    ) -> None:
+        """
+        Map the beta tensor to U, then to B and/or the iso value.
+
+        Inverts ``beta_ij = 2*pi**2 * U_ij * a*_i * a*_j``, applies ``B
+        = 8*pi**2 * U`` when the new type is a B convention, and
+        collapses the diagonal when the new type is isotropic.
+        """
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        for suffix, pair in zip(suffixes, pairs, strict=True):
+            p = getattr(aniso, f'_adp_{suffix}')
+            p.value /= two_pi_sq * pair
+        if new_enum in {AdpTypeEnum.BISO, AdpTypeEnum.BANI}:
+            for suffix in suffixes:
+                getattr(aniso, f'_adp_{suffix}').value *= factor
+        if new_enum in {AdpTypeEnum.BISO, AdpTypeEnum.UISO}:
+            self._collapse_aniso_to_iso()
+            structure = getattr(getattr(self, '_parent', None), '_parent', None)
+            if structure is not None and hasattr(structure, '_sync_atom_site_aniso'):
+                structure._sync_atom_site_aniso()
+
+    def _reciprocal_lengths_for_conversion(self) -> tuple[float, float, float]:
+        """
+        Return ``(a*, b*, c*)`` from the parent structure's cell.
+
+        Returns
+        -------
+        tuple[float, float, float]
+            Reciprocal-cell edge lengths in inverse angstrom.
+
+        Raises
+        ------
+        ValueError
+            If the atom has no reachable parent cell, so a beta
+            conversion cannot be performed safely.
+        """
+        structure = getattr(getattr(self, '_parent', None), '_parent', None)
+        cell = getattr(structure, 'cell', None) if structure is not None else None
+        if cell is None:
+            msg = (
+                f"Cannot convert the ADP type to or from 'beta' for atom "
+                f"'{self._id.value}': no unit cell is reachable. Add the atom "
+                f'to a structure with a defined cell before switching to or from '
+                f'the beta tensor.'
+            )
+            raise ValueError(msg)
+        return ecr.reciprocal_cell_lengths(
+            cell.length_a.value,
+            cell.length_b.value,
+            cell.length_c.value,
+            cell.angle_alpha.value,
+            cell.angle_beta.value,
+            cell.angle_gamma.value,
+        )
+
     def _reorder_adp_cif_names(self, new_type: str) -> None:
         """
         Reorder CIF names on adp_iso and aniso params for serialisation.
@@ -392,14 +564,17 @@ class AtomSite(CategoryItem):
         new_type : str
             The new ADP type value.
         """
+        if AdpTypeEnum(new_type) is AdpTypeEnum.BETA:
+            self._reorder_adp_cif_names_beta()
+            return
         is_u = AdpTypeEnum(new_type) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}
         if is_u:
-            self._adp_iso._cif_handler._names = [
+            self._adp_iso._tags._cif_names = [
                 '_atom_site.U_iso_or_equiv',
                 '_atom_site.B_iso_or_equiv',
             ]
         else:
-            self._adp_iso._cif_handler._names = [
+            self._adp_iso._tags._cif_names = [
                 '_atom_site.B_iso_or_equiv',
                 '_atom_site.U_iso_or_equiv',
             ]
@@ -411,22 +586,42 @@ class AtomSite(CategoryItem):
         for suffix in ('11', '22', '33', '12', '13', '23'):
             param = getattr(aniso, f'_adp_{suffix}')
             if is_u:
-                param._cif_handler._names = [
+                param._tags._cif_names = [
                     f'_atom_site_aniso.U_{suffix}',
                     f'_atom_site_aniso.B_{suffix}',
                 ]
             else:
-                param._cif_handler._names = [
+                param._tags._cif_names = [
                     f'_atom_site_aniso.B_{suffix}',
                     f'_atom_site_aniso.U_{suffix}',
                 ]
+
+    def _reorder_adp_cif_names_beta(self) -> None:
+        """
+        Put the beta-family CIF names first for a beta-tensor atom.
+        """
+        # adp_iso has no beta form; keep its B/U-equivalent ordering.
+        self._adp_iso._tags._cif_names = [
+            '_atom_site.B_iso_or_equiv',
+            '_atom_site.U_iso_or_equiv',
+        ]
+        aniso = self._get_aniso_entry()
+        if aniso is None:
+            return
+        for suffix in ('11', '22', '33', '12', '13', '23'):
+            param = getattr(aniso, f'_adp_{suffix}')
+            param._tags._cif_names = [
+                f'_atom_site_aniso.beta_{suffix}',
+                f'_atom_site_aniso.B_{suffix}',
+                f'_atom_site_aniso.U_{suffix}',
+            ]
 
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
 
     @property
-    def label(self) -> StringDescriptor:
+    def id(self) -> StringDescriptor:
         """
         Unique identifier for the atom site.
 
@@ -434,11 +629,11 @@ class AtomSite(CategoryItem):
         ``StringDescriptor`` object. Assigning to it updates the
         parameter value.
         """
-        return self._label
+        return self._id
 
-    @label.setter
-    def label(self, value: str) -> None:
-        self._label.value = value
+    @id.setter
+    def id(self, value: str) -> None:
+        self._id.value = value
 
     @property
     def type_symbol(self) -> StringDescriptor:
@@ -470,9 +665,22 @@ class AtomSite(CategoryItem):
         old_type = self._adp_type.value
         self._adp_type.value = value
         new_type = self._adp_type.value
-        if old_type != new_type:
-            self._convert_adp_values(old_type, new_type)
-            self._reorder_adp_cif_names(new_type)
+        if old_type == new_type:
+            return
+        aniso_types = {AdpTypeEnum.BANI, AdpTypeEnum.UANI, AdpTypeEnum.BETA}
+        involves_aniso = (
+            AdpTypeEnum(old_type) in aniso_types or AdpTypeEnum(new_type) in aniso_types
+        )
+        if involves_aniso and '_parent' not in self.__dict__:
+            # Anisotropic switch (tensor seeding or the cell-dependent
+            # beta transform) set inside ``create()`` before the atom is
+            # attached: nothing to convert on a fresh atom and the
+            # parent/cell is unreachable, so defer to the structure's
+            # aniso sync (run on add; see ``AtomSites.add``). Scalar
+            # iso↔iso switches need no parent and run eagerly below.
+            return
+        self._convert_adp_values(old_type, new_type)
+        self._reorder_adp_cif_names(new_type)
 
     @property
     def wyckoff_letter(self) -> StringDescriptor:
@@ -592,15 +800,25 @@ class AtomSite(CategoryItem):
         Return the isotropic ADP as a B-factor value.
 
         When ``adp_type`` is ``Uiso`` or ``Uani`` the stored U value is
-        converted to B via B = 8π²U.  Otherwise the stored value is
-        returned unchanged.
+        converted to B via B = 8π²U. For a ``beta`` atom the equivalent
+        B is computed straight from the dimensionless beta tensor via
+        the reciprocal cell (independent of the stored ``adp_iso``), so
+        it is never stale after a type switch. Otherwise the stored
+        value is returned unchanged.
 
         Returns
         -------
         float
             Equivalent B_iso value.
         """
-        if AdpTypeEnum(self._adp_type.value) in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
+        adp_enum = AdpTypeEnum(self._adp_type.value)
+        if adp_enum is AdpTypeEnum.BETA:
+            aniso = self._get_aniso_entry()
+            if aniso is None:
+                return self._adp_iso.value
+            u_diag = self._beta_diagonal_as_u(aniso)
+            return (u_diag[0] + u_diag[1] + u_diag[2]) / 3.0 * 8.0 * math.pi**2
+        if adp_enum in {AdpTypeEnum.UISO, AdpTypeEnum.UANI}:
             return self._adp_iso.value * 8.0 * math.pi**2
         return self._adp_iso.value
 
@@ -617,6 +835,31 @@ class AtomSites(CategoryCollection):
     def __init__(self) -> None:
         """Initialise an empty atom-sites collection."""
         super().__init__(item_type=AtomSite)
+
+    def add(self, item: object) -> None:
+        """
+        Add an atom site and reconcile the anisotropic-ADP rows.
+
+        Extends :meth:`CategoryCollection.add` so that an atom created
+        with an anisotropic ``adp_type`` (``Bani``/``Uani``/``beta``)
+        immediately exposes its ``atom_site_aniso`` entry, materialising
+        and CIF-reordering it via the parent structure's sync. This lets
+        ``create(adp_type='beta')`` work inline: the row exists (with
+        zero defaults) right after creation, ready for component
+        assignment.
+
+        Parameters
+        ----------
+        item : object
+            The :class:`AtomSite` to add.
+        """
+        super().add(item)
+        structure = getattr(self, '_parent', None)
+        if structure is None or not hasattr(structure, '_sync_atom_site_aniso'):
+            return
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
+        if item.adp_type.value in aniso_types:
+            structure._sync_atom_site_aniso()
 
     # ------------------------------------------------------------------
     #  Private helper methods
@@ -644,7 +887,7 @@ class AtomSites(CategoryCollection):
         """
         structure = self._parent
         name_hm = structure.space_group.name_h_m.value
-        coord_code = structure.space_group.it_coordinate_system_code.value
+        coord_code = structure.space_group.coord_system_code.value
         supported = ecr.space_group_wyckoff_table(name_hm, coord_code) is not None
         for atom in self._items:
             if atom._wyckoff_letter_needs_validation:
@@ -685,7 +928,7 @@ class AtomSites(CategoryCollection):
         self._clear_fract_symmetry_constrained(atom)
         if atom.wyckoff_letter.value and not called_by_minimizer:
             log.warning(
-                f'Wyckoff letter of {atom.label.value} is stored but not '
+                f'Wyckoff letter of {atom.id.value} is stored but not '
                 f'validated because the space group is untabulated'
             )
         atom._wyckoff_coord_baseline = (atom.fract_x.value, atom.fract_y.value, atom.fract_z.value)
@@ -719,31 +962,47 @@ class AtomSites(CategoryCollection):
         )
         key_changed = atom._wyckoff_key_baseline is not None and atom._wyckoff_key_baseline != key
         detect = (not called_by_minimizer) and (not letter_before or coords_changed or key_changed)
+        position = None
         if detect:
             position = ecr.detect_wyckoff_position(name_hm, coord_code, coords)
             if position is not None and letter_before and position.letter != letter_before:
                 log.warning(
-                    f'change moved the Wyckoff letter of {atom.label.value} '
+                    f'change moved the Wyckoff letter of {atom.id.value} '
                     f'from {letter_before} to {position.letter}'
                 )
             if position is not None:
                 atom._set_wyckoff_letter_detected(position.letter)
+            coord_template = position.coord_template if position is not None else None
+            multiplicity = position.multiplicity if position is not None else None
+            atom._wyckoff_template_cache = coord_template
+        elif called_by_minimizer and letter_before and atom._wyckoff_template_cache is not None:
+            # Fast refinement path: letter and space group are fixed
+            # for the duration of a fit, so the resolved orbit template
+            # is stable. Reuse it and only re-snap, skipping the
+            # per-template lstsq orbit search in wyckoff_position_info.
+            coord_template = atom._wyckoff_template_cache
+            multiplicity = atom._multiplicity.value
         elif letter_before:
             position = ecr.wyckoff_position_info(
                 name_hm, coord_code, letter_before, fract_xyz=coords
             )
+            coord_template = position.coord_template if position is not None else None
+            multiplicity = position.multiplicity if position is not None else None
+            atom._wyckoff_template_cache = coord_template
         else:
-            position = None
+            coord_template = None
+            multiplicity = None
 
-        if position is None or position.coord_template is None:
+        if coord_template is None:
             atom._multiplicity.value = None
             self._clear_fract_symmetry_constrained(atom)
             atom._wyckoff_coord_baseline = coords
             atom._wyckoff_key_baseline = key
+            atom._wyckoff_template_cache = None
             return
 
-        atom._multiplicity.value = position.multiplicity
-        snapped, flags = ecr.snap_to_wyckoff_template(position.coord_template, coords)
+        atom._multiplicity.value = multiplicity
+        snapped, flags = ecr.snap_to_wyckoff_template(coord_template, coords)
         atom.fract_x.value = snapped[0]
         atom.fract_y.value = snapped[1]
         atom.fract_z.value = snapped[2]
@@ -756,12 +1015,12 @@ class AtomSites(CategoryCollection):
         if moved and not called_by_minimizer:
             if not detect:
                 log.warning(
-                    f'coordinates of {atom.label.value} did not fit letter '
+                    f'coordinates of {atom.id.value} did not fit letter '
                     f'{position.letter} and were adjusted'
                 )
             elif letter_before and position.letter == letter_before:
                 log.warning(
-                    f'coordinates of {atom.label.value} were adjusted to satisfy '
+                    f'coordinates of {atom.id.value} were adjusted to satisfy '
                     f'Wyckoff letter {position.letter}'
                 )
         atom._wyckoff_coord_baseline = snapped
@@ -775,7 +1034,11 @@ class AtomSites(CategoryCollection):
         for axis_param in (atom._fract_x, atom._fract_y, atom._fract_z):
             axis_param._set_symmetry_constrained(value=False)
 
-    def _apply_adp_symmetry_constraints(self) -> None:
+    def _apply_adp_symmetry_constraints(
+        self,
+        *,
+        called_by_minimizer: bool = False,
+    ) -> None:
         """
         Apply symmetry rules to anisotropic ADP tensor components.
 
@@ -786,9 +1049,9 @@ class AtomSites(CategoryCollection):
         and ``adp_iso`` is flagged as fixed for all anisotropic atoms.
         """
         structure = self._parent
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         space_group_name = structure.space_group.name_h_m.value
-        space_group_coord_code = structure.space_group.it_coordinate_system_code.value
+        space_group_coord_code = structure.space_group.coord_system_code.value
         aniso_collection = structure.atom_site_aniso
 
         for atom in self._items:
@@ -800,7 +1063,7 @@ class AtomSites(CategoryCollection):
             wl = atom.wyckoff_letter.value
             if not wl:
                 continue
-            lbl = atom.label.value
+            lbl = atom.id.value
             if lbl not in aniso_collection:
                 continue
             aniso_entry = aniso_collection[lbl]
@@ -827,7 +1090,10 @@ class AtomSites(CategoryCollection):
             adp_keys = ('adp_11', 'adp_22', 'adp_33', 'adp_12', 'adp_13', 'adp_23')
             for key, is_free in zip(adp_keys, ref_i, strict=False):
                 param = getattr(aniso_entry, key)
-                param.value = dummy[key]
+                if called_by_minimizer:
+                    param._set_value_from_minimizer(dummy[key])
+                else:
+                    param.value = dummy[key]
                 param._set_symmetry_constrained(value=not is_free)
 
     def _sync_iso_from_aniso(self) -> None:
@@ -839,7 +1105,7 @@ class AtomSites(CategoryCollection):
         so that the isotropic value stays consistent with the current
         tensor state.
         """
-        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value}
+        aniso_types = {AdpTypeEnum.BANI.value, AdpTypeEnum.UANI.value, AdpTypeEnum.BETA.value}
         for atom in self._items:
             if atom.adp_type.value in aniso_types:
                 atom._collapse_aniso_to_iso()
@@ -862,5 +1128,7 @@ class AtomSites(CategoryCollection):
         self._apply_atomic_coordinates_symmetry_constraints(
             called_by_minimizer=called_by_minimizer
         )
-        self._apply_adp_symmetry_constraints()
+        self._apply_adp_symmetry_constraints(
+            called_by_minimizer=called_by_minimizer,
+        )
         self._sync_iso_from_aniso()

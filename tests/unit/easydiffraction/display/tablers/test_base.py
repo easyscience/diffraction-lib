@@ -59,8 +59,8 @@ class TestTableBackendBase:
         assert isinstance(color, str)
 
     def test_pandas_border_color_property(self):
-        from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
         from easydiffraction.display.tablers.rich import RichTableBackend
+        from easydiffraction.display.theme import DARK_AXIS_FRAME_COLOR
 
         backend = RichTableBackend()
         color = backend._pandas_border_color

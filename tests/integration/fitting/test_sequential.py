@@ -34,7 +34,7 @@ def _create_sequential_project(
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.8909
     model.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -44,7 +44,7 @@ def _create_sequential_project(
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -54,7 +54,7 @@ def _create_sequential_project(
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -63,7 +63,7 @@ def _create_sequential_project(
         adp_iso=0.5,
     )
     model.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -73,7 +73,7 @@ def _create_sequential_project(
     )
 
     # Experiment (template)
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     expt = ExperimentFactory.from_data_path(
         name='template',
         data_path=data_path,
@@ -85,9 +85,9 @@ def _create_sequential_project(
     expt.peak.broad_gauss_w = 0.123
     expt.peak.broad_lorentz_x = 0
     expt.peak.broad_lorentz_y = 0.0797
-    expt.background.create(id='1', x=10, y=170)
-    expt.background.create(id='2', x=165, y=170)
-    expt.linked_phases.create(id='lbco', scale=9.0)
+    expt.background.create(id='1', position=10, intensity=170)
+    expt.background.create(id='2', position=165, intensity=170)
+    expt.linked_structures.create(structure_id='lbco', scale=9.0)
 
     # Project assembly
     project = Project(name='seq_test')
@@ -96,10 +96,10 @@ def _create_sequential_project(
 
     # Free parameters
     model.cell.length_a.free = True
-    expt.linked_phases['lbco'].scale.free = True
+    expt.linked_structures['lbco'].scale.free = True
     expt.instrument.calib_twotheta_offset.free = True
-    expt.background['1'].y.free = True
-    expt.background['2'].y.free = True
+    expt.background['1'].intensity.free = True
+    expt.background['2'].intensity.free = True
 
     # Initial fit on the template
     project.verbosity = 'silent'
@@ -156,7 +156,7 @@ def test_fit_sequential_produces_csv(tmp_path) -> None:
 
     _run_sequential_fit(project, data_dir)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     assert csv_path.is_file(), 'results.csv was not created'
 
     with csv_path.open() as f:
@@ -195,7 +195,7 @@ def test_fit_sequential_crash_recovery(tmp_path) -> None:
     # First run: fit all 3 files
     _run_sequential_fit(project, data_dir)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
         rows_first = list(csv.DictReader(f))
     assert len(rows_first) == 3
@@ -220,7 +220,7 @@ def test_fit_sequential_parameter_propagation(tmp_path) -> None:
 
     _run_sequential_fit(project, data_dir)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
         rows = list(csv.DictReader(f))
 
@@ -249,7 +249,7 @@ def test_fit_sequential_with_diffrn_extract_rules(tmp_path) -> None:
 
     _run_sequential_fit(project, data_dir)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
         rows = list(csv.DictReader(f))
 
@@ -268,39 +268,51 @@ def test_fit_sequential_with_diffrn_extract_rules(tmp_path) -> None:
 
 def test_fit_sequential_requires_saved_project(tmp_path) -> None:
     """fit_sequential raises if project hasn't been saved."""
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     model = StructureFactory.from_scratch(name='s')
     expt = ExperimentFactory.from_data_path(
         name='e',
         data_path=data_path,
     )
-    expt.linked_phases.create(id='s', scale=1.0)
-    expt.linked_phases['s'].scale.free = True
+    expt.linked_structures.create(structure_id='s', scale=1.0)
+    expt.linked_structures['s'].scale.free = True
     project = Project(name='unsaved')
     project.structures.add(model)
     project.experiments.add(expt)
+
+    # A matching data file so source resolution passes and the
+    # unsaved-project precondition is reached.
+    (tmp_path / 'scan.xye').write_text('1 2 3\n')
 
     with pytest.raises(ValueError, match='must be saved'):
         _run_sequential_fit(project, str(tmp_path))
 
 
-def test_fit_sequential_requires_one_structure(tmp_path) -> None:
+def test_fit_sequential_requires_at_least_one_structure(tmp_path) -> None:
     """fit_sequential raises if no structures exist."""
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
+    expt = ExperimentFactory.from_data_path(name='e', data_path=data_path)
     project = Project(name='no_struct')
+    project.experiments.add(expt)
     project.save_as(str(tmp_path / 'proj'))
 
-    with pytest.raises(ValueError, match='exactly 1 structure'):
+    # One loaded experiment (so sequential applies) and a matching data
+    # file (so source resolution passes) make the missing structure the
+    # first precondition to fail.
+    (tmp_path / 'scan.xye').write_text('1 2 3\n')
+
+    with pytest.raises(ValueError, match='at least 1 structure'):
         _run_sequential_fit(project, str(tmp_path))
 
 
 def test_fit_sequential_requires_one_experiment(tmp_path) -> None:
-    """fit_sequential raises if no experiments exist."""
+    """Sequential mode does not apply with zero loaded experiments."""
     model = StructureFactory.from_scratch(name='s')
     project = Project(name='no_expt')
     project.structures.add(model)
     project.save_as(str(tmp_path / 'proj'))
 
-    with pytest.raises(ValueError, match='exactly 1 experiment'):
+    with pytest.raises(ValueError, match="Fit mode 'sequential' does not apply"):
         _run_sequential_fit(project, str(tmp_path))
 
 
@@ -315,7 +327,7 @@ def test_fit_sequential_parallel(tmp_path) -> None:
 
     _run_sequential_fit(project, data_dir, max_workers=2)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     assert csv_path.is_file(), 'results.csv was not created'
 
     with csv_path.open() as f:
@@ -355,7 +367,7 @@ def test_apply_params_from_csv_loads_data_and_params(tmp_path) -> None:
 
     _run_sequential_fit(project, data_dir)
 
-    csv_path = project.info.path / 'analysis' / 'results.csv'
+    csv_path = project.metadata.path / 'analysis' / 'results.csv'
     with csv_path.open() as f:
         rows = list(csv.DictReader(f))
 

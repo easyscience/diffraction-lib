@@ -18,7 +18,7 @@ from easydiffraction.core.variable import GenericDescriptorBase
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 def _result_display_handler(label: str) -> DisplayHandler:
@@ -48,47 +48,48 @@ class FitResultBase(CategoryItem):
     )
 
     def __init__(self) -> None:
+        """Initialize the common persisted fit-result descriptors."""
         super().__init__()
         self._result_kind = EnumDescriptor(
             name='result_kind',
             enum=FitResultKindEnum,
             description='Kind of the latest persisted fit-result projection.',
-            cif_handler=CifHandler(names=['_fit_result.result_kind']),
+            tags=TagSpec(edi_names=['_fit_result.result_kind']),
             display_handler=_result_display_handler('Result kind'),
         )
         self._success = BoolDescriptor(
             name='success',
             description='Whether the latest persisted fit-result projection succeeded.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_result.success']),
+            tags=TagSpec(edi_names=['_fit_result.success']),
             display_handler=_result_display_handler('Success'),
         )
         self._message = StringDescriptor(
             name='message',
             description='Status message for the latest persisted fit-result projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_result.message']),
+            tags=TagSpec(edi_names=['_fit_result.message']),
             display_handler=_result_display_handler('Message'),
         )
         self._iterations = IntegerDescriptor(
             name='iterations',
             description='Iteration count for the latest persisted fit-result projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_result.iterations']),
+            tags=TagSpec(edi_names=['_fit_result.iterations']),
             display_handler=_result_display_handler('Iterations'),
         )
         self._fitting_time = NumericDescriptor(
             name='fitting_time',
             description='Fitting time in seconds for the latest persisted projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_result.fitting_time']),
+            tags=TagSpec(edi_names=['_fit_result.fitting_time']),
             display_handler=_result_display_handler('Fitting time (s)'),
         )
         self._reduced_chi_square = NumericDescriptor(
             name='reduced_chi_square',
             description='Reduced chi-square for the latest persisted projection.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(names=['_fit_result.reduced_chi_square']),
+            tags=TagSpec(edi_names=['_fit_result.reduced_chi_square']),
             display_handler=_result_display_handler('Reduced chi-square'),
         )
 

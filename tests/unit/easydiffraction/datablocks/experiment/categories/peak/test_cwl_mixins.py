@@ -3,7 +3,7 @@
 
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
 from easydiffraction.datablocks.experiment.categories.peak.cwl import (
-    CwlPseudoVoigtEmpiricalAsymmetry,
+    CwlPseudoVoigtBerarBaldinozziAsymmetry,
 )
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 
@@ -19,12 +19,12 @@ def test_cwl_pseudo_voigt_params_exist_and_settable():
 
 
 def test_cwl_split_pseudo_voigt_adds_empirical_asymmetry():
-    peak = CwlPseudoVoigtEmpiricalAsymmetry()
-    # Has broadening and empirical asymmetry params
+    peak = CwlPseudoVoigtBerarBaldinozziAsymmetry()
+    # Has broadening and Berar-Baldinozzi asymmetry params
     assert peak.broad_gauss_w.name == 'broad_gauss_w'
-    assert peak.asym_empir_1.name == 'asym_empir_1'
-    peak.asym_empir_2 = 0.345
-    assert peak.asym_empir_2.value == 0.345
+    assert peak.asym_beba_a0.name == 'asym_beba_a0'
+    peak.asym_beba_b0 = 0.345
+    assert peak.asym_beba_b0.value == 0.345
 
 
 def test_cwl_tch_adds_fcj_asymmetry():

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Calculated powder reflection categories for CWL and TOF."""
 
 from __future__ import annotations
 
@@ -24,7 +25,7 @@ from easydiffraction.datablocks.experiment.item.enums import BeamModeEnum
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -38,15 +39,18 @@ class PowderReflnBase(SingleCrystalRefln):
     def __init__(self) -> None:
         super().__init__()
 
-        self._phase_id = StringDescriptor(
-            name='phase_id',
-            description='Identifier of the linked phase for this reflection',
+        self._structure_id = StringDescriptor(
+            name='structure_id',
+            description='Identifier of the linked structure for this reflection',
             display_handler=DisplayHandler(
-                display_name='Phase',
-                latex_name='Phase',
+                display_name='Structure',
+                latex_name='Structure',
             ),
             value_spec=AttributeSpec(default=''),
-            cif_handler=CifHandler(names=['_refln.phase_id']),
+            tags=TagSpec(
+                edi_names=['_refln.structure_id'],
+                cif_names=['_pd_refln.phase_id', '_refln.phase_id'],
+            ),
         )
         self._f_calc = NumericDescriptor(
             name='f_calc',
@@ -59,7 +63,7 @@ class PowderReflnBase(SingleCrystalRefln):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.f_calc']),
+            tags=TagSpec(edi_names=['_refln.f_calc']),
         )
         self._f_squared_calc = NumericDescriptor(
             name='f_squared_calc',
@@ -72,13 +76,13 @@ class PowderReflnBase(SingleCrystalRefln):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.f_squared_calc']),
+            tags=TagSpec(edi_names=['_refln.f_squared_calc']),
         )
 
     @property
-    def phase_id(self) -> StringDescriptor:
-        """Linked-phase identifier for this reflection."""
-        return self._phase_id
+    def structure_id(self) -> StringDescriptor:
+        """Linked-structure identifier for this reflection."""
+        return self._structure_id
 
     @property
     def f_calc(self) -> NumericDescriptor:
@@ -95,7 +99,7 @@ class PowderReflnBase(SingleCrystalRefln):
         """Powder reflection descriptors serialized in CIF loops."""
         return [
             self._id,
-            self._phase_id,
+            self._structure_id,
             self._d_spacing,
             self._sin_theta_over_lambda,
             self._index_h,
@@ -126,7 +130,7 @@ class PowderCwlRefln(PowderReflnBase):
                 default=0.0,
                 validator=RangeValidator(ge=0, le=180),
             ),
-            cif_handler=CifHandler(names=['_refln.two_theta']),
+            tags=TagSpec(edi_names=['_refln.two_theta']),
         )
 
     @property
@@ -160,7 +164,7 @@ class PowderTofRefln(PowderReflnBase):
                 default=0.0,
                 validator=RangeValidator(ge=0),
             ),
-            cif_handler=CifHandler(names=['_refln.time_of_flight']),
+            tags=TagSpec(edi_names=['_refln.time_of_flight']),
         )
 
     @property
@@ -189,7 +193,7 @@ class PowderReflnDataBase(CategoryCollection):
             item = self._item_type()
             item._parent = self
             item.id._value = str(index)
-            item.phase_id._value = str(record.phase_id)
+            item.structure_id._value = str(record.structure_id)
             item.d_spacing._value = float(record.d_spacing)
             item.sin_theta_over_lambda._value = float(record.sin_theta_over_lambda)
             item.index_h._value = record.index_h
@@ -218,9 +222,9 @@ class PowderReflnDataBase(CategoryCollection):
         return np.fromiter((item.id.value for item in self._items), dtype=object)
 
     @property
-    def phase_id(self) -> np.ndarray:
-        """Linked-phase identifiers for all rows."""
-        return np.fromiter((item.phase_id.value for item in self._items), dtype=object)
+    def structure_id(self) -> np.ndarray:
+        """Linked-structure identifiers for all rows."""
+        return np.fromiter((item.structure_id.value for item in self._items), dtype=object)
 
     @property
     def d_spacing(self) -> np.ndarray:

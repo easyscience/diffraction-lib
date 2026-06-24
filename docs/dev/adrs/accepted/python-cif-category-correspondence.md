@@ -5,6 +5,12 @@
 
 ## Context
 
+[`edstar-project-persistence.md`](edstar-project-persistence.md)
+replaces this ADR's scoped Python-to-`project.cif` correspondence with
+Python-to-Edi correspondence for regular project persistence. This ADR
+remains historical context for the old CIF layout and for the reasoning
+behind previous Python/CIF naming exceptions.
+
 EasyDiffraction exposes a Python object graph and persists state in CIF
 files. The public Python API should be easy for scientists to predict,
 while CIF output should remain readable and semantically useful.
@@ -124,7 +130,7 @@ to objects reached from the current `Project` root, for example
 | `analysis.sequential_fit_extract[id].pattern`     | `_sequential_fit_extract.pattern`  | Yes    | Direct collection mapping.                                                                          |
 | `analysis.sequential_fit_extract[id].required`    | `_sequential_fit_extract.required` | Yes    | Direct collection mapping.                                                                          |
 | `analysis.aliases[label].label`                   | `_alias.label`                     | Partly | Python collection is plural; CIF row category is singular.                                          |
-| `analysis.aliases[label].param_unique_name`       | `_alias.param_unique_name`         | Partly | Python collection is plural; CIF row category is singular.                                          |
+| `analysis.aliases[label].parameter_unique_name`   | `_alias.parameter_unique_name`     | Partly | Python collection is plural; CIF row category is singular.                                          |
 | `analysis.constraints[id].id`                     | `_constraint.id`                   | Yes    | Direct explicit row-key mapping; older CIFs may backfill the id from the expression left-hand side. |
 | `analysis.constraints[id].expression`             | `_constraint.expression`           | Yes    | Direct row-field mapping; `lhs_alias` and `rhs_expr` are derived Python helpers.                    |
 
@@ -154,12 +160,12 @@ to objects reached from the current `Project` root, for example
 | `experiment.peak.broad_gauss_w`               | `_peak.broad_gauss_w`                                                              | Yes    | CWL peak field.                                                                  |
 | `experiment.peak.broad_lorentz_x`             | `_peak.broad_lorentz_x`                                                            | Yes    | CWL peak field.                                                                  |
 | `experiment.peak.broad_lorentz_y`             | `_peak.broad_lorentz_y`                                                            | Yes    | CWL peak field.                                                                  |
-| `experiment.peak.asym_empir_1..4`             | `_peak.asym_empir_1..4`                                                            | Yes    | CWL peak field group.                                                            |
+| `experiment.peak.asym_beba_{a0,b0,a1,b1}`     | `_peak.asym_beba_{a0,b0,a1,b1}`                                                    | Yes    | CWL peak field group.                                                            |
 | `experiment.peak.asym_fcj_1..2`               | `_peak.asym_fcj_1..2`                                                              | Yes    | CWL peak field group.                                                            |
 | `experiment.peak.broad_gauss_sigma_0..2`      | `_peak.gauss_sigma_0..2`                                                           | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.    |
 | `experiment.peak.broad_lorentz_gamma_0..2`    | `_peak.lorentz_gamma_0..2`                                                         | Partly | Python prefixes the family with `broad_`; CIF tags omit that grouping prefix.    |
-| `experiment.peak.exp_rise_alpha_0..1`         | `_peak.rise_alpha_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
-| `experiment.peak.exp_decay_beta_0..1`         | `_peak.decay_beta_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
+| `experiment.peak.rise_alpha_0..1`             | `_peak.rise_alpha_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
+| `experiment.peak.decay_beta_0..1`             | `_peak.decay_beta_0..1`                                                            | Partly | Python prefixes the family with `exp_`; CIF tags omit that grouping prefix.      |
 | `experiment.peak.dexp_*`                      | `_peak.dexp_*`                                                                     | Yes    | TOF double-exponential peak field group.                                         |
 | `experiment.peak.damp_q`                      | `_peak.damp_q`                                                                     | Yes    | Total-scattering peak field.                                                     |
 | `experiment.peak.broad_q`                     | `_peak.broad_q`                                                                    | Yes    | Total-scattering peak field.                                                     |
@@ -209,32 +215,32 @@ to objects reached from the current `Project` root, for example
 
 ### Structure Configuration
 
-| Current Python path                               | Current CIF path                                           | Match? | Notes                                                                                                                                  |
-| ------------------------------------------------- | ---------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
-| `structure.cell.length_a`                         | `_cell.length_a`                                           | Yes    | Direct category mapping.                                                                                                               |
-| `structure.cell.length_b`                         | `_cell.length_b`                                           | Yes    | Direct category mapping.                                                                                                               |
-| `structure.cell.length_c`                         | `_cell.length_c`                                           | Yes    | Direct category mapping.                                                                                                               |
-| `structure.cell.angle_alpha`                      | `_cell.angle_alpha`                                        | Yes    | Direct category mapping.                                                                                                               |
-| `structure.cell.angle_beta`                       | `_cell.angle_beta`                                         | Yes    | Direct category mapping.                                                                                                               |
-| `structure.cell.angle_gamma`                      | `_cell.angle_gamma`                                        | Yes    | Direct category mapping.                                                                                                               |
-| `structure.space_group.name_h_m`                  | `_space_group.name_H-M_alt`                                | Partly | Default write uses dictionary-canonical casing; legacy `_space_group_name_H-M_alt` and `_symmetry*` alternatives are accepted on read. |
-| `structure.space_group.it_coordinate_system_code` | `_space_group.IT_coordinate_system_code`                   | Partly | Default write uses dictionary-canonical casing; legacy underscore-form and `_symmetry*` alternatives are accepted on read.             |
-| `structure.atom_sites[label].label`               | `_atom_site.label`                                         | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].type_symbol`         | `_atom_site.type_symbol`                                   | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].fract_x`             | `_atom_site.fract_x`                                       | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].fract_y`             | `_atom_site.fract_y`                                       | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].fract_z`             | `_atom_site.fract_z`                                       | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].wyckoff_letter`      | `_atom_site.Wyckoff_symbol`                                | Partly | Default write uses dictionary-canonical tag; legacy `_atom_site.Wyckoff_letter` is accepted on read.                                   |
-| `structure.atom_sites[label].occupancy`           | `_atom_site.occupancy`                                     | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_sites[label].adp_iso`             | `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv` | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_sites[label].adp_type`            | `_atom_site.ADP_type`                                      | Partly | Default write uses dictionary-canonical capitalization; legacy `_atom_site.adp_type` is accepted on read.                              |
-| `structure.atom_site_aniso[label].label`          | `_atom_site_aniso.label`                                   | Yes    | Direct row-field mapping.                                                                                                              |
-| `structure.atom_site_aniso[label].adp_11`         | `_atom_site_aniso.B_11` or `_atom_site_aniso.U_11`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_site_aniso[label].adp_22`         | `_atom_site_aniso.B_22` or `_atom_site_aniso.U_22`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_site_aniso[label].adp_33`         | `_atom_site_aniso.B_33` or `_atom_site_aniso.U_33`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_site_aniso[label].adp_12`         | `_atom_site_aniso.B_12` or `_atom_site_aniso.U_12`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_site_aniso[label].adp_13`         | `_atom_site_aniso.B_13` or `_atom_site_aniso.U_13`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
-| `structure.atom_site_aniso[label].adp_23`         | `_atom_site_aniso.B_23` or `_atom_site_aniso.U_23`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| Current Python path                          | Current CIF path                                           | Match? | Notes                                                                                                                                  |
+| -------------------------------------------- | ---------------------------------------------------------- | ------ | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `structure.cell.length_a`                    | `_cell.length_a`                                           | Yes    | Direct category mapping.                                                                                                               |
+| `structure.cell.length_b`                    | `_cell.length_b`                                           | Yes    | Direct category mapping.                                                                                                               |
+| `structure.cell.length_c`                    | `_cell.length_c`                                           | Yes    | Direct category mapping.                                                                                                               |
+| `structure.cell.angle_alpha`                 | `_cell.angle_alpha`                                        | Yes    | Direct category mapping.                                                                                                               |
+| `structure.cell.angle_beta`                  | `_cell.angle_beta`                                         | Yes    | Direct category mapping.                                                                                                               |
+| `structure.cell.angle_gamma`                 | `_cell.angle_gamma`                                        | Yes    | Direct category mapping.                                                                                                               |
+| `structure.space_group.name_h_m`             | `_space_group.name_H-M_alt`                                | Partly | Default write uses dictionary-canonical casing; legacy `_space_group_name_H-M_alt` and `_symmetry*` alternatives are accepted on read. |
+| `structure.space_group.coord_system_code`    | `_space_group.IT_coordinate_system_code`                   | Partly | Default write uses dictionary-canonical casing; legacy underscore-form and `_symmetry*` alternatives are accepted on read.             |
+| `structure.atom_sites[label].label`          | `_atom_site.label`                                         | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].type_symbol`    | `_atom_site.type_symbol`                                   | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].fract_x`        | `_atom_site.fract_x`                                       | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].fract_y`        | `_atom_site.fract_y`                                       | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].fract_z`        | `_atom_site.fract_z`                                       | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].wyckoff_letter` | `_atom_site.Wyckoff_symbol`                                | Partly | Default write uses dictionary-canonical tag; legacy `_atom_site.Wyckoff_letter` is accepted on read.                                   |
+| `structure.atom_sites[label].occupancy`      | `_atom_site.occupancy`                                     | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_sites[label].adp_iso`        | `_atom_site.B_iso_or_equiv` or `_atom_site.U_iso_or_equiv` | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_sites[label].adp_type`       | `_atom_site.ADP_type`                                      | Partly | Default write uses dictionary-canonical capitalization; legacy `_atom_site.adp_type` is accepted on read.                              |
+| `structure.atom_site_aniso[label].label`     | `_atom_site_aniso.label`                                   | Yes    | Direct row-field mapping.                                                                                                              |
+| `structure.atom_site_aniso[label].adp_11`    | `_atom_site_aniso.B_11` or `_atom_site_aniso.U_11`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_site_aniso[label].adp_22`    | `_atom_site_aniso.B_22` or `_atom_site_aniso.U_22`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_site_aniso[label].adp_33`    | `_atom_site_aniso.B_33` or `_atom_site_aniso.U_33`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_site_aniso[label].adp_12`    | `_atom_site_aniso.B_12` or `_atom_site_aniso.U_12`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_site_aniso[label].adp_13`    | `_atom_site_aniso.B_13` or `_atom_site_aniso.U_13`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
+| `structure.atom_site_aniso[label].adp_23`    | `_atom_site_aniso.B_23` or `_atom_site_aniso.U_23`         | No     | Python uses type-neutral ADP name; CIF uses B/U-specific tags.                                                                         |
 
 ### Not Represented In V1
 

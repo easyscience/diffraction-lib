@@ -1,8 +1,8 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
 
-from collections import UserList
 import csv
+from collections import UserList
 from types import SimpleNamespace
 
 
@@ -87,10 +87,10 @@ def test_apply_params_from_csv_resolves_relative_file_paths(tmp_path):
     from easydiffraction.project.project import Project
 
     project = Project()
-    project.info.path = tmp_path / 'project'
-    analysis_dir = project.info.path / 'analysis'
+    project.metadata.path = tmp_path / 'project'
+    analysis_dir = project.metadata.path / 'analysis'
     analysis_dir.mkdir(parents=True)
-    data_dir = project.info.path / 'experiments' / 'scan'
+    data_dir = project.metadata.path / 'experiments' / 'scan'
     data_dir.mkdir(parents=True)
     data_path = data_dir / 'scan_001.dat'
     data_path.write_text('1 2 3\n')
@@ -141,13 +141,13 @@ def test_undo_fit_save_reload_preserves_fit_parameter_controls(tmp_path):
     parameter.uncertainty = 0.04
     parameter.fit_min = 3.8
     parameter.fit_max = 4.0
-    parameter._set_fit_bounds_uncertainty_multiplier(4.0)
+    parameter._set_bounds_uncertainty_multiplier(4.0)
 
     project.analysis.fit_parameters.create(
-        param_unique_name=parameter.unique_name,
+        parameter_unique_name=parameter.unique_name,
         fit_min=parameter.fit_min,
         fit_max=parameter.fit_max,
-        fit_bounds_uncertainty_multiplier=4.0,
+        bounds_uncertainty_multiplier=4.0,
         start_value=3.87,
         start_uncertainty=0.02,
     )
@@ -172,13 +172,13 @@ def test_undo_fit_save_reload_preserves_fit_parameter_controls(tmp_path):
     assert loaded.analysis.fit_results is None
     assert loaded_row.fit_min.value == 3.8
     assert loaded_row.fit_max.value == 4.0
-    assert loaded_row.fit_bounds_uncertainty_multiplier.value == 4.0
+    assert loaded_row.bounds_uncertainty_multiplier.value == 4.0
     assert loaded_row.start_value.value == 3.87
     assert loaded_row.start_uncertainty.value == 0.02
     assert loaded_parameter.value == 3.87
     assert loaded_parameter.fit_min == 3.8
     assert loaded_parameter.fit_max == 4.0
-    assert loaded_parameter.fit_bounds_uncertainty_multiplier == 4.0
+    assert loaded_parameter.bounds_uncertainty_multiplier == 4.0
     assert loaded_parameter._fit_start_value == 3.87
     assert loaded_parameter._fit_start_uncertainty == 0.02
     assert second_outcome.was_no_op is True

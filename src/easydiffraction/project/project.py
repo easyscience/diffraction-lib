@@ -9,6 +9,7 @@ import shutil
 import tempfile
 from typing import TYPE_CHECKING
 from typing import ClassVar
+from typing import NoReturn
 
 from typeguard import typechecked
 from varname import varname
@@ -21,6 +22,9 @@ from easydiffraction.io.cif.serialize import analysis_from_cif
 from easydiffraction.io.cif.serialize import project_config_from_cif
 from easydiffraction.io.cif.serialize import project_config_to_cif
 from easydiffraction.io.cif.serialize import project_to_cif
+from easydiffraction.io.edi import edi_body_from_text
+from easydiffraction.io.edi import section_to_edi
+from easydiffraction.io.results_sidecar import carry_over_raw_sampler_state
 from easydiffraction.io.results_sidecar import read_analysis_results_sidecar
 from easydiffraction.io.results_sidecar import write_analysis_results_sidecar
 from easydiffraction.project.display import ProjectDisplay
@@ -40,8 +44,22 @@ if TYPE_CHECKING:
     from easydiffraction.project.categories.structure_style import StructureStyle
     from easydiffraction.project.categories.structure_view import StructureView
     from easydiffraction.project.categories.verbosity import Verbosity
-    from easydiffraction.project.project_info import ProjectInfo
+    from easydiffraction.project.project_metadata import ProjectMetadata
     from easydiffraction.report import Report
+
+
+def _raise_legacy_project_cif_error(
+    path: pathlib.Path,
+    *,
+    replacement: str,
+) -> NoReturn:
+    """Raise an explicit migration error for beta project CIF input."""
+    msg = (
+        f"Legacy beta project CIF file '{path}' is no longer supported as "
+        'project persistence. Open it in an EasyDiffraction version that '
+        f'can read beta project CIF, then save it again to create {replacement}.'
+    )
+    raise ValueError(msg)
 
 
 def _apply_csv_row_to_params(
@@ -122,16 +140,28 @@ def _resolve_data_path_from_results_csv(
     return project_path / path
 
 
-def _load_cif_directory(
-    cif_dir: pathlib.Path,
-    add_from_cif_path: Callable[[str], None],
+def _load_edi_directory(
+    section_dir: pathlib.Path,
+    add_from_edi_path: Callable[[str], None],
+    *,
+    replacement: str,
 ) -> None:
-    """Load all CIF files from one directory using the given loader."""
-    if not cif_dir.is_dir():
+    """Load Edi files and reject legacy-only project CIF files."""
+    if not section_dir.is_dir():
         return
 
-    for cif_file in sorted(cif_dir.glob('*.cif')):
-        add_from_cif_path(str(cif_file))
+    edi_files = sorted(section_dir.glob('*.edi'))
+    if edi_files:
+        for edi_file in edi_files:
+            add_from_edi_path(str(edi_file))
+        return
+
+    legacy_files = sorted(section_dir.glob('*.cif'))
+    if legacy_files:
+        _raise_legacy_project_cif_error(
+            legacy_files[0],
+            replacement=replacement,
+        )
 
 
 def _create_loading_project(project_cls: type[Project]) -> Project:
@@ -143,37 +173,67 @@ def _create_loading_project(project_cls: type[Project]) -> Project:
         project_cls._loading = False
 
 
-def _load_project_info(project: Project, project_path: pathlib.Path) -> None:
+def _load_project_metadata(project: Project, project_path: pathlib.Path) -> None:
     """
-    Restore project configuration from ``project.cif`` when present.
+    Restore project configuration from Edi.
     """
+    project_edi_path = project_path / 'project.edi'
+    if project_edi_path.is_file():
+        body = edi_body_from_text(project_edi_path.read_text())
+        project_config_from_cif(project, body)
+        return
+
     project_cif_path = project_path / 'project.cif'
     if project_cif_path.is_file():
-        project_config_from_cif(project, project_cif_path.read_text())
+        _raise_legacy_project_cif_error(
+            project_cif_path,
+            replacement='project.edi',
+        )
+
+    msg = f"Project directory '{project_path}' must contain project.edi."
+    raise FileNotFoundError(msg)
 
 
-def _resolved_analysis_cif_path(project_path: pathlib.Path) -> pathlib.Path | None:
-    """Return the preferred analysis CIF path for a saved project."""
-    analysis_cif_path = project_path / 'analysis' / 'analysis.cif'
-    if analysis_cif_path.is_file():
-        return analysis_cif_path
+def _resolved_analysis_path(project_path: pathlib.Path) -> pathlib.Path | None:
+    """Return the preferred analysis path for a saved project."""
+    for analysis_path in (
+        project_path / 'analysis' / 'analysis.edi',
+        project_path / 'analysis.edi',
+    ):
+        if analysis_path.is_file():
+            return analysis_path
 
-    analysis_cif_path = project_path / 'analysis.cif'
-    if analysis_cif_path.is_file():
-        return analysis_cif_path
+    for analysis_path in (
+        project_path / 'analysis' / 'analysis.cif',
+        project_path / 'analysis.cif',
+    ):
+        if analysis_path.is_file():
+            _raise_legacy_project_cif_error(
+                analysis_path,
+                replacement='analysis/analysis.edi',
+            )
     return None
+
+
+def _persistence_body_from_path(path: pathlib.Path) -> str:
+    """Read Edi text for a project section."""
+    if path.suffix == '.edi':
+        text = path.read_text(encoding='utf-8')
+        return edi_body_from_text(text)
+
+    _raise_legacy_project_cif_error(path, replacement='a .edi file')
 
 
 def _load_project_analysis(project: Project, project_path: pathlib.Path) -> None:
     """Restore analysis categories and sidecar state from disk."""
-    analysis_cif_path = _resolved_analysis_cif_path(project_path)
-    if analysis_cif_path is None:
+    analysis_path = _resolved_analysis_path(project_path)
+    if analysis_path is None:
         return
 
-    analysis_from_cif(project._analysis, analysis_cif_path.read_text())
+    analysis_from_cif(project._analysis, _persistence_body_from_path(analysis_path))
     read_analysis_results_sidecar(
         analysis=project._analysis,
-        analysis_dir=analysis_cif_path.parent,
+        analysis_dir=analysis_path.parent,
     )
     param_map = project._build_parameter_map()
     if project._analysis.fit_parameters:
@@ -205,7 +265,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         super().__init__()
 
         self._config = ProjectConfig(name, title, description)
-        object.__setattr__(self, '_info', self._config.info)
+        object.__setattr__(self, '_metadata', self._config.metadata)
         self._structures = Structures()
         self._experiments = Experiments()
         object.__setattr__(self, '_rendering_plot', self._config.rendering_plot)
@@ -258,7 +318,7 @@ class Project(GuardedBase):  # noqa: PLR0904
         current_project = cls._current_project
         if current_project is None:
             return None
-        return current_project.info.path
+        return current_project.metadata.path
 
     # ------------------------------------------------------------------
     # Dunder methods
@@ -280,14 +340,14 @@ class Project(GuardedBase):  # noqa: PLR0904
     # ------------------------------------------------------------------
 
     @property
-    def info(self) -> ProjectInfo:
+    def metadata(self) -> ProjectMetadata:
         """Project metadata container."""
-        return self._info
+        return self._metadata
 
     @property
     def name(self) -> str:
         """Convenience property for the project name."""
-        return self._info.name
+        return self._metadata.name
 
     @property
     def full_name(self) -> str:
@@ -373,8 +433,7 @@ class Project(GuardedBase):  # noqa: PLR0904
 
     @property
     def as_cif(self) -> str:
-        """Export whole project as CIF text."""
-        # Concatenate sections using centralized CIF serializers
+        """Serialize the whole project as EasyDiffraction STAR text."""
         return project_to_cif(self)
 
     @property
@@ -404,10 +463,10 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Load a project from a saved directory.
 
-        Reads ``project.cif``, ``structures/*.cif``,
-        ``experiments/*.cif``, and ``analysis.cif`` from *dir_path* and
-        reconstructs the full project state, including project-level
-        display configuration.
+        Reads Edi project files from *dir_path* and reconstructs the
+        full project state, including project-level display
+        configuration. Legacy beta CIF project files are rejected with
+        an explicit migration error.
 
         Parameters
         ----------
@@ -433,10 +492,18 @@ class Project(GuardedBase):  # noqa: PLR0904
         project = _create_loading_project(cls)
         project._saved = True
 
-        _load_project_info(project, project_path)
-        project.info.path = project_path
-        _load_cif_directory(project_path / 'structures', project._structures.add_from_cif_path)
-        _load_cif_directory(project_path / 'experiments', project._experiments.add_from_cif_path)
+        _load_project_metadata(project, project_path)
+        project.metadata.path = project_path
+        _load_edi_directory(
+            project_path / 'structures',
+            project._structures.add_from_edi_path,
+            replacement='structures/<structure>.edi',
+        )
+        _load_edi_directory(
+            project_path / 'experiments',
+            project._experiments.add_from_edi_path,
+            replacement='experiments/<experiment>.edi',
+        )
         _load_project_analysis(project, project_path)
 
         # 5. Resolve alias param references
@@ -451,12 +518,12 @@ class Project(GuardedBase):  # noqa: PLR0904
 
     def _resolve_alias_references(self) -> None:
         """
-        Resolve alias ``param_unique_name`` strings to live objects.
+        Resolve alias ``parameter_unique_name`` strings to live objects.
 
         After loading structures and experiments from CIF, aliases only
-        contain the ``param_unique_name`` string.  This method builds a
-        ``{unique_name: param}`` map from all project parameters and
-        wires each alias's ``_param_ref``.
+        contain the ``parameter_unique_name`` string.  This method
+        builds a ``{unique_name: param}`` map from all project
+        parameters and wires each alias's ``_param_ref``.
         """
         aliases = self._analysis.aliases
         if not aliases._items:
@@ -465,12 +532,12 @@ class Project(GuardedBase):  # noqa: PLR0904
         param_map = self._build_parameter_map()
 
         for alias in aliases:
-            uname = alias.param_unique_name.value
+            uname = alias.parameter_unique_name.value
             if uname in param_map:
                 alias._set_param(param_map[uname])
             else:
                 log.warning(
-                    f"Alias '{alias.label.value}' references unknown "
+                    f"Alias '{alias.id.value}' references unknown "
                     f"parameter '{uname}'. Reference not resolved."
                 )
 
@@ -494,11 +561,13 @@ class Project(GuardedBase):  # noqa: PLR0904
         """
         Save the project into the existing project directory.
         """
-        if self.info.path is None:
+        if self.metadata.path is None:
             log.error('Project path not specified. Use save_as() to define the path first.')
             return
 
-        console.paragraph(f"Saving project 📦 '{self.name}' to '{display_path(self.info.path)}'")
+        console.paragraph(
+            f"Saving project 📦 '{self.name}' to '{display_path(self.metadata.path)}'"
+        )
 
         # Apply constraints so dependent parameters are flagged
         # before serialization (user-constrained params are written
@@ -506,40 +575,40 @@ class Project(GuardedBase):  # noqa: PLR0904
         self._analysis._update_categories()
 
         # Ensure project directory exists
-        self.info.path.mkdir(parents=True, exist_ok=True)
+        self.metadata.path.mkdir(parents=True, exist_ok=True)
 
         # Save project-level configuration
-        with (self.info.path / 'project.cif').open('w') as f:
-            f.write(project_config_to_cif(self))
-            console.print('├── 📄 project.cif')
+        with (self.metadata.path / 'project.edi').open('w') as f:
+            f.write(section_to_edi(project_config_to_cif(self)))
+            console.print('├── 📄 project.edi')
 
         # Save structures
-        sm_dir = self.info.path / 'structures'
+        sm_dir = self.metadata.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 structures/')
         for structure in self.structures.values():
-            file_name: str = f'{structure.name}.cif'
+            file_name: str = f'{structure.name}.edi'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
-                f.write(structure.as_cif)
+                f.write(section_to_edi(structure.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save experiments
-        expt_dir = self.info.path / 'experiments'
+        expt_dir = self.metadata.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
         console.print('├── 📁 experiments/')
         for experiment in self.experiments.values():
-            file_name: str = f'{experiment.name}.cif'
+            file_name: str = f'{experiment.name}.edi'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
-                f.write(experiment.as_cif)
+                f.write(section_to_edi(experiment.as_cif))
                 console.print(f'│   └── 📄 {file_name}')
 
         # Save analysis
-        analysis_dir = self.info.path / 'analysis'
+        analysis_dir = self.metadata.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
-        with (analysis_dir / 'analysis.cif').open('w') as f:
-            f.write(self.analysis.as_cif)
+        with (analysis_dir / 'analysis.edi').open('w') as f:
+            f.write(section_to_edi(self.analysis.as_cif))
             console.print('├── 📁 analysis/')
         write_analysis_results_sidecar(
             analysis=self.analysis,
@@ -547,7 +616,9 @@ class Project(GuardedBase):  # noqa: PLR0904
         )
 
         analysis_file_names = sorted(
-            path.name for path in analysis_dir.iterdir() if path.is_file()
+            path.name
+            for path in analysis_dir.iterdir()
+            if path.is_file() and path.suffix in {'.edi', '.csv', '.h5'}
         )
         for index, file_name in enumerate(analysis_file_names):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
@@ -555,14 +626,14 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         report_paths = self.report._save_configured()
         if report_paths:
-            reports_dir = self.info.path / 'reports'
+            reports_dir = self.metadata.path / 'reports'
             console.print('└── 📁 reports/')
             for index, report_path in enumerate(report_paths):
                 branch = '└──' if index == len(report_paths) - 1 else '├──'
                 relative_path = report_path.relative_to(reports_dir)
                 console.print(f'    {branch} 📄 {relative_path}')
 
-        self.info.update_last_modified()
+        self.metadata.update_last_modified()
         self._saved = True
 
     def save_as(
@@ -591,7 +662,17 @@ class Project(GuardedBase):  # noqa: PLR0904
         else:
             project_dir = resolve_artifact_path(dir_path)
 
-        if overwrite and project_dir.is_dir():
+        previous_path = self.metadata.path
+        saving_in_place = (
+            previous_path is not None and project_dir.resolve() == previous_path.resolve()
+        )
+
+        # Saving in place (same path as the loaded/previous project)
+        # must behave like save(): never wipe the directory, or the
+        # existing mcmc.h5 (with the raw, resumable sampler-state groups
+        # that cannot be rebuilt from memory) would be lost. save()
+        # overwrites the derived arrays in place and keeps those groups.
+        if overwrite and project_dir.is_dir() and not saving_in_place:
             current_working_directory = pathlib.Path.cwd().resolve()
             resolved_project_dir = project_dir.resolve()
             if resolved_project_dir == current_working_directory:
@@ -603,7 +684,19 @@ class Project(GuardedBase):  # noqa: PLR0904
             else:
                 shutil.rmtree(project_dir)
 
-        self.info.path = project_dir
+        self.metadata.path = project_dir
+        # Relocating a saved Bayesian project to a new path must keep
+        # the raw, resumable sampler-state groups (emcee_chain /
+        # dream_state). save() rebuilds only the derived sidecar arrays
+        # from memory, so copy the raw groups across before they are
+        # rebuilt; else resume after load + save_as would have no chain
+        # to extend. Saving in place needs no copy (save() preserves
+        # them).
+        if previous_path is not None and not saving_in_place:
+            carry_over_raw_sampler_state(
+                source_analysis_dir=previous_path / 'analysis',
+                destination_analysis_dir=project_dir / 'analysis',
+            )
         self.save()
 
     def apply_params_from_csv(self, row_index: int) -> None:
@@ -637,11 +730,11 @@ class Project(GuardedBase):  # noqa: PLR0904
         from easydiffraction.analysis.sequential import _META_COLUMNS  # noqa: PLC0415
         from easydiffraction.core.variable import Parameter  # noqa: PLC0415
 
-        if self.info.path is None:
+        if self.metadata.path is None:
             msg = 'Project has no saved path. Save the project first.'
             raise FileNotFoundError(msg)
 
-        csv_path = pathlib.Path(self.info.path) / 'analysis' / 'results.csv'
+        csv_path = pathlib.Path(self.metadata.path) / 'analysis' / 'results.csv'
         if not csv_path.is_file():
             msg = f"Results CSV not found: '{csv_path}'"
             raise FileNotFoundError(msg)
@@ -663,7 +756,7 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         # 1. Reload data if file_path points to a real file
         file_path = row.get('file_path', '')
-        data_path = _resolve_data_path_from_results_csv(self.info.path, file_path)
+        data_path = _resolve_data_path_from_results_csv(self.metadata.path, file_path)
         if data_path is not None and data_path.is_file():
             experiment._load_ascii_data_to_experiment(str(data_path))
 

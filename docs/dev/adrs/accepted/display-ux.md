@@ -73,7 +73,9 @@ project.display.parameters.free()
 project.display.parameters.fittable()
 project.display.parameters.all()
 project.display.parameters.access()
-project.display.parameters.cif_uids()
+project.display.parameters.uid()
+project.display.parameters.edi()
+project.display.parameters.cif()
 
 project.display.fit.results()
 project.display.fit.correlations()
@@ -88,22 +90,26 @@ project.display.posterior.predictive(expt_name='hrpt')
 current responsibilities move to clearer homes, while the implementation
 may keep the existing helpers as internal delegation targets:
 
-| Current method               | New home                                                       |
-| ---------------------------- | -------------------------------------------------------------- |
-| `all_params()`               | `project.display.parameters.all()`                             |
-| `fittable_params()`          | `project.display.parameters.fittable()`                        |
-| `free_params()`              | `project.display.parameters.free()`                            |
-| `how_to_access_parameters()` | `project.display.parameters.access()`                          |
-| `parameter_cif_uids()`       | `project.display.parameters.cif_uids()`                        |
-| `fit_results()`              | `project.display.fit.results()`                                |
-| `constraints()`              | `project.analysis.constraints.show()`                          |
-| `as_cif()`                   | `project.analysis.as_cif` and `project.analysis.show_as_cif()` |
+| Current method               | New home                                                        |
+| ---------------------------- | --------------------------------------------------------------- |
+| `all_params()`               | `project.display.parameters.all()`                              |
+| `fittable_params()`          | `project.display.parameters.fittable()`                         |
+| `free_params()`              | `project.display.parameters.free()`                             |
+| `how_to_access_parameters()` | `project.display.parameters.access()`                           |
+| `parameter_uids()`           | `project.display.parameters.uid()`                              |
+| `parameter_edi_tags()`       | `project.display.parameters.edi()`                              |
+| `parameter_cif_tags()`       | `project.display.parameters.cif()`                              |
+| `fit_results()`              | `project.display.fit.results()`                                 |
+| `constraints()`              | `project.analysis.constraints.show()`                           |
+| `as_cif()`                   | `project.analysis.as_cif` and `project.analysis.show_as_text()` |
 
-`project.analysis` and `project.info` follow the same CIF display
-pattern as structures and experiments:
+`project.analysis` and `project.info` follow the same display pattern as
+structures and experiments:
 
-- `as_cif` is a read-only property returning CIF text as a string.
-- `show_as_cif()` pretty-prints the CIF text with a header.
+- `as_cif` is a read-only property returning the serialized CIF text as
+  a string (the block body that is persisted into the project's Edi
+  files).
+- `show_as_text()` pretty-prints that text with a header.
 
 ## Pattern Display
 

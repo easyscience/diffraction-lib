@@ -14,7 +14,6 @@ from easydiffraction import download_data
 TEMP_DIR = tempfile.gettempdir()
 
 
-@pytest.mark.fast
 def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='pbso4')
@@ -23,7 +22,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
     model.atom_sites.create(
-        label='Pb',
+        id='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
         fract_y=0.25,
@@ -32,7 +31,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         adp_iso=1.37,
     )
     model.atom_sites.create(
-        label='S',
+        id='S',
         type_symbol='S',
         fract_x=0.0654,
         fract_y=0.25,
@@ -41,7 +40,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         adp_iso=0.3777,
     )
     model.atom_sites.create(
-        label='O1',
+        id='O1',
         type_symbol='O',
         fract_x=0.9082,
         fract_y=0.25,
@@ -50,7 +49,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         adp_iso=1.9764,
     )
     model.atom_sites.create(
-        label='O2',
+        id='O2',
         type_symbol='O',
         fract_x=0.1935,
         fract_y=0.25,
@@ -59,7 +58,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         adp_iso=1.4456,
     )
     model.atom_sites.create(
-        label='O3',
+        id='O3',
         type_symbol='O',
         fract_x=0.0811,
         fract_y=0.0272,
@@ -69,7 +68,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_path = download_data(id=14, destination=TEMP_DIR)
+    data_path = download_data('meas-pbso4-d1a-part1', destination=TEMP_DIR)
     expt1 = ExperimentFactory.from_data_path(name='npd1', data_path=data_path)
     expt1.instrument.setup_wavelength = 1.91
     expt1.instrument.calib_twotheta_offset = -0.1406
@@ -78,7 +77,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.0878
-    expt1.linked_phases.create(id='pbso4', scale=1.46)
+    expt1.linked_structures.create(structure_id='pbso4', scale=1.46)
     expt1.background.type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
@@ -90,9 +89,9 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt1.background.create(id=id, x=x, y=y)
+        expt1.background.create(id=id, position=x, intensity=y)
 
-    data_path = download_data(id=15, destination=TEMP_DIR)
+    data_path = download_data('meas-pbso4-d1a-part2', destination=TEMP_DIR)
     expt2 = ExperimentFactory.from_data_path(name='npd2', data_path=data_path)
     expt2.instrument.setup_wavelength = 1.91
     expt2.instrument.calib_twotheta_offset = -0.1406
@@ -101,7 +100,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.386
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.0878
-    expt2.linked_phases.create(id='pbso4', scale=1.46)
+    expt2.linked_structures.create(structure_id='pbso4', scale=1.46)
     expt2.background.type = 'line-segment'
     for id, x, y in [
         ('1', 11.0, 206.1624),
@@ -113,7 +112,7 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt2.background.create(id=id, x=x, y=y)
+        expt2.background.create(id=id, position=x, intensity=y)
 
     # Create project
     project = Project()
@@ -141,7 +140,6 @@ def test_joint_fit_split_dataset_neutron_pd_cwl_pbso4() -> None:
     )
 
 
-@pytest.mark.fast
 def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Set structure
     model = StructureFactory.from_scratch(name='pbso4')
@@ -150,7 +148,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     model.cell.length_b = 5.39
     model.cell.length_c = 6.95
     model.atom_sites.create(
-        label='Pb',
+        id='Pb',
         type_symbol='Pb',
         fract_x=0.1876,
         fract_y=0.25,
@@ -159,7 +157,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         adp_iso=1.37,
     )
     model.atom_sites.create(
-        label='S',
+        id='S',
         type_symbol='S',
         fract_x=0.0654,
         fract_y=0.25,
@@ -168,7 +166,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         adp_iso=0.3777,
     )
     model.atom_sites.create(
-        label='O1',
+        id='O1',
         type_symbol='O',
         fract_x=0.9082,
         fract_y=0.25,
@@ -177,7 +175,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         adp_iso=1.9764,
     )
     model.atom_sites.create(
-        label='O2',
+        id='O2',
         type_symbol='O',
         fract_x=0.1935,
         fract_y=0.25,
@@ -186,7 +184,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         adp_iso=1.4456,
     )
     model.atom_sites.create(
-        label='O3',
+        id='O3',
         type_symbol='O',
         fract_x=0.0811,
         fract_y=0.0272,
@@ -196,7 +194,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     )
 
     # Set experiments
-    data_path = download_data(id=13, destination=TEMP_DIR)
+    data_path = download_data('meas-pbso4-d1a', destination=TEMP_DIR)
     expt1 = ExperimentFactory.from_data_path(
         name='npd',
         data_path=data_path,
@@ -209,7 +207,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt1.peak.broad_gauss_w = 0.386
     expt1.peak.broad_lorentz_x = 0
     expt1.peak.broad_lorentz_y = 0.088
-    expt1.linked_phases.create(id='pbso4', scale=1.5)
+    expt1.linked_structures.create(structure_id='pbso4', scale=1.5)
     for id, x, y in [
         ('1', 11.0, 206.1624),
         ('2', 15.0, 194.75),
@@ -220,9 +218,9 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         ('7', 120.0, 244.4525),
         ('8', 153.0, 226.0595),
     ]:
-        expt1.background.create(id=id, x=x, y=y)
+        expt1.background.create(id=id, position=x, intensity=y)
 
-    data_path = download_data(id=16, destination=TEMP_DIR)
+    data_path = download_data('meas-pbso4-xray', destination=TEMP_DIR)
     expt2 = ExperimentFactory.from_data_path(
         name='xrd',
         data_path=data_path,
@@ -235,7 +233,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     expt2.peak.broad_gauss_w = 0.021272
     expt2.peak.broad_lorentz_x = 0
     expt2.peak.broad_lorentz_y = 0.057691
-    expt2.linked_phases.create(id='pbso4', scale=0.001)
+    expt2.linked_structures.create(structure_id='pbso4', scale=0.001)
     for id, x, y in [
         ('1', 11.0, 141.8516),
         ('2', 13.0, 102.8838),
@@ -246,7 +244,7 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
         ('7', 90.0, 113.7473),
         ('8', 110.0, 132.4643),
     ]:
-        expt2.background.create(id=id, x=x, y=y)
+        expt2.background.create(id=id, position=x, intensity=y)
 
     # Create project
     project = Project()
@@ -261,35 +259,24 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     model.cell.length_a.free = True
     model.cell.length_b.free = True
     model.cell.length_c.free = True
-    expt1.linked_phases['pbso4'].scale.free = True
-    expt2.linked_phases['pbso4'].scale.free = True
+    expt1.linked_structures['pbso4'].scale.free = True
+    expt2.linked_structures['pbso4'].scale.free = True
 
-    # ------------ 1st fitting ------------
+    # ------------ 1st fitting (joint, default weights) ------------
 
-    # Perform fit
-    project.analysis.fit()
-
-    # Compare fit quality
-    assert_almost_equal(
-        project.analysis.fit_results.reduced_chi_square,
-        desired=26.05,
-        decimal=1,
-    )
-
-    # ------------ 2nd fitting ------------
-
-    # Perform fit
+    # Perform fit. With two loaded experiments only joint fitting
+    # applies (single is restricted to one experiment).
     project.analysis.fitting_mode.type = 'joint'
     project.analysis.fit()
 
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=21.09,
+        desired=18.78,
         decimal=1,
     )
 
-    # ------------ 3rd fitting ------------
+    # ------------ 2nd fitting (joint, explicit equal weights) ------------
 
     # Perform fit
     project.analysis.joint_fit['xrd'].weight = 0.5  # Default
@@ -299,11 +286,11 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=21.09,
+        desired=18.78,
         decimal=1,
     )
 
-    # ------------ 4th fitting ------------
+    # ------------ 3rd fitting (joint, asymmetric weights) ------------
 
     # Perform fit
     project.analysis.joint_fit['xrd'].weight = 0.3
@@ -313,11 +300,46 @@ def test_joint_fit_neutron_xray_pd_cwl_pbso4() -> None:
     # Compare fit quality
     assert_almost_equal(
         project.analysis.fit_results.reduced_chi_square,
-        desired=14.39,
+        desired=12.67,
         decimal=1,
     )
+
+
+def test_joint_fit_rejects_all_zero_weights() -> None:
+    # An all-zero joint-fit weight set would divide by zero during
+    # residual normalisation; the public fit path must reject it up
+    # front with a clear error instead of producing nan residuals.
+    model = StructureFactory.from_scratch(name='pbso4')
+    model.space_group.name_h_m = 'P n m a'
+    model.cell.length_a = 8.47
+    model.cell.length_b = 5.39
+    model.cell.length_c = 6.95
+
+    data_path = download_data('meas-pbso4-d1a-part1', destination=TEMP_DIR)
+    expt1 = ExperimentFactory.from_data_path(name='npd1', data_path=data_path)
+    expt1.linked_structures.create(structure_id='pbso4', scale=1.46)
+
+    data_path = download_data('meas-pbso4-d1a-part2', destination=TEMP_DIR)
+    expt2 = ExperimentFactory.from_data_path(name='npd2', data_path=data_path)
+    expt2.linked_structures.create(structure_id='pbso4', scale=1.46)
+
+    project = Project()
+    project.structures.add(model)
+    project.experiments.add(expt1)
+    project.experiments.add(expt2)
+
+    project.analysis.minimizer.type = 'lmfit'
+    project.analysis.fitting_mode.type = 'joint'
+
+    # Force an all-zero weight set via the public joint-fit API.
+    project.analysis.joint_fit.create(experiment_id='npd1', weight=0.0)
+    project.analysis.joint_fit.create(experiment_id='npd2', weight=0.0)
+
+    with pytest.raises(ValueError, match='Joint-fit weights'):
+        project.analysis.fit()
 
 
 if __name__ == '__main__':
     test_joint_fit_split_dataset_neutron_pd_cwl_pbso4()
     test_joint_fit_neutron_xray_pd_cwl_pbso4()
+    test_joint_fit_rejects_all_zero_weights()

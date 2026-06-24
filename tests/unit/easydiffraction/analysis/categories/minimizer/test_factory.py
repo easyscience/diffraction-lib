@@ -9,12 +9,8 @@ import pytest
 
 def test_factory_default_creates_lmfit_leastsq_minimizer():
     import easydiffraction.analysis.categories.minimizer  # noqa: F401
-    from easydiffraction.analysis.categories.minimizer.factory import (
-        MinimizerCategoryFactory,
-    )
-    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import (
-        LmfitLeastsqMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
+    from easydiffraction.analysis.categories.minimizer.lmfit_leastsq import LmfitLeastsqMinimizer
 
     minimizer = MinimizerCategoryFactory.create_default_for()
 
@@ -24,9 +20,7 @@ def test_factory_default_creates_lmfit_leastsq_minimizer():
 
 def test_factory_rejects_unsupported_minimizer_type():
     import easydiffraction.analysis.categories.minimizer  # noqa: F401
-    from easydiffraction.analysis.categories.minimizer.factory import (
-        MinimizerCategoryFactory,
-    )
+    from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
 
     with pytest.raises(ValueError, match='Unsupported type'):
         MinimizerCategoryFactory.create('missing')

@@ -1,4 +1,5 @@
 ---
+title: Introduction
 icon: material/information-slab-circle
 ---
 
@@ -10,12 +11,22 @@ icon: material/information-slab-circle
 based on a structural model and refining its parameters against
 experimental data.
 
+A pattern can be calculated from a structural model and instrument
+settings alone — without any measured data — to preview a candidate
+structure or generate a synthetic pattern, and then refined against
+experimental data once it is available.
+
 **EasyDiffraction** is developed both as a Python library and as a
 cross-platform desktop application.
 
 Here, we focus on the Python library. For the graphical user interface
 (GUI), please see the corresponding
 [GUI resources](https://easyscience.github.io/diffraction-app).
+
+For a full overview of what EasyDiffraction can do today and what is
+planned — across powder and single-crystal diffraction, total
+scattering, and analysis — see the [Features](../features/index.md)
+page.
 
 <!--
 **EasyDiffraction** is developed using the

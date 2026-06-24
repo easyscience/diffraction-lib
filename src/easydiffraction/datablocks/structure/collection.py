@@ -2,11 +2,14 @@
 # SPDX-License-Identifier: BSD-3-Clause
 """Collection of structure data blocks."""
 
+import pathlib
+
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockCollection
 from easydiffraction.datablocks.structure.item.base import Structure
 from easydiffraction.datablocks.structure.item.factory import StructureFactory
+from easydiffraction.io.edi import edi_body_from_text
 from easydiffraction.utils.logging import console
 
 
@@ -77,6 +80,23 @@ class Structures(DatablockCollection):
             Filesystem path to a CIF file.
         """
         structure = StructureFactory.from_cif_path(cif_path)
+        self.add(structure)
+
+    @typechecked
+    def add_from_edi_path(
+        self,
+        edi_path: str,
+    ) -> None:
+        """
+        Create a structure from an Edi file and add it.
+
+        Parameters
+        ----------
+        edi_path : str
+            Filesystem path to an Edi structure file.
+        """
+        body = edi_body_from_text(pathlib.Path(edi_path).read_text(encoding='utf-8'))
+        structure = StructureFactory.from_cif_str(body)
         self.add(structure)
 
     # TODO: Move to DatablockCollection?

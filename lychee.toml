@@ -1,0 +1,22 @@
+# lychee link-checker configuration.
+#
+# Fast every-push docs gate: verify local/relative links only. External
+# URL checking is deferred to avoid flakiness from rate-limited sites
+# (see docs/dev/issues/index.md (issue 114)).
+
+# Skip online links entirely — deterministic and fast, no network.
+offline = true
+
+# Quieter CI logs.
+no_progress = true
+
+# Directories never traversed for links: third-party/tooling caches and
+# generated artifacts (tutorial notebooks and package-structure docs are
+# generated; their sources are checked elsewhere).
+exclude_path = [
+  "node_modules",
+  ".pixi",
+  "tmp",
+  "docs/docs/tutorials",
+  "docs/dev/package-structure",
+]

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Fit-result reporting and Bayesian posterior summaries."""
 
 from easydiffraction.analysis.fit_helpers.bayesian import BayesianFitResults
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSummary

@@ -31,30 +31,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Paths
-# ---------------------------------------------------------------------------
-
-ROOT = Path(__file__).resolve().parents[1]
-SRC_ROOT = ROOT / 'src' / 'easydiffraction'
-TEST_ROOT = ROOT / 'tests' / 'unit' / 'easydiffraction'
-
-# ---------------------------------------------------------------------------
-# Exclusions
-# ---------------------------------------------------------------------------
-
-# Source modules that do not need a dedicated unit-test file.
-EXCLUDED_MODULES: set[str] = {
-    '__init__',
-    '__main__',
-}
-
-# Source directories whose contents are excluded entirely.
-EXCLUDED_DIRS: set[str] = {
-    '_vendored',
-    '__pycache__',
-    'vendor',
-}
+from _src_tree import TEST_ROOT
+from _src_tree import iter_source_modules
 
 # ---------------------------------------------------------------------------
 # Known aliases: src module stem → accepted test stem(s)
@@ -71,21 +49,6 @@ KNOWN_ALIASES: dict[str, set[str]] = {
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _source_modules() -> list[Path]:
-    """Return all non-excluded source modules as paths relative to SRC_ROOT."""
-    modules: list[Path] = []
-    for py in sorted(SRC_ROOT.rglob('*.py')):
-        rel = py.relative_to(SRC_ROOT)
-        # Skip excluded directories
-        if any(part in EXCLUDED_DIRS for part in rel.parts):
-            continue
-        # Skip excluded module names
-        if py.stem in EXCLUDED_MODULES:
-            continue
-        modules.append(rel)
-    return modules
 
 
 def _find_existing_tests(src_rel: Path) -> list[Path]:
@@ -159,7 +122,7 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    modules = _source_modules()
+    modules = iter_source_modules()
     missing: list[tuple[Path, Path]] = []
     covered: list[tuple[Path, list[Path]]] = []
 

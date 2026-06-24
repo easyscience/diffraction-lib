@@ -9,9 +9,7 @@ import pytest
 
 
 def test_bayesian_minimizer_defaults_and_native_kwargs():
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     minimizer = BumpsDreamMinimizer()
 
@@ -33,9 +31,7 @@ def test_bayesian_minimizer_defaults_and_native_kwargs():
 
 
 def test_bayesian_minimizer_rejects_unsupported_initialization_method():
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     minimizer = BumpsDreamMinimizer()
 
@@ -44,9 +40,7 @@ def test_bayesian_minimizer_rejects_unsupported_initialization_method():
 
 
 def test_bayesian_minimizer_keeps_unset_random_seed_in_cif():
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     cif_text = BumpsDreamMinimizer().as_cif
 
@@ -54,9 +48,7 @@ def test_bayesian_minimizer_keeps_unset_random_seed_in_cif():
 
 
 def test_bayesian_minimizer_keeps_configured_random_seed_in_cif():
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     minimizer = BumpsDreamMinimizer()
     minimizer.random_seed = 123
@@ -67,9 +59,7 @@ def test_bayesian_minimizer_keeps_configured_random_seed_in_cif():
 
 
 def test_bayesian_minimizer_reads_cif_unknown_values_as_defaults():
-    from easydiffraction.analysis.categories.minimizer.bumps_dream import (
-        BumpsDreamMinimizer,
-    )
+    from easydiffraction.analysis.categories.minimizer.bumps_dream import BumpsDreamMinimizer
 
     document = gemmi.cif.read_string(
         """data_minimizer

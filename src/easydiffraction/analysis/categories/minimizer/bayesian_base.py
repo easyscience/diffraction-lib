@@ -14,7 +14,7 @@ from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import IntegerDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class BayesianMinimizerBase(MinimizerCategoryBase):
@@ -72,9 +72,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='sampling_steps',
             description='Total sampler iterations per chain.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(
-                names=['_minimizer.sampling_steps'],
-                iucr_name='_easydiffraction_minimizer.sampling_steps',
+            tags=TagSpec(
+                edi_names=['_minimizer.sampling_steps'],
+                cif_names=['_easydiffraction_minimizer.sampling_steps'],
             ),
         )
 
@@ -85,9 +85,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='burn_in_steps',
             description='Sampler iterations discarded as warm-up.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
-            cif_handler=CifHandler(
-                names=['_minimizer.burn_in_steps'],
-                iucr_name='_easydiffraction_minimizer.burn_in_steps',
+            tags=TagSpec(
+                edi_names=['_minimizer.burn_in_steps'],
+                cif_names=['_easydiffraction_minimizer.burn_in_steps'],
             ),
         )
 
@@ -98,9 +98,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='thinning_interval',
             description='Sampler thinning interval.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(
-                names=['_minimizer.thinning_interval'],
-                iucr_name='_easydiffraction_minimizer.thinning_interval',
+            tags=TagSpec(
+                edi_names=['_minimizer.thinning_interval'],
+                cif_names=['_easydiffraction_minimizer.thinning_interval'],
             ),
         )
 
@@ -111,9 +111,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='population_size',
             description='Number of chains or walkers.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=1)),
-            cif_handler=CifHandler(
-                names=['_minimizer.population_size'],
-                iucr_name='_easydiffraction_minimizer.population_size',
+            tags=TagSpec(
+                edi_names=['_minimizer.population_size'],
+                cif_names=['_easydiffraction_minimizer.population_size'],
             ),
         )
 
@@ -124,9 +124,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='parallel_workers',
             description='Worker count; 0 uses all available CPUs.',
             value_spec=AttributeSpec(default=default, validator=RangeValidator(ge=0)),
-            cif_handler=CifHandler(
-                names=['_minimizer.parallel_workers'],
-                iucr_name='_easydiffraction_minimizer.parallel_workers',
+            tags=TagSpec(
+                edi_names=['_minimizer.parallel_workers'],
+                cif_names=['_easydiffraction_minimizer.parallel_workers'],
             ),
         )
 
@@ -141,9 +141,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
                 default=InitializationMethodEnum.LATIN_HYPERCUBE.value,
                 validator=MembershipValidator(allowed=allowed),
             ),
-            cif_handler=CifHandler(
-                names=['_minimizer.initialization_method'],
-                iucr_name='_easydiffraction_minimizer.initialization_method',
+            tags=TagSpec(
+                edi_names=['_minimizer.initialization_method'],
+                cif_names=['_easydiffraction_minimizer.initialization_method'],
             ),
         )
 
@@ -154,9 +154,9 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
             name='random_seed',
             description='Random seed; None uses a system-derived seed.',
             value_spec=AttributeSpec(default=None, allow_none=True),
-            cif_handler=CifHandler(
-                names=['_minimizer.random_seed'],
-                iucr_name='_easydiffraction_minimizer.random_seed',
+            tags=TagSpec(
+                edi_names=['_minimizer.random_seed'],
+                cif_names=['_easydiffraction_minimizer.random_seed'],
             ),
         )
 
@@ -167,6 +167,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @sampling_steps.setter
     def sampling_steps(self, value: int) -> None:
+        """Set the total sampler iterations per chain."""
         self._sampling_steps.value = value
 
     @property
@@ -176,6 +177,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @burn_in_steps.setter
     def burn_in_steps(self, value: int) -> None:
+        """Set the sampler iterations discarded as warm-up."""
         self._burn_in_steps.value = value
 
     @property
@@ -185,6 +187,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @thinning_interval.setter
     def thinning_interval(self, value: int) -> None:
+        """Set the sampler thinning interval."""
         self._thinning_interval.value = value
 
     @property
@@ -194,6 +197,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @population_size.setter
     def population_size(self, value: int) -> None:
+        """Set the number of chains or walkers."""
         self._population_size.value = value
 
     @property
@@ -203,6 +207,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @parallel_workers.setter
     def parallel_workers(self, value: int) -> None:
+        """Set the worker count; 0 uses all available CPUs."""
         self._parallel_workers.value = value
 
     @property
@@ -212,6 +217,7 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @initialization_method.setter
     def initialization_method(self, value: InitializationMethodEnum | str) -> None:
+        """Set the sampler initialization method if supported."""
         method = InitializationMethodEnum(value)
         if method not in self._supported_initialization_methods:
             supported = ', '.join(item.value for item in self._supported_initialization_methods)
@@ -226,4 +232,5 @@ class BayesianMinimizerBase(MinimizerCategoryBase):
 
     @random_seed.setter
     def random_seed(self, value: int | None) -> None:
+        """Set the random seed; None uses a system-derived seed."""
         self._random_seed.value = value

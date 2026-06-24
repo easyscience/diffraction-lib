@@ -5,7 +5,7 @@ from __future__ import annotations
 
 
 def test_display_theme_colors_returns_light_and_dark_constants():
-    import easydiffraction.display.theme as theme
+    from easydiffraction.display import theme
 
     light = theme.display_theme_colors(is_dark_theme=False)
     dark = theme.display_theme_colors(is_dark_theme=True)
@@ -19,7 +19,7 @@ def test_display_theme_colors_returns_light_and_dark_constants():
 
 
 def test_display_theme_colors_for_template_maps_plotly_templates():
-    import easydiffraction.display.theme as theme
+    from easydiffraction.display import theme
 
     assert theme.display_theme_colors_for_template('plotly_white') is theme.LIGHT_THEME_COLORS
     assert theme.display_theme_colors_for_template('plotly_dark') is theme.DARK_THEME_COLORS
@@ -27,7 +27,7 @@ def test_display_theme_colors_for_template_maps_plotly_templates():
 
 
 def test_plot_backgrounds_opaque_and_paper_transparent():
-    import easydiffraction.display.theme as theme
+    from easydiffraction.display import theme
 
     # Inside the axes rectangle is opaque; the figure paper stays
     # transparent so charts blend into the host page.

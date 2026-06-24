@@ -12,8 +12,8 @@ import pytest
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
 from easydiffraction.datablocks.experiment.item.enums import ScatteringTypeEnum
 from easydiffraction.datablocks.structure.item.base import Structure
-from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.plotting import _MeasVsCalcPlotOptions
+from easydiffraction.display.progress import ACTIVITY_LABEL_PROCESSING
 from easydiffraction.display.structure.builder import FeatureAvailability
 from easydiffraction.project.categories.structure_style.default import StructureStyle
 from easydiffraction.project.display import PatternOptionStatus
@@ -35,7 +35,9 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
         fittable_params=record('fittable_params'),
         free_params=record('free_params'),
         how_to_access_parameters=record('how_to_access_parameters'),
-        parameter_cif_uids=record('parameter_cif_uids'),
+        parameter_uids=record('parameter_uids'),
+        parameter_edi_tags=record('parameter_edi_tags'),
+        parameter_cif_tags=record('parameter_cif_tags'),
         fit_results=record('fit_results'),
     )
     plotter = SimpleNamespace(
@@ -67,7 +69,7 @@ def _make_project_stub() -> tuple[SimpleNamespace, list[tuple[str, tuple, dict]]
             _persisted_fit_state_sidecar={},
         ),
         rendering_plot=SimpleNamespace(plotter=plotter),
-        experiments={'hrpt': SimpleNamespace(type=SimpleNamespace())},
+        experiments={'hrpt': SimpleNamespace(experiment_type=SimpleNamespace())},
         free_parameters=[],
         verbosity=SimpleNamespace(fit=SimpleNamespace(value='full')),
     )
@@ -173,14 +175,18 @@ def test_parameter_display_delegates_to_analysis_display():
     display.parameters.fittable()
     display.parameters.free()
     display.parameters.access()
-    display.parameters.cif_uids()
+    display.parameters.uid()
+    display.parameters.edi()
+    display.parameters.cif()
 
     assert [name for name, _args, _kwargs in calls] == [
         'all_params',
         'fittable_params',
         'free_params',
         'how_to_access_parameters',
-        'parameter_cif_uids',
+        'parameter_uids',
+        'parameter_edi_tags',
+        'parameter_cif_tags',
     ]
 
 
@@ -322,7 +328,7 @@ def test_posterior_predictive_skips_processing_indicator_for_restored_cache(monk
             }
         },
     )
-    project.experiments = {'hrpt': SimpleNamespace(type=SimpleNamespace())}
+    project.experiments = {'hrpt': SimpleNamespace(experiment_type=SimpleNamespace())}
     project.rendering_plot.plotter.engine = 'plotly'
     project.rendering_plot.plotter._resolve_x_axis = lambda expt_type, x: (
         'two_theta',
@@ -549,14 +555,15 @@ def test_pattern_option_statuses_ignore_placeholder_arrays_without_usable_state(
     )
 
     experiment = SimpleNamespace(
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=SimpleNamespace(value=SampleFormEnum.POWDER.value),
             scattering_type=SimpleNamespace(value=ScatteringTypeEnum.BRAGG.value),
         ),
-        linked_phases=[],
+        linked_structures=[],
         background=[],
         refln=[],
         excluded_regions=[],
+        _has_measured_data=lambda: True,
     )
     project = SimpleNamespace(
         experiments={'hrpt': experiment},
@@ -597,12 +604,13 @@ def test_pattern_auto_routes_single_crystal_with_calculated_data(monkeypatch):
         intensity_calc=[9.5, 11.5],
     )
     experiment = SimpleNamespace(
-        type=SimpleNamespace(
+        experiment_type=SimpleNamespace(
             sample_form=SimpleNamespace(value=SampleFormEnum.SINGLE_CRYSTAL.value),
             scattering_type=SimpleNamespace(value=ScatteringTypeEnum.BRAGG.value),
         ),
-        linked_crystal=SimpleNamespace(id=SimpleNamespace(value='si')),
+        linked_structure=SimpleNamespace(structure_id=SimpleNamespace(value='si')),
         excluded_regions=[],
+        _has_measured_data=lambda: True,
     )
     project = SimpleNamespace(
         experiments={'heidi': experiment},

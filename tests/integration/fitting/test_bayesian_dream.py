@@ -21,7 +21,7 @@ def _create_lbco_project() -> Project:
     model.space_group.name_h_m = 'P m -3 m'
     model.cell.length_a = 3.88
     model.atom_sites.create(
-        label='La',
+        id='La',
         type_symbol='La',
         fract_x=0,
         fract_y=0,
@@ -31,7 +31,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='Ba',
+        id='Ba',
         type_symbol='Ba',
         fract_x=0,
         fract_y=0,
@@ -41,7 +41,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='Co',
+        id='Co',
         type_symbol='Co',
         fract_x=0.5,
         fract_y=0.5,
@@ -50,7 +50,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.1,
     )
     model.atom_sites.create(
-        label='O',
+        id='O',
         type_symbol='O',
         fract_x=0,
         fract_y=0.5,
@@ -59,7 +59,7 @@ def _create_lbco_project() -> Project:
         adp_iso=0.1,
     )
 
-    data_path = download_data(id=3, destination=TEMP_DIR)
+    data_path = download_data('meas-lbco-hrpt', destination=TEMP_DIR)
     experiment = ExperimentFactory.from_data_path(name='hrpt', data_path=data_path)
     experiment.instrument.setup_wavelength = 1.494
     experiment.instrument.calib_twotheta_offset = 0.0
@@ -68,9 +68,9 @@ def _create_lbco_project() -> Project:
     experiment.peak.broad_gauss_w = 0.2
     experiment.peak.broad_lorentz_x = 0.0
     experiment.peak.broad_lorentz_y = 0.0
-    experiment.linked_phases.create(id='lbco', scale=5.0)
-    experiment.background.create(id='1', x=10, y=170)
-    experiment.background.create(id='2', x=165, y=170)
+    experiment.linked_structures.create(structure_id='lbco', scale=5.0)
+    experiment.background.create(id='1', position=10, intensity=170)
+    experiment.background.create(id='2', position=165, intensity=170)
 
     project = Project(name='lbco_bayesian')
     project.structures.add(model)
@@ -83,7 +83,7 @@ def _dream_parameters(project: Project) -> tuple[object, object, object]:
     experiment = project.experiments['hrpt']
     return (
         structure.cell.length_a,
-        experiment.linked_phases['lbco'].scale,
+        experiment.linked_structures['lbco'].scale,
         experiment.instrument.calib_twotheta_offset,
     )
 
@@ -185,9 +185,9 @@ def test_bayesian_fit_results_reload_from_persisted_fit_state(tmp_path):
     proj_dir = tmp_path / 'dream_project'
     project.save_as(str(proj_dir))
 
-    analysis_cif = proj_dir / 'analysis' / 'analysis.cif'
-    results_sidecar = proj_dir / 'analysis' / 'results.h5'
-    assert analysis_cif.is_file()
+    analysis_edi = proj_dir / 'analysis' / 'analysis.edi'
+    results_sidecar = proj_dir / 'analysis' / 'mcmc.h5'
+    assert analysis_edi.is_file()
     assert results_sidecar.is_file()
 
     loaded = Project.load(str(proj_dir))

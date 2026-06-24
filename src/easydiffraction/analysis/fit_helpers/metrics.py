@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""R-factor and reduced chi-square fit-quality metrics."""
 
 from __future__ import annotations
 

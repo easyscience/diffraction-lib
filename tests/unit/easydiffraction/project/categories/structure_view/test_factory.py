@@ -15,18 +15,14 @@ def test_module_import():
 
 
 def test_default_rules_universal_fallback():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     # The factory declares a single universal-fallback rule.
     assert StructureViewFactory._default_rules == {frozenset(): 'default'}
 
 
 def test_supported_tags_lists_default():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     tags = StructureViewFactory.supported_tags()
     assert isinstance(tags, list)
@@ -34,17 +30,13 @@ def test_supported_tags_lists_default():
 
 
 def test_default_tag_without_conditions():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     assert StructureViewFactory.default_tag() == 'default'
 
 
 def test_default_tag_with_unmatched_conditions_falls_back():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     # Extra conditions still match the empty-key universal fallback.
     assert StructureViewFactory.default_tag(scattering_type='bragg') == 'default'
@@ -52,18 +44,14 @@ def test_default_tag_with_unmatched_conditions_falls_back():
 
 def test_create_returns_structure_view():
     from easydiffraction.project.categories.structure_view.default import StructureView
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     structure_view = StructureViewFactory.create('default')
     assert isinstance(structure_view, StructureView)
 
 
 def test_create_rejects_unknown_tag():
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     with pytest.raises(ValueError, match=r"Unsupported type: 'missing'"):
         StructureViewFactory.create('missing')
@@ -71,9 +59,7 @@ def test_create_rejects_unknown_tag():
 
 def test_create_default_for_returns_structure_view():
     from easydiffraction.project.categories.structure_view.default import StructureView
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     structure_view = StructureViewFactory.create_default_for()
     assert isinstance(structure_view, StructureView)
@@ -81,18 +67,14 @@ def test_create_default_for_returns_structure_view():
 
 def test_supported_for_includes_registered_class():
     from easydiffraction.project.categories.structure_view.default import StructureView
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     supported = StructureViewFactory.supported_for()
     assert StructureView in supported
 
 
 def test_show_supported_lists_default(capsys):
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     StructureViewFactory.show_supported()
     out = capsys.readouterr().out
@@ -103,9 +85,7 @@ def test_show_supported_lists_default(capsys):
 def test_registry_is_independent_from_base():
     from easydiffraction.core.factory import FactoryBase
     from easydiffraction.project.categories.structure_view.default import StructureView
-    from easydiffraction.project.categories.structure_view.factory import (
-        StructureViewFactory,
-    )
+    from easydiffraction.project.categories.structure_view.factory import StructureViewFactory
 
     # __init_subclass__ gives each factory its own registry; the
     # registered concrete class must not leak onto the shared base.

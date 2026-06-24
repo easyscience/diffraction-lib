@@ -21,6 +21,7 @@ class ViewerFactory(RendererFactoryBase):
 
     @classmethod
     def _registry(cls) -> dict:
+        """Return the ASCII and Three.js viewer engine registry."""
         return {
             ViewerEngineEnum.ASCII.value: {
                 'description': ViewerEngineEnum.ASCII.description(),

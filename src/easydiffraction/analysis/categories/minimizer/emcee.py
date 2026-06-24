@@ -30,7 +30,7 @@ from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import MembershipValidator
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 @MinimizerCategoryFactory.register
@@ -75,6 +75,7 @@ class EmceeMinimizer(BayesianMinimizerBase):
     )
 
     def __init__(self) -> None:
+        """Initialize the emcee minimizer setting descriptors."""
         super().__init__()
         self._sampling_steps = self._sampling_steps_descriptor(DEFAULT_SAMPLING_STEPS)
         self._burn_in_steps = self._burn_in_steps_descriptor(DEFAULT_BURN_IN_STEPS)
@@ -96,9 +97,9 @@ class EmceeMinimizer(BayesianMinimizerBase):
                 default=DEFAULT_INITIALIZATION_METHOD.value,
                 validator=MembershipValidator(allowed=allowed),
             ),
-            cif_handler=CifHandler(
-                names=['_minimizer.initialization_method'],
-                iucr_name='_easydiffraction_minimizer.initialization_method',
+            tags=TagSpec(
+                edi_names=['_minimizer.initialization_method'],
+                cif_names=['_easydiffraction_minimizer.initialization_method'],
             ),
         )
 
@@ -112,9 +113,9 @@ class EmceeMinimizer(BayesianMinimizerBase):
                 default=DEFAULT_PROPOSAL_MOVES,
                 validator=MembershipValidator(allowed=SUPPORTED_PROPOSAL_MOVES),
             ),
-            cif_handler=CifHandler(
-                names=['_minimizer.proposal_moves'],
-                iucr_name='_easydiffraction_minimizer.proposal_moves',
+            tags=TagSpec(
+                edi_names=['_minimizer.proposal_moves'],
+                cif_names=['_easydiffraction_minimizer.proposal_moves'],
             ),
         )
 
@@ -125,4 +126,5 @@ class EmceeMinimizer(BayesianMinimizerBase):
 
     @proposal_moves.setter
     def proposal_moves(self, value: str) -> None:
+        """Set the single emcee proposal move."""
         self._proposal_moves.value = value

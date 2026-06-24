@@ -4,7 +4,6 @@
 
 from easydiffraction.crystallography.crystallography import apply_cell_symmetry_constraints
 
-
 # ------------------------------------------------------------------
 # apply_cell_symmetry_constraints
 # ------------------------------------------------------------------
@@ -109,9 +108,7 @@ class TestApplyCellSymmetryConstraints:
 
 class TestCellSymmetryConstrainedFlags:
     def test_cubic_only_a_is_free(self):
-        from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_constrained_flags,
-        )
+        from easydiffraction.crystallography.crystallography import cell_symmetry_constrained_flags
 
         flags = cell_symmetry_constrained_flags('F m -3 m')
         assert flags == {
@@ -124,9 +121,7 @@ class TestCellSymmetryConstrainedFlags:
         }
 
     def test_monoclinic_b_and_beta_free(self):
-        from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_constrained_flags,
-        )
+        from easydiffraction.crystallography.crystallography import cell_symmetry_constrained_flags
 
         flags = cell_symmetry_constrained_flags('P 21/c')
         assert flags['lattice_a'] is False
@@ -137,17 +132,13 @@ class TestCellSymmetryConstrainedFlags:
         assert flags['angle_gamma'] is True
 
     def test_triclinic_all_free(self):
-        from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_constrained_flags,
-        )
+        from easydiffraction.crystallography.crystallography import cell_symmetry_constrained_flags
 
         flags = cell_symmetry_constrained_flags('P 1')
         assert all(v is False for v in flags.values())
 
     def test_invalid_returns_all_false(self, monkeypatch):
-        from easydiffraction.crystallography.crystallography import (
-            cell_symmetry_constrained_flags,
-        )
+        from easydiffraction.crystallography.crystallography import cell_symmetry_constrained_flags
         from easydiffraction.utils.logging import Logger
 
         monkeypatch.setattr(Logger, '_reaction', Logger.Reaction.WARN, raising=True)

@@ -12,17 +12,24 @@ def test_module_import():
     assert MUT.__name__ == 'easydiffraction.analysis.calculators.pdffit'
 
 
-def test_pdffit_engine_flag_and_hkl_message(capsys):
+def test_pdffit_engine_flag_and_hkl_message(monkeypatch):
+    from easydiffraction.analysis.calculators import pdffit as pdffit_mod
     from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
 
     calc = PdffitCalculator()
     assert isinstance(calc.engine_imported, bool)
-    # calculate_structure_factors prints fixed message and returns [] by contract
+
+    messages: list[str] = []
+
+    def fake_debug(*parts):
+        messages.append(' '.join(str(p) for p in parts))
+
+    monkeypatch.setattr(pdffit_mod.log, 'debug', fake_debug)
+
+    # calculate_structure_factors logs a not-applicable note and returns [] by contract
     out = calc.calculate_structure_factors(structures=None, experiments=None)
     assert out == []
-    # The method prints a note
-    printed = capsys.readouterr().out
-    assert 'HKLs (not applicable)' in printed
+    assert any('HKLs (not applicable)' in m for m in messages)
 
 
 # -- Stub classes for test_pdffit_cif_v2_to_v1_regex_behavior ----------
@@ -53,12 +60,15 @@ class _DummyExperiment:
         self.name = 'E'
         self.peak = _DummyPeak()
         self.data = type('D', (), {'x': np.linspace(0.0, 1.0, 5)})()
-        self.type = type('T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()})()
-        self.linked_phases = _DummyLinkedPhases()
+        self.experiment_type = type(
+            'T', (), {'radiation_probe': type('P', (), {'value': 'neutron'})()}
+        )()
+        self.linked_structures = _DummyLinkedPhases()
 
 
 class _DummyStructure:
     name = 'PhaseA'
+    atom_sites = ()
 
     @property
     def as_cif(self):
@@ -66,11 +76,17 @@ class _DummyStructure:
 
 
 class _FakePdf:
+    instances = []
+
+    def __init__(self):
+        self.setvars = []
+        self.__class__.instances.append(self)
+
     def add_structure(self, s):
         pass
 
-    def setvar(self, *a, **k):
-        pass
+    def setvar(self, *args):
+        self.setvars.append(args)
 
     def read_data_lists(self, *a, **k):
         pass
@@ -93,13 +109,12 @@ class _FakeParser:
 
 def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     # Exercise the regex conversion path indirectly by providing minimal objects
-    from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
-
     # Monkeypatch PdfFit and parser to avoid real engine usage
     import easydiffraction.analysis.calculators.pdffit as mod
+    from easydiffraction.analysis.calculators.pdffit import PdffitCalculator
 
     monkeypatch.setattr(mod, 'PdfFit', _FakePdf)
-    monkeypatch.setattr(mod, 'pdffit_cif_parser', lambda: _FakeParser())
+    monkeypatch.setattr(mod, 'pdffit_cif_parser', _FakeParser)
     monkeypatch.setattr(mod, 'redirect_stdout', lambda *a, **k: None)
     monkeypatch.setattr(mod, '_pdffit_devnull', None, raising=False)
 
@@ -109,3 +124,75 @@ def test_pdffit_cif_v2_to_v1_regex_behavior(monkeypatch):
     )
     assert isinstance(pattern, np.ndarray)
     assert pattern.shape[0] == 5
+    assert ('pscale', 1.0) in _FakePdf.instances[-1].setvars
+
+
+def test_structure_cif_for_pdffit_uses_legacy_iucr_tags():
+    """Edi structure tags map to the legacy spellings diffpy reads."""
+    from easydiffraction.analysis.calculators.pdffit import _structure_cif_for_pdffit
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='ni')
+    structure.space_group.name_h_m = 'F m -3 m'
+    structure.cell.length_a = 3.52
+    structure.atom_sites.create(
+        id='Ni',
+        type_symbol='Ni',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        occupancy=1.0,
+        adp_iso=0.42,
+    )
+
+    cif = _structure_cif_for_pdffit(structure)
+
+    assert '_atom_site.label' in cif
+    assert '_atom_site.id' not in cif
+    assert '_space_group.name_H-M_alt' in cif
+    assert '_space_group.name_h_m' not in cif
+    # ADPs are normalized to the U convention for diffpy.
+    assert '_atom_site.U_iso_or_equiv' in cif
+    assert '_atom_site.B_iso_or_equiv' not in cif
+    assert '_atom_site.adp_iso' not in cif
+
+
+def test_structure_cif_for_pdffit_normalizes_mixed_b_u_iso_adp():
+    import math
+
+    from easydiffraction.analysis.calculators.pdffit import _structure_cif_for_pdffit
+    from easydiffraction.datablocks.structure.item.base import Structure
+
+    structure = Structure(name='mixed')
+    structure.space_group.name_h_m = 'P 1'
+    structure.cell.length_a = 5.0
+    structure.atom_sites.create(
+        id='B1',
+        type_symbol='Si',
+        fract_x=0,
+        fract_y=0,
+        fract_z=0,
+        adp_type='Biso',
+        adp_iso=0.8,
+    )
+    structure.atom_sites.create(
+        id='U1',
+        type_symbol='O',
+        fract_x=0.5,
+        fract_y=0.5,
+        fract_z=0.5,
+        adp_type='Uiso',
+        adp_iso=0.01,
+    )
+
+    cif = _structure_cif_for_pdffit(structure)
+
+    # Both rows use the U tag; the Biso value is converted (B / 8π² ≈
+    # 0.0101) while the native Uiso value is left as-is.
+    assert '_atom_site.U_iso_or_equiv' in cif
+    assert '_atom_site.B_iso_or_equiv' not in cif
+    assert math.isclose(0.8 / (8.0 * math.pi**2), 0.010132, abs_tol=1e-5)
+    assert '0.0101' in cif
+    assert '0.01' in cif
+    # The live structure is restored to its original B value afterwards.
+    assert structure.atom_sites['B1'].adp_iso.value == 0.8

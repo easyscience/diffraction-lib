@@ -10,7 +10,7 @@ from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.metadata import TypeInfo
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import BoolDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.iucr_writer import write_iucr_cif
 from easydiffraction.project.categories.report.factory import ReportFactory
 from easydiffraction.report.data_context import build_report_data_context
@@ -52,31 +52,31 @@ class Report(CategoryItem):
             name='cif',
             description='Whether to write CIF reports when saving.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_report.cif']),
+            tags=TagSpec(edi_names=['_report.cif']),
         )
         self._html = BoolDescriptor(
             name='html',
             description='Whether to write HTML reports when saving.',
             value_spec=AttributeSpec(default=True),
-            cif_handler=CifHandler(names=['_report.html']),
+            tags=TagSpec(edi_names=['_report.html']),
         )
         self._tex = BoolDescriptor(
             name='tex',
             description='Whether to write TeX reports when saving.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_report.tex']),
+            tags=TagSpec(edi_names=['_report.tex']),
         )
         self._pdf = BoolDescriptor(
             name='pdf',
             description='Whether to write PDF reports when saving.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_report.pdf']),
+            tags=TagSpec(edi_names=['_report.pdf']),
         )
         self._html_offline = BoolDescriptor(
             name='html_offline',
             description='Whether HTML reports should embed assets.',
             value_spec=AttributeSpec(default=False),
-            cif_handler=CifHandler(names=['_report.html_offline']),
+            tags=TagSpec(edi_names=['_report.html_offline']),
         )
 
     @property

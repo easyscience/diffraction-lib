@@ -19,7 +19,7 @@ from easydiffraction.datablocks.experiment.categories.excluded_regions.factory i
     ExcludedRegionsFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import SampleFormEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import render_table
 
@@ -33,7 +33,7 @@ class ExcludedRegion(CategoryItem):
     def __init__(self) -> None:
         super().__init__()
 
-        # TODO: Add point_id as for the background
+        # TODO: Add id as for the background
         self._id = StringDescriptor(
             name='id',
             description='Identifier for this excluded region',
@@ -44,9 +44,9 @@ class ExcludedRegion(CategoryItem):
                 #  Do we need conversion between CIF and internal label?
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_]*$'),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.id'],
-                iucr_name='_easydiffraction_excluded_region.id',
+            tags=TagSpec(
+                edi_names=['_excluded_region.id'],
+                cif_names=['_easydiffraction_excluded_region.id'],
             ),
         )
         self._start = NumericDescriptor(
@@ -56,9 +56,9 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.start'],
-                iucr_name='_easydiffraction_excluded_region.start',
+            tags=TagSpec(
+                edi_names=['_excluded_region.start'],
+                cif_names=['_easydiffraction_excluded_region.start'],
             ),
         )
         self._end = NumericDescriptor(
@@ -68,9 +68,9 @@ class ExcludedRegion(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_excluded_region.end'],
-                iucr_name='_easydiffraction_excluded_region.end',
+            tags=TagSpec(
+                edi_names=['_excluded_region.end'],
+                cif_names=['_easydiffraction_excluded_region.end'],
             ),
         )
 
@@ -144,15 +144,31 @@ class ExcludedRegions(CategoryCollection):
 
     def __init__(self) -> None:
         super().__init__(item_type=ExcludedRegion)
+        # Signature of the last applied mask (point count + region
+        # bounds): lets minimizer iterations skip the re-apply during a
+        # fit, where the grid and region bounds are invariant.
+        self._last_applied_signature: tuple | None = None
 
     def _update(
         self,
         *,
         called_by_minimizer: bool = False,
     ) -> None:
-        del called_by_minimizer
-
         data = self._parent.data
+
+        # The included/excluded split depends only on the x-grid and the
+        # region bounds, both fixed during a fit. Skip the full re-apply
+        # (an unfiltered_x build plus an all-point calc_status write) on
+        # minimizer iterations when neither has changed. A non-minimizer
+        # update (e.g. a public calculate, a data reload, or a region
+        # edit) always re-applies, so changes are never missed.
+        regions_signature = tuple(
+            (region.start.value, region.end.value) for region in self.values()
+        )
+        signature = (len(data._items), regions_signature)
+        if called_by_minimizer and signature == self._last_applied_signature:
+            return
+
         x = data.unfiltered_x
 
         # Start with a mask of all False (nothing excluded yet)
@@ -170,6 +186,7 @@ class ExcludedRegions(CategoryCollection):
 
         # Set refinement status in the data object
         data._set_calc_status(inverted_mask)
+        self._last_applied_signature = signature
 
     def show(self) -> None:
         """Print a table of excluded [start, end] intervals."""

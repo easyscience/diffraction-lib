@@ -9,7 +9,7 @@ from easydiffraction.core.category import CategoryCollection
 from easydiffraction.core.category import CategoryItem
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class SimpleItem(CategoryItem):
@@ -25,7 +25,7 @@ class SimpleItem(CategoryItem):
                 name='a',
                 description='',
                 value_spec=AttributeSpec(default='_'),
-                cif_handler=CifHandler(names=['_simple.a']),
+                tags=TagSpec(edi_names=['_simple.a']),
             ),
         )
         object.__setattr__(
@@ -35,7 +35,7 @@ class SimpleItem(CategoryItem):
                 name='b',
                 description='',
                 value_spec=AttributeSpec(default='_'),
-                cif_handler=CifHandler(names=['_simple.b']),
+                tags=TagSpec(edi_names=['_simple.b']),
             ),
         )
 
@@ -79,7 +79,7 @@ def test_category_item_uses_declared_identity_metadata():
         pytest.param(
             'easydiffraction.analysis.categories.aliases.default',
             'Alias',
-            'label',
+            'id',
             'alias_1',
             'alias',
             id='alias',
@@ -111,7 +111,7 @@ def test_category_item_uses_declared_identity_metadata():
         pytest.param(
             'easydiffraction.datablocks.structure.categories.atom_sites.default',
             'AtomSite',
-            'label',
+            'id',
             'Fe1',
             'atom_site',
             id='atom_site',
@@ -119,17 +119,17 @@ def test_category_item_uses_declared_identity_metadata():
         pytest.param(
             'easydiffraction.datablocks.structure.categories.atom_site_aniso.default',
             'AtomSiteAniso',
-            'label',
+            'id',
             'Fe1',
             'atom_site_aniso',
             id='atom_site_aniso',
         ),
         pytest.param(
-            'easydiffraction.datablocks.experiment.categories.linked_phases.default',
-            'LinkedPhase',
-            'id',
+            'easydiffraction.datablocks.experiment.categories.linked_structures.default',
+            'LinkedStructure',
+            'structure_id',
             'phase_1',
-            'linked_phases',
+            'linked_structure',
             id='linked_phases',
         ),
         pytest.param(
@@ -167,25 +167,25 @@ def test_category_item_uses_declared_identity_metadata():
         pytest.param(
             'easydiffraction.datablocks.experiment.categories.data.bragg_pd',
             'PdCwlDataPoint',
-            'point_id',
+            'id',
             '1',
-            'pd_data',
+            'data',
             id='pd_cwl_data',
         ),
         pytest.param(
             'easydiffraction.datablocks.experiment.categories.data.bragg_pd',
             'PdTofDataPoint',
-            'point_id',
+            'id',
             '2',
-            'pd_data',
+            'data',
             id='pd_tof_data',
         ),
         pytest.param(
             'easydiffraction.datablocks.experiment.categories.data.total_pd',
             'TotalDataPoint',
-            'point_id',
+            'id',
             '3',
-            'total_data',
+            'data',
             id='total_data',
         ),
     ],
@@ -251,3 +251,19 @@ def test_category_collection_help(capsys):
     assert 'Items (2)' in out
     assert 'n1' in out
     assert 'n2' in out
+
+
+def test_category_collection_clear_marks_parent_dirty():
+    from types import SimpleNamespace
+
+    c = SimpleCollection()
+    c.create(a='n1')
+    c.create(a='n2')
+    assert len(c) == 2
+
+    parent = SimpleNamespace(_need_categories_update=False)
+    object.__setattr__(c, '_parent', parent)
+
+    c.clear()
+    assert len(c) == 0
+    assert parent._need_categories_update is True

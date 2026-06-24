@@ -10,12 +10,18 @@ Detection Strategy (in priority order):
 
 1. JupyterLab settings files (~/.jupyter/lab/user-settings/)
 2. VS Code settings (when VSCODE_PID env var is present)
-3. JavaScript DOM inspection (for browser-based environments)
-4. System preferences (macOS, Windows) - fallback only
+3. System preferences (macOS, Windows) - fallback only
 
-Note: The detection order differs from upstream jupyter_dark_detect. We
-prioritize JavaScript DOM inspection over system preferences because the
-Jupyter theme may differ from the system theme.
+Note: the upstream JavaScript DOM probe is deliberately **not** in this
+order. It depends on the classic Notebook ``IPython.notebook.kernel``
+API, which JupyterLab removed, so it can never return a value there; it
+only publishes an (invisible) ``Javascript`` display and sleeps. Calling
+it once per figure/table render left a stack of blank output rows in the
+notebook (worst case, several per ``project.save()``). The probe is kept
+available through :func:`get_detection_result` for debugging but is not
+used for live theme detection. Detection still differs from upstream by
+prioritizing the Jupyter-specific settings files over system
+preferences, because the Jupyter theme may differ from the system theme.
 
 Example: >>> from easydiffraction.utils._vendored.theme_detect import
 is_dark >>> if is_dark(): ...     print('Dark mode detected')
@@ -42,9 +48,12 @@ def is_dark() -> bool:
     Detection order:
 
     1. JupyterLab settings files (most reliable for JupyterLab) 2. VS
-    Code settings (when running in VS Code) 3. JavaScript DOM inspection
-    (for browser-based Jupyter) 4. System preferences (fallback - may
-    differ from Jupyter theme)
+    Code settings (when running in VS Code) 3. System preferences
+    (fallback - may differ from Jupyter theme)
+
+    The JavaScript DOM probe is intentionally omitted: it cannot return
+    a value under JupyterLab and only emits blank ``Javascript`` display
+    output as a side effect (see the module docstring).
 
     Returns
     -------
@@ -57,14 +66,6 @@ def is_dark() -> bool:
         return result
 
     result = _check_vscode_settings()
-    if result is not None:
-        return result
-
-    # JavaScript DOM inspection for browser environments
-    # (Classic Notebook, Colab, Binder, etc.)
-    # This comes BEFORE system preferences because Jupyter theme
-    # may differ from system theme
-    result = _check_javascript_detection()
     if result is not None:
         return result
 

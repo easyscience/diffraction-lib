@@ -27,9 +27,7 @@ def _make_project() -> object:
 
 
 def test_emcee_minimizer_category_defaults_to_max_parallel_workers():
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_PARALLEL_WORKERS,
-    )
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_PARALLEL_WORKERS
     from easydiffraction.analysis.categories.minimizer.emcee import EmceeMinimizer
 
     minimizer = EmceeMinimizer()
@@ -40,12 +38,8 @@ def test_emcee_minimizer_category_defaults_to_max_parallel_workers():
 
 
 def test_emcee_minimizer_category_defaults_to_de_without_thinning():
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_PROPOSAL_MOVES,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_THINNING_INTERVAL,
-    )
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_PROPOSAL_MOVES
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_THINNING_INTERVAL
     from easydiffraction.analysis.categories.minimizer.emcee import EmceeMinimizer
 
     minimizer = EmceeMinimizer()
@@ -59,27 +53,13 @@ def test_emcee_minimizer_category_defaults_to_de_without_thinning():
 
 
 def test_emcee_minimizer_category_maps_native_kwargs():
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_BURN_IN_STEPS,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_INITIALIZATION_METHOD,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_PARALLEL_WORKERS,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_POPULATION_SIZE,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_PROPOSAL_MOVES,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_SAMPLING_STEPS,
-    )
-    from easydiffraction.analysis.categories.minimizer.emcee import (
-        DEFAULT_THINNING_INTERVAL,
-    )
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_BURN_IN_STEPS
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_INITIALIZATION_METHOD
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_PARALLEL_WORKERS
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_POPULATION_SIZE
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_PROPOSAL_MOVES
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_SAMPLING_STEPS
+    from easydiffraction.analysis.categories.minimizer.emcee import DEFAULT_THINNING_INTERVAL
     from easydiffraction.analysis.categories.minimizer.emcee import EmceeMinimizer
 
     native_kwargs = EmceeMinimizer()._native_kwargs()
@@ -131,7 +111,7 @@ def test_emcee_resume_parameter_set_mismatch_raises_before_sampler():
     analysis = SimpleNamespace(
         fit_parameters=[
             SimpleNamespace(
-                param_unique_name=SimpleNamespace(value='saved.param'),
+                parameter_unique_name=SimpleNamespace(value='saved.param'),
             ),
         ],
     )

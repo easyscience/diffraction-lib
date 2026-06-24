@@ -11,14 +11,16 @@ multiple inheritance.
 from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
+from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class CwlBroadeningMixin:
     """CWL Gaussian and Lorentz broadening parameters."""
 
     def __init__(self) -> None:
+        """Initialize the CWL broadening parameters."""
         super().__init__()
 
         self._broad_gauss_u: Parameter = Parameter(
@@ -35,9 +37,9 @@ class CwlBroadeningMixin:
                 default=0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_u'],
-                iucr_name='_easydiffraction_peak.broad_gauss_u',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_u'],
+                cif_names=['_easydiffraction_peak.broad_gauss_u'],
             ),
         )
         self._broad_gauss_v: Parameter = Parameter(
@@ -54,9 +56,9 @@ class CwlBroadeningMixin:
                 default=-0.01,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_v'],
-                iucr_name='_easydiffraction_peak.broad_gauss_v',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_v'],
+                cif_names=['_easydiffraction_peak.broad_gauss_v'],
             ),
         )
         self._broad_gauss_w: Parameter = Parameter(
@@ -73,9 +75,9 @@ class CwlBroadeningMixin:
                 default=0.02,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_gauss_w'],
-                iucr_name='_easydiffraction_peak.broad_gauss_w',
+            tags=TagSpec(
+                edi_names=['_peak.broad_gauss_w'],
+                cif_names=['_easydiffraction_peak.broad_gauss_w'],
             ),
         )
         self._broad_lorentz_x: Parameter = Parameter(
@@ -92,9 +94,9 @@ class CwlBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_lorentz_x'],
-                iucr_name='_easydiffraction_peak.broad_lorentz_x',
+            tags=TagSpec(
+                edi_names=['_peak.broad_lorentz_x'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_x'],
             ),
         )
         self._broad_lorentz_y: Parameter = Parameter(
@@ -111,15 +113,53 @@ class CwlBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_lorentz_y'],
-                iucr_name='_easydiffraction_peak.broad_lorentz_y',
+            tags=TagSpec(
+                edi_names=['_peak.broad_lorentz_y'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_y'],
+            ),
+        )
+        self._cutoff_fwhm = NumericDescriptor(
+            name='cutoff_fwhm',
+            description='Peak-range cutoff in FWHMs (speed vs accuracy; '
+            'FullProf "WDT"). 0 = no cutoff (full range); a positive value '
+            'is a literal cutoff and is faster but truncates more.',
+            units='',
+            display_handler=DisplayHandler(
+                display_name='Cutoff (FWHM)',
+                latex_name='WDT',
+            ),
+            value_spec=AttributeSpec(
+                default=0.0,
+                validator=RangeValidator(ge=0.0),
+            ),
+            tags=TagSpec(
+                edi_names=['_peak.cutoff_fwhm'],
+                cif_names=['_easydiffraction_peak.cutoff_fwhm'],
             ),
         )
 
     # ------------------------------------------------------------------
     #  Public properties
     # ------------------------------------------------------------------
+
+    @property
+    def cutoff_fwhm(self) -> NumericDescriptor:
+        """
+        Peak-range cutoff in FWHMs (speed vs accuracy).
+
+        The profile is evaluated only within this many FWHMs of each
+        peak. ``0`` (default) means no cutoff (the full range is
+        computed); a positive value is a literal cutoff in FWHMs that
+        mirrors FullProf's ``WDT`` (faster, truncates the peak tails).
+        Reading returns the underlying descriptor; assigning updates its
+        value.
+        """
+        return self._cutoff_fwhm
+
+    @cutoff_fwhm.setter
+    def cutoff_fwhm(self, value: float) -> None:
+        """Set the peak-range cutoff (FWHMs)."""
+        self._cutoff_fwhm.value = value
 
     @property
     def broad_gauss_u(self) -> Parameter:
@@ -133,6 +173,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_u.setter
     def broad_gauss_u(self, value: float) -> None:
+        """Set Gaussian broadening from size/resolution (deg²)."""
         self._broad_gauss_u.value = value
 
     @property
@@ -147,6 +188,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_v.setter
     def broad_gauss_v(self, value: float) -> None:
+        """Set Gaussian broadening instrumental contribution (deg²)."""
         self._broad_gauss_v.value = value
 
     @property
@@ -161,6 +203,7 @@ class CwlBroadeningMixin:
 
     @broad_gauss_w.setter
     def broad_gauss_w(self, value: float) -> None:
+        """Set Gaussian broadening instrumental contribution (deg²)."""
         self._broad_gauss_w.value = value
 
     @property
@@ -175,6 +218,7 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_x.setter
     def broad_lorentz_x(self, value: float) -> None:
+        """Set Lorentzian broadening from strain effects (deg)."""
         self._broad_lorentz_x.value = value
 
     @property
@@ -189,65 +233,83 @@ class CwlBroadeningMixin:
 
     @broad_lorentz_y.setter
     def broad_lorentz_y(self, value: float) -> None:
+        """Set Lorentzian broadening from defects (deg)."""
         self._broad_lorentz_y.value = value
 
 
-class EmpiricalAsymmetryMixin:
-    """Empirical CWL peak asymmetry parameters."""
+class BerarBaldinozziAsymmetryMixin:
+    """Berar-Baldinozzi empirical CWL peak asymmetry parameters."""
 
     def __init__(self) -> None:
+        """Initialize the Berar-Baldinozzi peak asymmetry parameters."""
         super().__init__()
 
-        self._asym_empir_1: Parameter = Parameter(
-            name='asym_empir_1',
-            description='Empirical asymmetry coefficient p1',
+        self._asym_beba_a0: Parameter = Parameter(
+            name='asym_beba_a0',
+            description='Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='A₀',
+                latex_name=r'$A_0$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_empir_1'],
-                iucr_name='_easydiffraction_peak.asym_empir_1',
+            tags=TagSpec(
+                edi_names=['_peak.asym_beba_a0'],
+                cif_names=['_easydiffraction_peak.asym_beba_a0'],
             ),
         )
-        self._asym_empir_2: Parameter = Parameter(
-            name='asym_empir_2',
-            description='Empirical asymmetry coefficient p2',
+        self._asym_beba_b0: Parameter = Parameter(
+            name='asym_beba_b0',
+            description='Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='B₀',
+                latex_name=r'$B_0$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_empir_2'],
-                iucr_name='_easydiffraction_peak.asym_empir_2',
+            tags=TagSpec(
+                edi_names=['_peak.asym_beba_b0'],
+                cif_names=['_easydiffraction_peak.asym_beba_b0'],
             ),
         )
-        self._asym_empir_3: Parameter = Parameter(
-            name='asym_empir_3',
-            description='Empirical asymmetry coefficient p3',
+        self._asym_beba_a1: Parameter = Parameter(
+            name='asym_beba_a1',
+            description='Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='A₁',
+                latex_name=r'$A_1$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_empir_3'],
-                iucr_name='_easydiffraction_peak.asym_empir_3',
+            tags=TagSpec(
+                edi_names=['_peak.asym_beba_a1'],
+                cif_names=['_easydiffraction_peak.asym_beba_a1'],
             ),
         )
-        self._asym_empir_4: Parameter = Parameter(
-            name='asym_empir_4',
-            description='Empirical asymmetry coefficient p4',
+        self._asym_beba_b1: Parameter = Parameter(
+            name='asym_beba_b1',
+            description='Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta)',
             units='none',
+            display_handler=DisplayHandler(
+                display_name='B₁',
+                latex_name=r'$B_1$',
+            ),
             value_spec=AttributeSpec(
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_empir_4'],
-                iucr_name='_easydiffraction_peak.asym_empir_4',
+            tags=TagSpec(
+                edi_names=['_peak.asym_beba_b1'],
+                cif_names=['_easydiffraction_peak.asym_beba_b1'],
             ),
         )
 
@@ -256,66 +318,71 @@ class EmpiricalAsymmetryMixin:
     # ------------------------------------------------------------------
 
     @property
-    def asym_empir_1(self) -> Parameter:
+    def asym_beba_a0(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p1.
+        Berar-Baldinozzi asymmetry coefficient A0 (Fa/tan theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_1
+        return self._asym_beba_a0
 
-    @asym_empir_1.setter
-    def asym_empir_1(self, value: float) -> None:
-        self._asym_empir_1.value = value
+    @asym_beba_a0.setter
+    def asym_beba_a0(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient A0."""
+        self._asym_beba_a0.value = value
 
     @property
-    def asym_empir_2(self) -> Parameter:
+    def asym_beba_b0(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p2.
+        Berar-Baldinozzi asymmetry coefficient B0 (Fb/tan theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_2
+        return self._asym_beba_b0
 
-    @asym_empir_2.setter
-    def asym_empir_2(self, value: float) -> None:
-        self._asym_empir_2.value = value
+    @asym_beba_b0.setter
+    def asym_beba_b0(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient B0."""
+        self._asym_beba_b0.value = value
 
     @property
-    def asym_empir_3(self) -> Parameter:
+    def asym_beba_a1(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p3.
+        Berar-Baldinozzi asymmetry coefficient A1 (Fa/tan 2theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_3
+        return self._asym_beba_a1
 
-    @asym_empir_3.setter
-    def asym_empir_3(self, value: float) -> None:
-        self._asym_empir_3.value = value
+    @asym_beba_a1.setter
+    def asym_beba_a1(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient A1."""
+        self._asym_beba_a1.value = value
 
     @property
-    def asym_empir_4(self) -> Parameter:
+    def asym_beba_b1(self) -> Parameter:
         """
-        Empirical asymmetry coefficient p4.
+        Berar-Baldinozzi asymmetry coefficient B1 (Fb/tan 2theta).
 
         Reading this property returns the underlying ``Parameter``
         object. Assigning to it updates the parameter value.
         """
-        return self._asym_empir_4
+        return self._asym_beba_b1
 
-    @asym_empir_4.setter
-    def asym_empir_4(self, value: float) -> None:
-        self._asym_empir_4.value = value
+    @asym_beba_b1.setter
+    def asym_beba_b1(self, value: float) -> None:
+        """Set Berar-Baldinozzi asymmetry coefficient B1."""
+        self._asym_beba_b1.value = value
 
 
 class FcjAsymmetryMixin:
     """Finger-Cox-Jephcoat (FCJ) asymmetry parameters."""
 
     def __init__(self) -> None:
+        """Initialize the Finger-Cox-Jephcoat asymmetry parameters."""
         super().__init__()
 
         self._asym_fcj_1: Parameter = Parameter(
@@ -326,9 +393,8 @@ class FcjAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_fcj_1'],
-                iucr_name='_easydiffraction_peak.asym_fcj_1',
+            tags=TagSpec(
+                edi_names=['_peak.asym_fcj_1'], cif_names=['_easydiffraction_peak.asym_fcj_1']
             ),
         )
         self._asym_fcj_2: Parameter = Parameter(
@@ -339,9 +405,8 @@ class FcjAsymmetryMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.asym_fcj_2'],
-                iucr_name='_easydiffraction_peak.asym_fcj_2',
+            tags=TagSpec(
+                edi_names=['_peak.asym_fcj_2'], cif_names=['_easydiffraction_peak.asym_fcj_2']
             ),
         )
 
@@ -361,6 +426,7 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_1.setter
     def asym_fcj_1(self, value: float) -> None:
+        """Set the Finger-Cox-Jephcoat asymmetry parameter 1."""
         self._asym_fcj_1.value = value
 
     @property
@@ -375,4 +441,5 @@ class FcjAsymmetryMixin:
 
     @asym_fcj_2.setter
     def asym_fcj_2(self, value: float) -> None:
+        """Set the Finger-Cox-Jephcoat asymmetry parameter 2."""
         self._asym_fcj_2.value = value

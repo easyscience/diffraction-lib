@@ -24,9 +24,19 @@ def test_display_how_to_access_parameters(lbco_fitted_project):
     project.display.parameters.access()
 
 
-def test_display_parameter_cif_uids(lbco_fitted_project):
+def test_display_parameter_uids(lbco_fitted_project):
     project = lbco_fitted_project
-    project.display.parameters.cif_uids()
+    project.display.parameters.uid()
+
+
+def test_display_parameter_edi_tags(lbco_fitted_project):
+    project = lbco_fitted_project
+    project.display.parameters.edi()
+
+
+def test_display_parameter_cif_tags(lbco_fitted_project):
+    project = lbco_fitted_project
+    project.display.parameters.cif()
 
 
 def test_display_constraints_empty(lbco_fitted_project):
@@ -40,9 +50,9 @@ def test_display_fit_results(lbco_fitted_project):
     project.display.fit.results()
 
 
-def test_display_as_cif(lbco_fitted_project):
+def test_display_as_text(lbco_fitted_project):
     project = lbco_fitted_project
-    project.analysis.show_as_cif()
+    project.analysis.show_as_text()
 
 
 def test_analysis_as_cif(lbco_fitted_project):

@@ -7,6 +7,10 @@ Here is a brief overview of the main documentation sections:
 - [:material-information-slab-circle: Introduction](introduction/index.md)
   – Provides a description of EasyDiffraction, including its purpose,
   licensing, latest release details, and contact information.
+- [:material-clipboard-check-outline: Features](features/index.md) – A
+  capability matrix of what EasyDiffraction supports across the library,
+  command line, and application, including current status and planned
+  work.
 - [:material-cog-box: Installation & Setup](installation-and-setup/index.md)
   – Guides users through system requirements, environment configuration,
   and the installation process.
@@ -16,6 +20,9 @@ Here is a brief overview of the main documentation sections:
 - [:material-school: Tutorials](tutorials/index.md) – Offers practical,
   step-by-step examples demonstrating common workflows and data analysis
   tasks.
+- [:material-check-decagram: Verification](verification/index.md) –
+  Cross-checks EasyDiffraction calculations against reference results
+  from external software (FullProf) across supported experiment types.
 - [:material-console: Command-Line Interface](cli/index.md) – Describes
   how to use EasyDiffraction from the terminal for batch fitting and
   other tasks.

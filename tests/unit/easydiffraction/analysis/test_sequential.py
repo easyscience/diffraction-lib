@@ -10,8 +10,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from easydiffraction.analysis.sequential import SequentialFitTemplate
 from easydiffraction.analysis.sequential import _META_COLUMNS
+from easydiffraction.analysis.sequential import SequentialFitTemplate
 from easydiffraction.analysis.sequential import _append_to_csv
 from easydiffraction.analysis.sequential import _build_csv_header
 from easydiffraction.analysis.sequential import _chunk_file_range
@@ -39,10 +39,10 @@ def _minimal_template(
     if diffrn_fields is None:
         diffrn_fields = []
     return SequentialFitTemplate(
-        structure_cif='',
+        structure_cifs=[],
         experiment_cif='',
         initial_params={},
-        free_param_unique_names=free_names,
+        free_parameter_unique_names=free_names,
         alias_defs=[],
         constraint_defs=[],
         constraints_enabled=False,
@@ -489,7 +489,7 @@ class TestSequentialFitTemplate:
             free_names=['cell.a'],
             diffrn_fields=['temp'],
         )
-        assert template.free_param_unique_names == ['cell.a']
+        assert template.free_parameter_unique_names == ['cell.a']
         assert template.diffrn_field_names == ['temp']
         assert template.minimizer_tag == 'lmfit'
         assert template.calculator_tag == 'cryspy'

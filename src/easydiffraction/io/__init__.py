@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Input/output helpers for data files, CIF, and projects."""
 
 from easydiffraction.io.ascii import extract_data_paths_from_dir
 from easydiffraction.io.ascii import extract_data_paths_from_zip

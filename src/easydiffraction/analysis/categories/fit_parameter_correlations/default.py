@@ -17,17 +17,17 @@ from easydiffraction.core.validation import RegexValidator
 from easydiffraction.core.variable import EnumDescriptor
 from easydiffraction.core.variable import NumericDescriptor
 from easydiffraction.core.variable import StringDescriptor
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 def _normalized_parameter_pair(
-    param_unique_name_i: str,
-    param_unique_name_j: str,
+    parameter_unique_name_i: str,
+    parameter_unique_name_j: str,
 ) -> tuple[str, str]:
     """Return a stable ordering for a parameter pair."""
-    if param_unique_name_i <= param_unique_name_j:
-        return param_unique_name_i, param_unique_name_j
-    return param_unique_name_j, param_unique_name_i
+    if parameter_unique_name_i <= parameter_unique_name_j:
+        return parameter_unique_name_i, parameter_unique_name_j
+    return parameter_unique_name_j, parameter_unique_name_i
 
 
 class FitParameterCorrelationItem(CategoryItem):
@@ -37,6 +37,7 @@ class FitParameterCorrelationItem(CategoryItem):
     _category_entry_name = 'id'
 
     def __init__(self) -> None:
+        """Initialize the persisted correlation-row descriptors."""
         super().__init__()
         self._id = StringDescriptor(
             name='id',
@@ -45,31 +46,37 @@ class FitParameterCorrelationItem(CategoryItem):
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z0-9_.:-]+$'),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.id']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.id']),
         )
         self._source_kind = EnumDescriptor(
             name='source_kind',
             enum=FitCorrelationSourceEnum,
             description='Origin of the persisted correlation summary.',
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.source_kind']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.source_kind']),
         )
-        self._param_unique_name_i = StringDescriptor(
-            name='param_unique_name_i',
+        self._parameter_unique_name_i = StringDescriptor(
+            name='parameter_unique_name_i',
             description='First unique parameter name in the persisted pair.',
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.param_unique_name_i']),
+            tags=TagSpec(
+                edi_names=['_fit_parameter_correlation.parameter_unique_name_i'],
+                cif_names=['_fit_parameter_correlation.param_unique_name_i'],
+            ),
         )
-        self._param_unique_name_j = StringDescriptor(
-            name='param_unique_name_j',
+        self._parameter_unique_name_j = StringDescriptor(
+            name='parameter_unique_name_j',
             description='Second unique parameter name in the persisted pair.',
             value_spec=AttributeSpec(
                 default='_',
                 validator=RegexValidator(pattern=r'^[A-Za-z_][A-Za-z0-9_.]*$'),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.param_unique_name_j']),
+            tags=TagSpec(
+                edi_names=['_fit_parameter_correlation.parameter_unique_name_j'],
+                cif_names=['_fit_parameter_correlation.param_unique_name_j'],
+            ),
         )
         self._correlation = NumericDescriptor(
             name='correlation',
@@ -78,7 +85,7 @@ class FitParameterCorrelationItem(CategoryItem):
                 default=0.0,
                 validator=RangeValidator(ge=-1.0, le=1.0),
             ),
-            cif_handler=CifHandler(names=['_fit_parameter_correlation.correlation']),
+            tags=TagSpec(edi_names=['_fit_parameter_correlation.correlation']),
         )
 
     @property
@@ -100,22 +107,22 @@ class FitParameterCorrelationItem(CategoryItem):
         self._source_kind.value = value
 
     @property
-    def param_unique_name_i(self) -> StringDescriptor:
+    def parameter_unique_name_i(self) -> StringDescriptor:
         """First unique parameter name in the persisted pair."""
-        return self._param_unique_name_i
+        return self._parameter_unique_name_i
 
-    def _set_param_unique_name_i(self, value: str) -> None:
+    def _set_parameter_unique_name_i(self, value: str) -> None:
         """Set the first parameter name for internal callers."""
-        self._param_unique_name_i.value = value
+        self._parameter_unique_name_i.value = value
 
     @property
-    def param_unique_name_j(self) -> StringDescriptor:
+    def parameter_unique_name_j(self) -> StringDescriptor:
         """Second unique parameter name in the persisted pair."""
-        return self._param_unique_name_j
+        return self._parameter_unique_name_j
 
-    def _set_param_unique_name_j(self, value: str) -> None:
+    def _set_parameter_unique_name_j(self, value: str) -> None:
         """Set the second parameter name for internal callers."""
-        self._param_unique_name_j.value = value
+        self._parameter_unique_name_j.value = value
 
     @property
     def correlation(self) -> NumericDescriptor:
@@ -137,14 +144,15 @@ class FitParameterCorrelations(CategoryCollection):
     )
 
     def __init__(self) -> None:
+        """Create an empty fit-parameter correlations collection."""
         super().__init__(item_type=FitParameterCorrelationItem)
 
     def create(
         self,
         *,
         source_kind: str,
-        param_unique_name_i: str,
-        param_unique_name_j: str,
+        parameter_unique_name_i: str,
+        parameter_unique_name_j: str,
         correlation: float,
         id: str | None = None,
     ) -> None:
@@ -155,9 +163,9 @@ class FitParameterCorrelations(CategoryCollection):
         ----------
         source_kind : str
             Origin of the persisted correlation summary.
-        param_unique_name_i : str
+        parameter_unique_name_i : str
             First unique parameter name in the pair.
-        param_unique_name_j : str
+        parameter_unique_name_j : str
             Second unique parameter name in the pair.
         correlation : float
             Correlation coefficient for the parameter pair.
@@ -166,13 +174,13 @@ class FitParameterCorrelations(CategoryCollection):
             sequential identifier is generated.
         """
         normalized_i, normalized_j = _normalized_parameter_pair(
-            param_unique_name_i,
-            param_unique_name_j,
+            parameter_unique_name_i,
+            parameter_unique_name_j,
         )
         item = FitParameterCorrelationItem()
         item._set_source_kind(source_kind)
-        item._set_param_unique_name_i(normalized_i)
-        item._set_param_unique_name_j(normalized_j)
+        item._set_parameter_unique_name_i(normalized_i)
+        item._set_parameter_unique_name_j(normalized_j)
         item._set_correlation(correlation)
         resolved_id = id or str(len(self) + 1)
         item._set_id(resolved_id)

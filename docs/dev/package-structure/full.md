@@ -14,8 +14,10 @@
 │   │   │   └── 🏷️ class CryspyCalculator
 │   │   ├── 📄 factory.py
 │   │   │   └── 🏷️ class CalculatorFactory
-│   │   └── 📄 pdffit.py
-│   │       └── 🏷️ class PdffitCalculator
+│   │   ├── 📄 pdffit.py
+│   │   │   └── 🏷️ class PdffitCalculator
+│   │   └── 📄 support.py
+│   │       └── 🏷️ class SupportEntry
 │   ├── 📁 categories
 │   │   ├── 📁 aliases
 │   │   │   ├── 📄 __init__.py
@@ -124,6 +126,10 @@
 │   │   │   └── 📄 factory.py
 │   │   │       └── 🏷️ class SoftwareFactory
 │   │   └── 📄 __init__.py
+│   ├── 📁 corrections
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
+│   │   └── 📄 polarization.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 _diagnostics.py
@@ -152,6 +158,7 @@
 │   │   ├── 📄 bumps_de.py
 │   │   │   └── 🏷️ class BumpsDEMinimizer
 │   │   ├── 📄 bumps_dream.py
+│   │   │   ├── 🏷️ class _DreamForkPoolMapper
 │   │   │   ├── 🏷️ class _DreamRunContext
 │   │   │   ├── 🏷️ class _DreamDriverResult
 │   │   │   ├── 🏷️ class _DreamProgressMonitor
@@ -188,17 +195,22 @@
 │   ├── 📄 enums.py
 │   │   ├── 🏷️ class FitModeEnum
 │   │   ├── 🏷️ class FitResultKindEnum
-│   │   └── 🏷️ class FitCorrelationSourceEnum
+│   │   ├── 🏷️ class FitCorrelationSourceEnum
+│   │   └── 🏷️ class SoftwareRoleEnum
 │   ├── 📄 fitting.py
 │   │   ├── 🏷️ class FitterFitOptions
 │   │   └── 🏷️ class Fitter
-│   └── 📄 sequential.py
-│       ├── 🏷️ class SequentialFitExtractRule
-│       ├── 🏷️ class SequentialFitTemplate
-│       ├── 🏷️ class SequentialProgressState
-│       ├── 🏷️ class SequentialProgressContext
-│       ├── 🏷️ class _ChunkProgressMetrics
-│       └── 🏷️ class SequentialRunPlan
+│   ├── 📄 sequential.py
+│   │   ├── 🏷️ class SequentialFitExtractRule
+│   │   ├── 🏷️ class SequentialFitTemplate
+│   │   ├── 🏷️ class SequentialProgressState
+│   │   ├── 🏷️ class SequentialProgressContext
+│   │   ├── 🏷️ class _ChunkProgressMetrics
+│   │   └── 🏷️ class SequentialRunPlan
+│   └── 📄 verification.py
+│       ├── 🏷️ class ClosenessMetrics
+│       ├── 🏷️ class AgreementTolerances
+│       └── 🏷️ class _AgreementCheck
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -268,6 +280,16 @@
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
+│   │   │   ├── 📁 absorption
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class AbsorptionBase
+│   │   │   │   ├── 📄 cylinder_hewat.py
+│   │   │   │   │   └── 🏷️ class CylinderHewatAbsorption
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   │   └── 🏷️ class AbsorptionFactory
+│   │   │   │   └── 📄 none.py
+│   │   │   │       └── 🏷️ class NoAbsorption
 │   │   │   ├── 📁 background
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
@@ -276,7 +298,10 @@
 │   │   │   │   │   ├── 🏷️ class PolynomialTerm
 │   │   │   │   │   └── 🏷️ class ChebyshevPolynomialBackground
 │   │   │   │   ├── 📄 enums.py
-│   │   │   │   │   └── 🏷️ class BackgroundTypeEnum
+│   │   │   │   │   ├── 🏷️ class BackgroundTypeEnum
+│   │   │   │   │   └── 🏷️ class BackgroundEstimatorMethodEnum
+│   │   │   │   ├── 📄 estimate.py
+│   │   │   │   │   └── 🏷️ class BackgroundEstimate
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class BackgroundFactory
 │   │   │   │   └── 📄 line_segment.py
@@ -305,6 +330,18 @@
 │   │   │   │       ├── 🏷️ class TotalDataPoint
 │   │   │   │       ├── 🏷️ class TotalDataBase
 │   │   │   │       └── 🏷️ class TotalData
+│   │   │   ├── 📁 data_range
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   │   └── 🏷️ class DataRangeBase
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   │   └── 🏷️ class CwlPdDataRange
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   │   └── 🏷️ class DataRangeFactory
+│   │   │   │   ├── 📄 sc.py
+│   │   │   │   │   └── 🏷️ class ScDataRange
+│   │   │   │   └── 📄 tof.py
+│   │   │   │       └── 🏷️ class TofPdDataRange
 │   │   │   ├── 📁 diffrn
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
@@ -339,36 +376,40 @@
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlInstrumentBase
 │   │   │   │   │   ├── 🏷️ class CwlScInstrument
-│   │   │   │   │   └── 🏷️ class CwlPdInstrument
+│   │   │   │   │   ├── 🏷️ class CwlPdInstrumentBase
+│   │   │   │   │   ├── 🏷️ class CwlPdNeutronInstrument
+│   │   │   │   │   └── 🏷️ class CwlPdXrayInstrument
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class InstrumentFactory
 │   │   │   │   └── 📄 tof.py
 │   │   │   │       ├── 🏷️ class TofScInstrument
 │   │   │   │       └── 🏷️ class TofPdInstrument
 │   │   │   ├── 📁 linked_crystal
-│   │   │   │   ├── 📄 __init__.py
-│   │   │   │   ├── 📄 default.py
-│   │   │   │   │   └── 🏷️ class LinkedCrystal
-│   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedCrystalFactory
 │   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structure
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
-│   │   │   │   │   ├── 🏷️ class LinkedPhase
-│   │   │   │   │   └── 🏷️ class LinkedPhases
+│   │   │   │   │   └── 🏷️ class LinkedStructure
 │   │   │   │   └── 📄 factory.py
-│   │   │   │       └── 🏷️ class LinkedPhasesFactory
+│   │   │   │       └── 🏷️ class LinkedStructureFactory
+│   │   │   ├── 📁 linked_structures
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class LinkedStructure
+│   │   │   │   │   └── 🏷️ class LinkedStructures
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class LinkedStructuresFactory
 │   │   │   ├── 📁 peak
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
 │   │   │   │   │   └── 🏷️ class PeakBase
 │   │   │   │   ├── 📄 cwl.py
 │   │   │   │   │   ├── 🏷️ class CwlPseudoVoigt
-│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtEmpiricalAsymmetry
+│   │   │   │   │   ├── 🏷️ class CwlPseudoVoigtBerarBaldinozziAsymmetry
 │   │   │   │   │   └── 🏷️ class CwlThompsonCoxHastings
 │   │   │   │   ├── 📄 cwl_mixins.py
 │   │   │   │   │   ├── 🏷️ class CwlBroadeningMixin
-│   │   │   │   │   ├── 🏷️ class EmpiricalAsymmetryMixin
+│   │   │   │   │   ├── 🏷️ class BerarBaldinozziAsymmetryMixin
 │   │   │   │   │   └── 🏷️ class FcjAsymmetryMixin
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class PeakFactory
@@ -386,6 +427,13 @@
 │   │   │   │   │   └── 🏷️ class TotalGaussianDampedSinc
 │   │   │   │   └── 📄 total_mixins.py
 │   │   │   │       └── 🏷️ class TotalBroadeningMixin
+│   │   │   ├── 📁 pref_orient
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class PrefOrient
+│   │   │   │   │   └── 🏷️ class PrefOrients
+│   │   │   │   └── 📄 factory.py
+│   │   │   │       └── 🏷️ class PrefOrientFactory
 │   │   │   ├── 📁 refln
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -422,7 +470,8 @@
 │   │   │   │   ├── 🏷️ class BeamModeEnum
 │   │   │   │   ├── 🏷️ class CalculatorEnum
 │   │   │   │   ├── 🏷️ class PeakProfileTypeEnum
-│   │   │   │   └── 🏷️ class ExtinctionModelEnum
+│   │   │   │   ├── 🏷️ class ExtinctionModelEnum
+│   │   │   │   └── 🏷️ class AbsorptionTypeEnum
 │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 🏷️ class ExperimentFactory
 │   │   │   └── 📄 total_pd.py
@@ -435,6 +484,7 @@
 │   │   │   ├── 📁 atom_site_aniso
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
+│   │   │   │   │   ├── 🏷️ class _AnisoAdpParameter
 │   │   │   │   │   ├── 🏷️ class AtomSiteAniso
 │   │   │   │   │   └── 🏷️ class AtomSiteAnisoCollection
 │   │   │   │   └── 📄 factory.py
@@ -486,6 +536,7 @@
 │   └── 📄 __init__.py
 ├── 📁 display
 │   ├── 📁 plotters
+│   │   ├── 📁 assets
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 ascii.py
 │   │   │   └── 🏷️ class AsciiPlotter
@@ -504,8 +555,6 @@
 │   │   │   ├── 📄 elements.py
 │   │   │   └── 📄 radii.py
 │   │   ├── 📁 renderers
-│   │   │   ├── 📁 vendor
-│   │   │   │   └── 📁 threejs
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 ascii.py
 │   │   │   │   ├── 🏷️ class _Orientation
@@ -556,6 +605,8 @@
 │   ├── 📄 base.py
 │   │   ├── 🏷️ class RendererBase
 │   │   └── 🏷️ class RendererFactoryBase
+│   ├── 📄 links.py
+│   │   └── 🏷️ class TableLink
 │   ├── 📄 plotting.py
 │   │   ├── 🏷️ class PlotterEngineEnum
 │   │   ├── 🏷️ class PosteriorPairPlotStyleEnum
@@ -584,7 +635,7 @@
 │   ├── 📁 cif
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 handler.py
-│   │   │   └── 🏷️ class CifHandler
+│   │   │   └── 🏷️ class TagSpec
 │   │   ├── 📄 iucr_transformers.py
 │   │   │   ├── 🏷️ class IucrItem
 │   │   │   ├── 🏷️ class IucrLoop
@@ -600,19 +651,21 @@
 │   │   │   └── 🏷️ class _PowderPattern
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
+│   ├── 📁 edi
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
 │   ├── 📄 ascii.py
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info
+│   │   ├── 📁 metadata
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
-│   │   │   │   └── 🏷️ class ProjectInfo
+│   │   │   │   └── 🏷️ class ProjectMetadata
 │   │   │   └── 📄 factory.py
-│   │   │       └── 🏷️ class ProjectInfoFactory
-│   │   ├── 📁 publication
-│   │   ├── 📁 rendering
+│   │   │       └── 🏷️ class ProjectMetadataFactory
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -667,13 +720,11 @@
 │   │   └── 🏷️ class Project
 │   ├── 📄 project_config.py
 │   │   └── 🏷️ class ProjectConfig
-│   └── 📄 project_info.py
+│   └── 📄 project_metadata.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html
-│   │   │   └── 📁 vendor
 │   │   └── 📁 tex
-│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   │   └── 🏷️ class ReportDataContext
@@ -685,12 +736,6 @@
 │   ├── 📄 style.py
 │   └── 📄 tex_renderer.py
 ├── 📁 utils
-│   ├── 📁 _vendored
-│   │   ├── 📁 jupyter_dark_detect
-│   │   │   ├── 📄 __init__.py
-│   │   │   └── 📄 detector.py
-│   │   ├── 📄 __init__.py
-│   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
 │   ├── 📄 enums.py
 │   │   └── 🏷️ class VerbosityEnum
@@ -705,6 +750,8 @@
 │   │   └── 🏷️ class ConsolePrinter
 │   ├── 📄 matplotlib_config.py
 │   └── 📄 utils.py
+│       ├── 🏷️ class DataCategoryEnum
+│       └── 🏷️ class TutorialFormat
 ├── 📄 __init__.py
 └── 📄 __main__.py
 ```

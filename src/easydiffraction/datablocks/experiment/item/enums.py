@@ -160,7 +160,7 @@ class PeakProfileTypeEnum(StrEnum):
     """Available peak profile types per scattering and beam mode."""
 
     CWL_PSEUDO_VOIGT = 'cwl-pseudo-voigt'
-    CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY = 'cwl-pseudo-voigt-empirical-asymmetry'
+    CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY = 'cwl-pseudo-voigt-berar-baldinozzi-asymmetry'
     CWL_THOMPSON_COX_HASTINGS = 'cwl-thompson-cox-hastings'
     TOF_PSEUDO_VOIGT = 'tof-pseudo-voigt'
     TOF_JORGENSEN = 'tof-jorgensen'
@@ -220,8 +220,8 @@ class PeakProfileTypeEnum(StrEnum):
         """
         if self is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT:
             return 'CWL pseudo-Voigt profile'
-        if self is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_EMPIRICAL_ASYMMETRY:
-            return 'CWL pseudo-Voigt profile with empirical asymmetry correction.'
+        if self is PeakProfileTypeEnum.CWL_PSEUDO_VOIGT_BERAR_BALDINOZZI_ASYMMETRY:
+            return 'CWL pseudo-Voigt profile with Berar-Baldinozzi asymmetry correction.'
         if self is PeakProfileTypeEnum.CWL_THOMPSON_COX_HASTINGS:
             return 'CWL Thompson-Cox-Hastings profile with FCJ asymmetry correction.'
         if self is PeakProfileTypeEnum.TOF_PSEUDO_VOIGT:
@@ -271,4 +271,38 @@ class ExtinctionModelEnum(StrEnum):
             return 'Gaussian mosaicity distribution for extinction correction.'
         if self is ExtinctionModelEnum.LORENTZ:
             return 'Lorentzian mosaicity distribution for extinction correction.'
+        return None
+
+
+class AbsorptionTypeEnum(StrEnum):
+    """Sample-absorption correction types for powder experiments."""
+
+    NONE = 'none'
+    CYLINDER_HEWAT = 'cylinder-hewat'
+
+    @classmethod
+    def default(cls) -> 'AbsorptionTypeEnum':
+        """
+        Return the default absorption type (NONE).
+
+        Returns
+        -------
+        'AbsorptionTypeEnum'
+            The default enum member.
+        """
+        return cls.NONE
+
+    def description(self) -> str:
+        """
+        Return a human-readable description of this absorption type.
+
+        Returns
+        -------
+        str
+            Description string for the current enum member.
+        """
+        if self is AbsorptionTypeEnum.NONE:
+            return 'No sample-absorption correction.'
+        if self is AbsorptionTypeEnum.CYLINDER_HEWAT:
+            return 'Cylindrical Debye-Scherrer absorption (Hewat).'
         return None

@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2025 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Guarded base class with controlled attribute access."""
 
 from __future__ import annotations
 
@@ -143,16 +144,6 @@ class GuardedBase(ABC):
     def _public_writable_attrs(cls) -> set[str]:
         """Public properties with a setter."""
         return {key for key, prop in cls._iter_properties() if prop.fset is not None}
-
-    def _allowed_attrs(
-        self,
-        *,
-        writable_only: bool = False,
-    ) -> set[str]:
-        cls = type(self)
-        if writable_only:
-            return cls._public_writable_attrs()
-        return cls._public_attrs()
 
     @property
     def _log_name(self) -> str:

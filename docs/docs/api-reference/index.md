@@ -1,4 +1,5 @@
 ---
+title: API Reference
 icon: material/code-braces-box
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: Installation & Setup
 icon: material/cog-box
 ---
 

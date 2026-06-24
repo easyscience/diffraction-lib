@@ -259,7 +259,6 @@ def test_residual_function_skips_tracker_for_solver_monitored_minimizer(monkeypa
     class DummyExperiment:
         def _update_categories(self, *, called_by_minimizer=False):
             del called_by_minimizer
-            return
 
     class DummyMin:
         def __init__(self):
@@ -297,3 +296,55 @@ def test_residual_function_skips_tracker_for_solver_monitored_minimizer(monkeypa
     )
 
     np.testing.assert_allclose(residuals, np.array([1.0]))
+
+
+def test_require_valid_weights_accepts_none():
+    from easydiffraction.analysis.fitting import Fitter
+
+    # Equal-weight fits pass None and must always be accepted.
+    Fitter._require_valid_weights(None, [object(), object()])
+
+
+def test_require_valid_weights_accepts_valid_arrays():
+    import numpy as np
+
+    from easydiffraction.analysis.fitting import Fitter
+
+    experiments = [object(), object()]
+    # Distinct positive weights.
+    Fitter._require_valid_weights(np.array([0.3, 0.7]), experiments)
+    # A single zero weight is allowed: positive total, that experiment
+    # simply contributes zero residuals (0-as-exclusion stays valid).
+    Fitter._require_valid_weights(np.array([0.0, 1.0]), experiments)
+
+
+def test_require_valid_weights_rejects_invalid_arrays():
+    import numpy as np
+    import pytest
+
+    from easydiffraction.analysis.fitting import Fitter
+
+    experiments = [object(), object()]
+    invalid_cases = [
+        np.array([-1.0, 1.0]),  # negative element
+        np.array([0.0, 0.0]),  # all-zero set -> total 0
+        np.array([np.nan, 1.0]),  # non-finite element
+        np.array([np.inf, 1.0]),  # non-finite element
+        np.array([1e308, 1e308]),  # finite elements, sum overflows to inf
+        np.array([[0.5, 0.5]]),  # 2-D array
+        np.array([1.0]),  # too few weights for two experiments
+        np.array([0.3, 0.3, 0.4]),  # too many weights for two experiments
+    ]
+    for weights in invalid_cases:
+        with pytest.raises(ValueError, match='Joint-fit weights'):
+            Fitter._require_valid_weights(weights, experiments)
+
+
+def test_require_valid_weights_rejects_scalar():
+    import pytest
+
+    from easydiffraction.analysis.fitting import Fitter
+
+    # A scalar coerces to a 0-D array and must be rejected.
+    with pytest.raises(ValueError, match='1-D array'):
+        Fitter._require_valid_weights(1.0, [object(), object()])

@@ -19,6 +19,7 @@ import numpy as np
 from easydiffraction.analysis.calculators.base import CalculatorBase
 from easydiffraction.analysis.calculators.factory import CalculatorFactory
 from easydiffraction.core.metadata import TypeInfo
+from easydiffraction.utils.logging import log
 
 if TYPE_CHECKING:
     from easydiffraction.datablocks.experiment.item.base import ExperimentBase
@@ -29,6 +30,76 @@ def _open_pdffit_devnull() -> object:
     """Open a durable devnull handle for PDFfit stdout redirection."""
     with Path(os.devnull).open('w', encoding='utf-8') as tmp_devnull:
         return os.fdopen(os.dup(tmp_devnull.fileno()), 'w')
+
+
+_ANISO_SUFFIXES = ('11', '22', '33', '12', '13', '23')
+_B_TO_U_FACTOR = 8.0 * np.pi**2
+
+
+def _normalize_b_family_adp_to_u(structure: Structure) -> list[tuple]:
+    """
+    Temporarily convert B-convention ADP values to U notation.
+
+    diffpy reads a single isotropic/anisotropic ADP column, so a
+    structure mixing ``Biso``/``Uiso`` (or ``Bani``/``Uani``) atoms must
+    be normalized to one convention. B-family values are divided by 8π²
+    so every row can be written under the U tags. Returns saved state
+    for restoration. ``beta`` atoms keep their stored equivalent values
+    unchanged.
+    """
+    saved: list[tuple] = []
+    for atom in structure.atom_sites:
+        adp_type = str(atom.adp_type.value).lower()
+        if adp_type not in {'biso', 'bani'}:
+            continue
+        saved.append((atom._adp_iso, atom._adp_iso._value))
+        atom._adp_iso._value /= _B_TO_U_FACTOR
+        if atom.id.value in structure.atom_site_aniso:
+            aniso = structure.atom_site_aniso[atom.id.value]
+            for suffix in _ANISO_SUFFIXES:
+                param = getattr(aniso, f'_adp_{suffix}')
+                saved.append((param, param._value))
+                param._value /= _B_TO_U_FACTOR
+    return saved
+
+
+def _restore_adp_values(saved: list[tuple]) -> None:
+    """Restore ADP values saved by ``_normalize_b_family_adp_to_u``."""
+    for param, value in saved:
+        param._value = value
+
+
+def _structure_cif_for_pdffit(structure: Structure) -> str:
+    """
+    Return structure CIF using legacy IUCr tags diffpy recognizes.
+
+    Edi persistence renamed several CIF tags (``_atom_site.id``,
+    ``_space_group.name_h_m``, type-neutral ``_atom_site.adp_iso``).
+    diffpy's CIF parser only understands the legacy IUCr spellings, so
+    map them back. All ADP values are normalized to the U convention
+    first, so mixed B/U structures are written consistently under the U
+    tags rather than mislabeling one family.
+    """
+    saved = _normalize_b_family_adp_to_u(structure)
+    try:
+        cif = structure.as_cif
+    finally:
+        _restore_adp_values(saved)
+
+    replacements = [
+        ('_atom_site_aniso.id', '_atom_site_aniso.label'),
+        ('_atom_site.id', '_atom_site.label'),
+        ('_space_group.name_h_m', '_space_group.name_H-M_alt'),
+        ('_space_group.coord_system_code', '_space_group.IT_coordinate_system_code'),
+        ('_atom_site.adp_iso', '_atom_site.U_iso_or_equiv'),
+        *(
+            (f'_atom_site_aniso.adp_{suffix}', f'_atom_site_aniso.U_{suffix}')
+            for suffix in _ANISO_SUFFIXES
+        ),
+    ]
+    for edi_tag, iucr_tag in replacements:
+        cif = cif.replace(edi_tag, iucr_tag)
+    return cif
 
 
 try:
@@ -89,7 +160,7 @@ class PdffitCalculator(CalculatorBase):
         # PDF doesn't compute HKL but we keep interface consistent
         # Intentionally unused, required by public API/signature
         del structures, experiments
-        print('[pdffit] Calculating HKLs (not applicable)...')
+        log.debug('[pdffit] Calculating HKLs (not applicable)')
         return []
 
     def calculate_pattern(  # noqa: PLR6301
@@ -124,8 +195,9 @@ class PdffitCalculator(CalculatorBase):
         # ---------------------------
 
         # TODO: move CIF v2 -> CIF v1 conversion to a separate module
-        # Convert the structure to CIF supported by PDFfit
-        cif_string_v2 = structure.as_cif
+        # Convert the structure to CIF supported by PDFfit, mapping
+        # Edi tags back to the legacy IUCr spellings diffpy needs.
+        cif_string_v2 = _structure_cif_for_pdffit(structure)
         # convert to version 1 of CIF format
         # this means: replace all dots with underscores for
         # cases where the dot is surrounded by letters on both sides.
@@ -144,7 +216,9 @@ class PdffitCalculator(CalculatorBase):
         # -------------------------
 
         # Set some peak-related parameters
-        calculator.setvar('pscale', experiment.linked_phases[structure.name].scale.value)
+        # Linked-structure scale is applied by TotalData._update after
+        # this per-structure pattern is returned.
+        calculator.setvar('pscale', 1.0)
         calculator.setvar('delta1', experiment.peak.sharp_delta_1.value)
         calculator.setvar('delta2', experiment.peak.sharp_delta_2.value)
         calculator.setvar('spdiameter', experiment.peak.damp_particle_diameter.value)
@@ -155,7 +229,7 @@ class PdffitCalculator(CalculatorBase):
 
         # Assign the data to the PDFfit calculator
         calculator.read_data_lists(
-            stype=experiment.type.radiation_probe.value[0].upper(),
+            stype=experiment.experiment_type.radiation_probe.value[0].upper(),
             qmax=experiment.peak.cutoff_q.value,
             qdamp=experiment.peak.damp_q.value,
             r_data=x,

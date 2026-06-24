@@ -16,6 +16,9 @@ except ImportError:
     HTML = None
     display = None
 
+from easydiffraction.display.links import TableLink
+from easydiffraction.display.tablers.base import TABLE_CELL_LINE_HEIGHT
+from easydiffraction.display.tablers.base import TABLE_CELL_PADDING
 from easydiffraction.display.tablers.base import TableBackendBase
 from easydiffraction.utils.environment import can_use_ipython_display
 from easydiffraction.utils.logging import log
@@ -32,13 +35,20 @@ _RICH_COLOR_RE = re.compile(r'\[(\w+)\](.*?)\[/\1\]')
 BORDER_COLOR = 'rgba(128, 128, 128, 0.4)'
 INDEX_COLOR = 'rgba(128, 128, 128, 0.7)'
 
-# Compact cell metrics matching the Rich layout. ``border: 0`` and
-# ``min-width: 0`` neutralise MkDocs Material's ``table:not([class])``
-# rules, which otherwise inject a per-row ``border-top`` (stray rules
-# between rows) and ``th { min-width: 5rem }`` (over-wide columns) onto
-# class-less embedded tables. Inline values win over the theme
-# stylesheet, so no CSS class or ``<style>`` block is needed.
-_CELL_STYLE = 'padding: 0.25em 0.5em; line-height: 1.15em; border: 0; min-width: 0'
+# Compact cell metrics matching the Rich layout. Spacing comes from the
+# shared ``TABLE_CELL_*`` constants so both backends stay in sync.
+# ``border: 0`` and ``min-width: 0`` neutralise MkDocs Material's
+# ``table:not([class])`` rules, which otherwise inject a per-row
+# ``border-top`` (stray rules between rows) and a ``min-width`` on
+# ``th`` (over-wide columns) onto class-less embedded tables.
+# ``white-space: nowrap`` keeps each cell on one line so a wide table
+# scrolls horizontally rather than folding into multi-line rows. Inline
+# values win over the theme stylesheet, so no CSS class or ``<style>``
+# block is needed.
+_CELL_STYLE = (
+    f'padding: {TABLE_CELL_PADDING}; line-height: {TABLE_CELL_LINE_HEIGHT}; '
+    'border: 0; min-width: 0; white-space: nowrap'
+)
 _TRANSPARENT_ROW = 'background-color: transparent'
 
 
@@ -67,6 +77,16 @@ class PandasTableBackend(TableBackendBase):
         tuple[str, str | None]
             HTML-escaped text and a CSS colour (``None`` when absent).
         """
+        if isinstance(value, TableLink):
+            text = html.escape(value.text)
+            url = html.escape(value.url, quote=True)
+            title = ''
+            if value.title is not None:
+                escaped_title = html.escape(value.title, quote=True)
+                title = f' title="{escaped_title}"'
+            link = f'<a href="{url}"{title} target="_blank" rel="noopener noreferrer">{text}</a>'
+            return link, None
+
         text = self._format_value(value)
         match = _RICH_COLOR_RE.fullmatch(text)
         colour = None
@@ -116,17 +136,33 @@ class PandasTableBackend(TableBackendBase):
         border = f'1px solid {BORDER_COLOR}'
         header = f'{_CELL_STYLE}; border-bottom: {border}; font-weight: bold'
         index = f'{_CELL_STYLE}; color: {INDEX_COLOR}; font-weight: normal; text-align: right'
+        # ``display: table`` overrides MkDocs Material's
+        # ``table:not([class]) { display: inline-block }`` rule. Left as
+        # inline-block the table drops out of the collapsing-border
+        # model, so the header's translucent ``border-bottom`` stacks
+        # into a darker line than the outer border and stops one pixel
+        # short of the right edge. The wrapping ``overflow-x: auto`` div
+        # (added below) restores the horizontal scrolling that
+        # Material's ``inline-block`` would otherwise have provided for
+        # wide tables.
         table_style = (
-            f'border: {border}; border-collapse: collapse; margin-top: 0.5em; margin-left: 0.5em'
+            f'border: {border}; border-collapse: collapse; display: table; '
+            f'margin-top: 0.5em; margin-left: 0.5em'
         )
 
         header_cells = ''.join(
             f'<th style="{header}; text-align: {align}">{html.escape(str(column))}</th>'
             for column, align in zip(columns, aligns, strict=False)
         )
+        # ``border-bottom: 0`` neutralises hosts (e.g. JupyterLab's
+        # ``.jp-RenderedHTMLCommon thead``) that paint an opaque header
+        # rule on the thead element. Left in place that rule wins the
+        # border collapse and recolours the divider; zeroing it keeps
+        # the header/body divider the same translucent grey as the outer
+        # border, sourced only from the header cells' ``border-bottom``.
         head = (
             f'<table style="{table_style}">'
-            f'<thead><tr style="{_TRANSPARENT_ROW}">'
+            f'<thead style="border-bottom: 0"><tr style="{_TRANSPARENT_ROW}">'
             f'<th style="{header}"></th>{header_cells}</tr></thead><tbody>'
         )
         parts = [head]
@@ -138,7 +174,7 @@ class PandasTableBackend(TableBackendBase):
             index_cell = f'<th style="{index}">{html.escape(str(idx))}</th>'
             parts.append(f'<tr style="{_TRANSPARENT_ROW}">{index_cell}{cells}</tr>')
         parts.append('</tbody></table>')
-        return ''.join(parts)
+        return f'<div style="overflow-x: auto; max-width: 100%">{"".join(parts)}</div>'
 
     def build_renderable(self, alignments: object, df: object) -> object:
         """

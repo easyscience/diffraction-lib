@@ -15,7 +15,7 @@ from easydiffraction.datablocks.experiment.categories.calculator.factory import 
     CalculatorCategoryFactory,
 )
 from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.io.cif.parse import read_cif_str
 
 
@@ -48,9 +48,8 @@ class Calculator(CategoryItem, SwitchableCategoryBase):
                     allowed=[member.value for member in CalculatorEnum],
                 ),
             ),
-            cif_handler=CifHandler(
-                names=['_calculator.type'],
-                iucr_name='_easydiffraction_calculator.type',
+            tags=TagSpec(
+                edi_names=['_calculator.type'], cif_names=['_easydiffraction_calculator.type']
             ),
             display_handler=DisplayHandler(
                 display_name='Type',

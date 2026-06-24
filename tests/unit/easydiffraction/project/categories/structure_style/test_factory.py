@@ -139,15 +139,15 @@ def test_created_instance_defaults():
     assert structure_style.atom_scale.value == 0.3
 
 
-def test_cif_handler_names():
+def test_tags_names():
     structure_style = _make_style()
 
-    assert structure_style.atom_view._cif_handler.names == ['_structure_style.atom_view']
-    assert structure_style.color_scheme._cif_handler.names == ['_structure_style.color_scheme']
-    assert structure_style.adp_probability._cif_handler.names == [
+    assert structure_style.atom_view._tags.edi_names == ['_structure_style.atom_view']
+    assert structure_style.color_scheme._tags.edi_names == ['_structure_style.color_scheme']
+    assert structure_style.adp_probability._tags.edi_names == [
         '_structure_style.adp_probability',
     ]
-    assert structure_style.atom_scale._cif_handler.names == ['_structure_style.atom_scale']
+    assert structure_style.atom_scale._tags.edi_names == ['_structure_style.atom_scale']
 
 
 # ----------------------------------------------------------------------

@@ -37,19 +37,24 @@ docs/dev/
 |   |-- accepted/
 |   `-- suggestions/
 |-- issues/
-|   |-- open.md
-|   `-- closed.md
+|   |-- index.md
+|   |-- open/
+|   `-- closed/
 |-- package-structure/
 |   |-- full.md
 |   `-- short.md
-|-- plans/
-`-- roadmap/
-    `-- ROADMAP.md
+`-- plans/
 ```
 
-Use lowercase directory names for new development-doc folders. Keep
-`ROADMAP.md` uppercase because it may later be copied into published
-user documentation where the conventional filename is useful.
+Issues are one Markdown file per issue under `issues/open/` and
+`issues/closed/`, with `issues/index.md` as the table of contents (not
+flat `open.md` / `closed.md` files).
+
+Use lowercase directory names for new development-doc folders. The
+feature/roadmap matrix is published directly in the user documentation
+at `docs/docs/features/index.md` (single source of truth for both
+current capabilities and planned work); there is no separate
+`docs/dev/roadmap/` copy.
 
 Use `docs/dev/adrs/index.md` as the architecture and decision navigation
 surface. Do not keep a separate architecture overview that duplicates
@@ -62,5 +67,5 @@ ADR content.
 - ADRs have one entry point for architecture navigation and separate
   accepted and proposed areas.
 - Package-structure snapshots have stable, script-friendly paths.
-- Roadmap publication can later be implemented as a build-time copy from
-  `docs/dev/roadmap/ROADMAP.md` into `docs/docs`.
+- The roadmap is published directly as a user-facing page at
+  `docs/docs/features/index.md`, kept in sync with the codebase.

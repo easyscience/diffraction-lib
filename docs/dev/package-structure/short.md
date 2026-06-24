@@ -9,7 +9,8 @@
 │   │   ├── 📄 crysfml.py
 │   │   ├── 📄 cryspy.py
 │   │   ├── 📄 factory.py
-│   │   └── 📄 pdffit.py
+│   │   ├── 📄 pdffit.py
+│   │   └── 📄 support.py
 │   ├── 📁 categories
 │   │   ├── 📁 aliases
 │   │   │   ├── 📄 __init__.py
@@ -72,6 +73,10 @@
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
 │   │   └── 📄 __init__.py
+│   ├── 📁 corrections
+│   │   ├── 📄 __init__.py
+│   │   ├── 📄 absorption.py
+│   │   └── 📄 polarization.py
 │   ├── 📁 fit_helpers
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 _diagnostics.py
@@ -99,7 +104,8 @@
 │   ├── 📄 analysis.py
 │   ├── 📄 enums.py
 │   ├── 📄 fitting.py
-│   └── 📄 sequential.py
+│   ├── 📄 sequential.py
+│   └── 📄 verification.py
 ├── 📁 core
 │   ├── 📄 __init__.py
 │   ├── 📄 category.py
@@ -126,11 +132,18 @@
 ├── 📁 datablocks
 │   ├── 📁 experiment
 │   │   ├── 📁 categories
+│   │   │   ├── 📁 absorption
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cylinder_hewat.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   └── 📄 none.py
 │   │   │   ├── 📁 background
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 base.py
 │   │   │   │   ├── 📄 chebyshev.py
 │   │   │   │   ├── 📄 enums.py
+│   │   │   │   ├── 📄 estimate.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 line_segment.py
 │   │   │   ├── 📁 calculator
@@ -142,6 +155,13 @@
 │   │   │   │   ├── 📄 bragg_pd.py
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 total_pd.py
+│   │   │   ├── 📁 data_range
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 base.py
+│   │   │   │   ├── 📄 cwl.py
+│   │   │   │   ├── 📄 factory.py
+│   │   │   │   ├── 📄 sc.py
+│   │   │   │   └── 📄 tof.py
 │   │   │   ├── 📁 diffrn
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
@@ -166,10 +186,12 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   └── 📄 tof.py
 │   │   │   ├── 📁 linked_crystal
+│   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structure
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
-│   │   │   ├── 📁 linked_phases
+│   │   │   ├── 📁 linked_structures
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 default.py
 │   │   │   │   └── 📄 factory.py
@@ -183,6 +205,10 @@
 │   │   │   │   ├── 📄 tof_mixins.py
 │   │   │   │   ├── 📄 total.py
 │   │   │   │   └── 📄 total_mixins.py
+│   │   │   ├── 📁 pref_orient
+│   │   │   │   ├── 📄 __init__.py
+│   │   │   │   ├── 📄 default.py
+│   │   │   │   └── 📄 factory.py
 │   │   │   ├── 📁 refln
 │   │   │   │   ├── 📄 __init__.py
 │   │   │   │   ├── 📄 bragg_pd.py
@@ -236,6 +262,7 @@
 │   └── 📄 __init__.py
 ├── 📁 display
 │   ├── 📁 plotters
+│   │   ├── 📁 assets
 │   │   ├── 📄 __init__.py
 │   │   ├── 📄 ascii.py
 │   │   ├── 📄 base.py
@@ -247,8 +274,6 @@
 │   │   │   ├── 📄 elements.py
 │   │   │   └── 📄 radii.py
 │   │   ├── 📁 renderers
-│   │   │   ├── 📁 vendor
-│   │   │   │   └── 📁 threejs
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 ascii.py
 │   │   │   ├── 📄 base.py
@@ -267,6 +292,7 @@
 │   │   └── 📄 rich.py
 │   ├── 📄 __init__.py
 │   ├── 📄 base.py
+│   ├── 📄 links.py
 │   ├── 📄 plotting.py
 │   ├── 📄 progress.py
 │   ├── 📄 tables.py
@@ -280,17 +306,19 @@
 │   │   ├── 📄 iucr_writer.py
 │   │   ├── 📄 parse.py
 │   │   └── 📄 serialize.py
+│   ├── 📁 edi
+│   │   ├── 📄 __init__.py
+│   │   └── 📄 serialize.py
 │   ├── 📄 __init__.py
 │   ├── 📄 ascii.py
 │   └── 📄 results_sidecar.py
 ├── 📁 project
 │   ├── 📁 categories
 │   │   ├── 📁 info
+│   │   ├── 📁 metadata
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 publication
-│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -324,13 +352,11 @@
 │   ├── 📄 display.py
 │   ├── 📄 project.py
 │   ├── 📄 project_config.py
-│   └── 📄 project_info.py
+│   └── 📄 project_metadata.py
 ├── 📁 report
 │   ├── 📁 templates
 │   │   ├── 📁 html
-│   │   │   └── 📁 vendor
 │   │   └── 📁 tex
-│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   ├── 📄 enums.py
@@ -340,12 +366,6 @@
 │   ├── 📄 style.py
 │   └── 📄 tex_renderer.py
 ├── 📁 utils
-│   ├── 📁 _vendored
-│   │   ├── 📁 jupyter_dark_detect
-│   │   │   ├── 📄 __init__.py
-│   │   │   └── 📄 detector.py
-│   │   ├── 📄 __init__.py
-│   │   └── 📄 theme_detect.py
 │   ├── 📄 __init__.py
 │   ├── 📄 enums.py
 │   ├── 📄 environment.py

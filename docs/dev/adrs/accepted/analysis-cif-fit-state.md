@@ -29,7 +29,7 @@ Analysis-owned fit state needs to persist:
 - deterministic correlation summaries
 - minimizer-specific fit outputs on the paired `_fit_result.*` category
 - per-parameter posterior summaries on `_fit_parameter`
-- large posterior arrays and plot caches in `analysis/results.h5`
+- large posterior arrays and plot caches in `analysis/mcmc.h5`
 
 Committed model parameter values and uncertainties already persist in
 structure and experiment CIF files through the accepted free-flag CIF
@@ -44,7 +44,7 @@ projection. This ADR defines that narrower saved projection.
 
 Persist analysis-owned fit state as explicit analysis categories in
 `analysis/analysis.cif`, with large posterior arrays stored in
-`analysis/results.h5`.
+`analysis/mcmc.h5`.
 
 Do not add a dedicated `_fit_state` category or
 `_fit_state.schema_version`. Persisted fit state is detected from
@@ -61,7 +61,7 @@ Persist these common categories for any saved fit projection:
 `_fit_parameter` stores analysis-owned per-parameter fit controls and
 pre-fit scalar snapshots:
 
-- `param_unique_name`
+- `parameter_unique_name`
 - `fit_min`
 - `fit_max`
 - `start_value`
@@ -70,7 +70,7 @@ pre-fit scalar snapshots:
 When any row has uncertainty-derived bounds, `_fit_parameter` also
 stores the provenance field:
 
-- `fit_bounds_uncertainty_multiplier`
+- `bounds_uncertainty_multiplier`
 
 For Bayesian fit projections, `_fit_parameter` also stores per-parameter
 posterior summaries:
@@ -235,12 +235,12 @@ metadata from `_minimizer.*`.
 
 ### Posterior sidecar
 
-Persist large posterior arrays in `analysis/results.h5` using `h5py`.
-This includes canonical posterior arrays and saved distribution, pair,
-and predictive cache arrays. The HDF5 file is self-describing; no CIF
+Persist large posterior arrays in `analysis/mcmc.h5` using `h5py`. This
+includes canonical posterior arrays and saved distribution, pair, and
+predictive cache arrays. The HDF5 file is self-describing; no CIF
 manifest rows or sidecar filename tags are persisted.
 
-The sidecar filename is fixed to `results.h5` inside the project
+The sidecar filename is fixed to `mcmc.h5` inside the project
 `analysis/` directory.
 
 If the sidecar is missing on load, summary rows in

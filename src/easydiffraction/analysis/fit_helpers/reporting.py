@@ -1,11 +1,12 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
-
+"""Least-squares fit-result container and summary rendering."""
 
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor_squared
 from easydiffraction.analysis.fit_helpers.metrics import calculate_rb_factor
 from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
+from easydiffraction.display.links import parameter_docs_link
 from easydiffraction.utils.logging import console
 from easydiffraction.utils.utils import print_metrics_table
 from easydiffraction.utils.utils import print_table_footnote
@@ -230,7 +231,7 @@ def _is_uncertainty_large(param: object) -> bool:
     return param.uncertainty > abs_value
 
 
-def _build_parameter_row(param: object) -> list[str]:
+def _build_parameter_row(param: object) -> list[object]:
     """
     Build a single table row for a fitted parameter.
 
@@ -241,10 +242,10 @@ def _build_parameter_row(param: object) -> list[str]:
 
     Returns
     -------
-    list[str]
+    list[object]
         Column values for the parameter row.
     """
-    name = getattr(param, 'name', 'N/A')
+    name = parameter_docs_link(param)
     start = f'{param._fit_start_value:.4f}' if param._fit_start_value is not None else 'N/A'
     fitted = f'{param.value:.4f}' if param.value is not None else 'N/A'
     if getattr(param, '_outside_physical_limits', False):

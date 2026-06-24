@@ -102,10 +102,10 @@ next section.
 These fields are serialized in loop rows and look identity-like, but
 they do not define the collection key.
 
-| Python field        | Area       | Collection class                            | Category code | CIF tag                    | Role                                                                                  |
-| ------------------- | ---------- | ------------------------------------------- | ------------- | -------------------------- | ------------------------------------------------------------------------------------- |
-| `phase_id`          | Experiment | `PowderCwlReflnData` / `PowderTofReflnData` | `refln`       | `_refln.phase_id`          | References the linked phase for a calculated reflection. Row key remains `_refln.id`. |
-| `param_unique_name` | Analysis   | `Aliases`                                   | `alias`       | `_alias.param_unique_name` | References the target parameter. Row key remains `_alias.label`.                      |
+| Python field            | Area       | Collection class                            | Category code | CIF tag                        | Role                                                                                  |
+| ----------------------- | ---------- | ------------------------------------------- | ------------- | ------------------------------ | ------------------------------------------------------------------------------------- |
+| `phase_id`              | Experiment | `PowderCwlReflnData` / `PowderTofReflnData` | `refln`       | `_refln.phase_id`              | References the linked phase for a calculated reflection. Row key remains `_refln.id`. |
+| `parameter_unique_name` | Analysis   | `Aliases`                                   | `alias`       | `_alias.parameter_unique_name` | References the target parameter. Row key remains `_alias.label`.                      |
 
 ## Naming Guidance
 

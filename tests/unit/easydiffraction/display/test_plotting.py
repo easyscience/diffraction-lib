@@ -7,7 +7,6 @@ from types import MethodType
 from types import SimpleNamespace
 
 import numpy as np
-
 import pytest
 
 
@@ -86,7 +85,7 @@ def test_plot_param_series_reads_fit_result_columns_from_csv(
     from easydiffraction.project.project import Project
 
     project = Project(name='series')
-    project.info.path = tmp_path
+    project.metadata.path = tmp_path
 
     analysis_dir = tmp_path / 'analysis'
     analysis_dir.mkdir(parents=True)
@@ -210,7 +209,7 @@ def test_plotter_error_paths_and_filtering(capsys, monkeypatch):
     class Expt:
         def __init__(self, pattern, expt_type):
             self.data = pattern
-            self.type = expt_type
+            self.experiment_type = expt_type
 
     p._plot_meas_vs_calc_data(
         Expt(Ptn(two_theta=None, intensity_meas=None, intensity_calc=None), ExptType()),
@@ -317,7 +316,7 @@ def test_extract_bragg_tick_sets_groups_and_filters():
     from easydiffraction.display.plotting import XAxisType
 
     class Refln:
-        phase_id = np.array(['phase-a', 'phase-a', 'phase-b', 'phase-b'])
+        structure_id = np.array(['phase-a', 'phase-a', 'phase-b', 'phase-b'])
         two_theta = np.array([0.5, 1.5, 2.5, 3.5])
         index_h = np.array([1, 2, 3, 4])
         index_k = np.array([0, 1, 1, 2])
@@ -336,7 +335,7 @@ def test_extract_bragg_tick_sets_groups_and_filters():
         x_max=3.0,
     )
 
-    assert [tick_set.phase_id for tick_set in tick_sets] == ['phase-a', 'phase-b']
+    assert [tick_set.structure_id for tick_set in tick_sets] == ['phase-a', 'phase-b']
     assert np.allclose(tick_sets[0].x, np.array([1.5]))
     assert np.array_equal(tick_sets[0].h, np.array([2]))
     assert np.array_equal(tick_sets[1].h, np.array([3]))
@@ -765,10 +764,10 @@ def test_build_posterior_pairs_plot_rejects_unknown_style():
 
 
 def test_build_param_distribution_plot_returns_plotly_figure():
+    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_COLOR
     from easydiffraction.display.plotting import POSTERIOR_PAIR_MARGINAL_DENSITY_LINE_WIDTH
-    from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
 
     plotter, fit_results, _ = _make_bayesian_plotter_fixture()
@@ -898,10 +897,10 @@ def test_plot_param_distribution_routes_ascii_to_marginal_density(monkeypatch):
 def test_plot_posterior_predictive_summary_uses_consistent_labels_and_styles(monkeypatch):
     from types import SimpleNamespace
 
+    from easydiffraction.display.plotters.plotly import PlotlyPlotter
     from easydiffraction.display.plotting import POSTERIOR_INTERVAL_95_FILL_COLOR
     from easydiffraction.display.plotting import POSTERIOR_POINT_ESTIMATE_LINE_DASH
     from easydiffraction.display.plotting import Plotter
-    from easydiffraction.display.plotters.plotly import PlotlyPlotter
 
     captured: dict[str, object] = {}
 
@@ -1006,7 +1005,7 @@ def test_plot_posterior_predictive_data_uses_max_posterior_label_and_dash(monkey
         intensity_bkg = np.array([1.0, 1.0, 1.0])
 
     class Experiment:
-        type = ExptType()
+        experiment_type = ExptType()
         data = Pattern()
 
     plotter = Plotter()
@@ -1063,7 +1062,7 @@ def test_plot_posterior_predictive_request_allows_ascii_for_powder_bragg(monkeyp
         beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
 
     class Experiment:
-        type = ExptType()
+        experiment_type = ExptType()
 
     class Project:
         experiments = {'hrpt': Experiment()}
@@ -1164,7 +1163,7 @@ def test_plot_posterior_predictive_data_routes_ascii_to_line_plot_without_interv
         intensity_bkg = np.array([1.0, 1.0, 1.0])
 
     class Experiment:
-        type = ExptType()
+        experiment_type = ExptType()
         data = Pattern()
 
     plotter = Plotter()
@@ -1235,7 +1234,7 @@ def test_plot_meas_vs_calc_request_respects_background_and_bragg_flags():
         intensity_bkg = np.array([1.0, 1.0, 1.0])
 
     class Refln:
-        phase_id = np.array(['phase-a'])
+        structure_id = np.array(['phase-a'])
         two_theta = np.array([2.0])
         index_h = np.array([1])
         index_k = np.array([0])
@@ -1250,7 +1249,7 @@ def test_plot_meas_vs_calc_request_respects_background_and_bragg_flags():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
         refln = Refln()
 
     plotter = Plotter()
@@ -1347,7 +1346,7 @@ def test_resolve_posterior_parameter_names_warns_on_ambiguous_label(monkeypatch)
 
     monkeypatch.setattr(
         'easydiffraction.display.plotting.log.warning',
-        lambda message: warning_messages.append(message),
+        warning_messages.append,
     )
 
     result = Plotter._resolve_posterior_parameter_names(
@@ -1540,7 +1539,7 @@ def test_plot_posterior_predictive_defaults_to_band_for_bragg(monkeypatch):
         beam_mode = type('B', (), {'value': BeamModeEnum.CONSTANT_WAVELENGTH})()
 
     class Experiment:
-        type = ExptType()
+        experiment_type = ExptType()
 
     class Project:
         experiments = {'hrpt': Experiment()}
@@ -1601,7 +1600,7 @@ def test_plot_posterior_predictive_non_bragg_filters_x_range_and_warns_for_resid
         intensity_meas = np.array([10.0, 20.0, 30.0])
 
     class Experiment:
-        type = ExptType()
+        experiment_type = ExptType()
         data = Pattern()
 
     class Project:
@@ -1672,7 +1671,7 @@ def test_extract_bragg_tick_sets_uses_derived_d_spacing_for_cwl_ticks():
     from easydiffraction.utils.utils import twotheta_to_d
 
     class Refln:
-        phase_id = np.array(['phase-a'])
+        structure_id = np.array(['phase-a'])
         two_theta = np.array([20.0])
         d_spacing = np.array([999.0])
         index_h = np.array([1])
@@ -1726,7 +1725,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
         intensity_calc = np.array([9.0, 18.0, 27.0, 39.0])
 
     class Refln:
-        phase_id = np.array(['phase-a', 'phase-a', 'phase-b'])
+        structure_id = np.array(['phase-a', 'phase-a', 'phase-b'])
         two_theta = np.array([0.5, 1.5, 2.0])
         index_h = np.array([1, 2, 3])
         index_k = np.array([0, 1, 1])
@@ -1741,7 +1740,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
         refln = Refln()
 
     plotter = Plotter()
@@ -1761,7 +1760,7 @@ def test_plot_meas_vs_calc_routes_powder_bragg_to_composite_backend():
     assert np.allclose(call.y_bkg, np.array([2.0, 3.0]))
     assert np.allclose(call.y_calc, np.array([18.0, 27.0]))
     assert np.allclose(call.y_resid, np.array([2.0, 3.0]))
-    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == [
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == [
         'phase-a',
         'phase-b',
     ]
@@ -1790,7 +1789,7 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
     class Refln:
-        phase_id = np.array(['phase-a'])
+        structure_id = np.array(['phase-a'])
         time_of_flight = np.array([11.0])
         index_h = np.array([1])
         index_k = np.array([0])
@@ -1805,7 +1804,7 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
         refln = Refln()
 
     plotter = Plotter()
@@ -1818,7 +1817,7 @@ def test_plot_meas_vs_calc_extracts_bragg_ticks_with_default_bounds():
 
     call = captured['powder_meas_vs_calc']
     assert np.allclose(call.x, np.array([10.0, 11.0, 12.0]))
-    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == ['phase-a']
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['phase-a']
     assert np.allclose(call.bragg_tick_sets[0].x, np.array([11.0]))
 
 
@@ -1843,7 +1842,7 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
     class Refln:
-        phase_id = np.array([1, 1, 2])
+        structure_id = np.array([1, 1, 2])
         time_of_flight = np.array([10.0, 11.0, 12.0])
         index_h = np.array([1, 2, 3])
         index_k = np.array([0, 1, 1])
@@ -1858,7 +1857,7 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
         refln = Refln()
 
     plotter = Plotter()
@@ -1870,7 +1869,7 @@ def test_plot_meas_vs_calc_groups_numeric_bragg_structure_ids():
     )
 
     call = captured['powder_meas_vs_calc']
-    assert [tick_set.phase_id for tick_set in call.bragg_tick_sets] == ['1', '2']
+    assert [tick_set.structure_id for tick_set in call.bragg_tick_sets] == ['1', '2']
     assert np.allclose(call.bragg_tick_sets[0].x, np.array([10.0, 11.0]))
     assert np.allclose(call.bragg_tick_sets[1].x, np.array([12.0]))
 
@@ -1896,7 +1895,7 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
         intensity_calc = np.array([99.0, 108.0, 104.0])
 
     class Refln:
-        phase_id = np.array(['phase-a'])
+        structure_id = np.array(['phase-a'])
         time_of_flight = np.array([8.0])
         index_h = np.array([1])
         index_k = np.array([0])
@@ -1911,7 +1910,7 @@ def test_plot_meas_vs_calc_skips_bragg_ticks_when_filtered_pattern_is_empty():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
         refln = Refln()
 
     plotter = Plotter()
@@ -1969,7 +1968,7 @@ def test_plot_meas_vs_calc_keeps_single_crystal_routing():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
@@ -2019,7 +2018,7 @@ def test_plot_meas_vs_calc_keeps_default_residual_off_for_line_paths():
 
     class Experiment:
         data = Pattern()
-        type = ExptType()
+        experiment_type = ExptType()
 
     plotter = Plotter()
     plotter._backend = FakeBackend()
@@ -2047,7 +2046,7 @@ def test_plot_param_correlations_renders_ascii_table(monkeypatch):
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2094,11 +2093,11 @@ def test_plot_param_correlations_renders_plotly_heatmap(monkeypatch):
 
     import easydiffraction.display.plotters.plotly as plotly_mod
     from easydiffraction.display.plotting import POSTERIOR_PAIR_TITLE_FONT_SIZE
-    from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.plotting import SQUARE_MATRIX_AXIS_TITLE_LINE_HEIGHT_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_BOTTOM_MARGIN_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_TITLE_YSHIFT_PIXELS
     from easydiffraction.display.plotting import SQUARE_MATRIX_TOP_MARGIN_PIXELS
+    from easydiffraction.display.plotting import Plotter
 
     captured = {}
 
@@ -2274,7 +2273,7 @@ def test_plot_param_correlations_plotly_labels_respect_threshold(monkeypatch):
     assert len(fig.layout.shapes) == 15
 
 
-def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypatch):
+def test_plot_param_correlations_limits_default_table_to_five_parameters(monkeypatch):
     from easydiffraction.display.plotting import Plotter
     from easydiffraction.display.tables import TableRenderer
 
@@ -2284,7 +2283,7 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2330,6 +2329,9 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
     p._set_project(Project())
     p.plot_param_correlations()
 
+    # The default cap is DEFAULT_CORRELATION_MAX_PARAMETERS (5), so the
+    # weakest-correlated parameter (p6, |corr| 0.91) is trimmed and the
+    # auto threshold settles at 0.92.
     df = captured['df']
     assert [column.strip() for column in df.columns.get_level_values(0)] == [
         'parameter',
@@ -2338,24 +2340,20 @@ def test_plot_param_correlations_limits_default_table_to_six_parameters(monkeypa
         '3',
         '4',
         '5',
-        '6',
     ]
-    assert list(df.index) == [0, 1, 2, 3, 4, 5]
+    assert list(df.index) == [0, 1, 2, 3, 4]
     assert list(df.iloc[:, 0]) == [
         'phase.scale',
         'phase.cell.length_a',
         'phase.background',
         'phase.profile.u',
         'phase.profile.v',
-        'phase.profile.w',
     ]
     assert df.iloc[0, 1] == ''
     assert _strip_markup(df.iloc[1, 1]).strip() == '0.95'
     assert _strip_markup(df.iloc[2, 2]).strip() == '0.94'
     assert _strip_markup(df.iloc[3, 3]).strip() == '0.93'
     assert _strip_markup(df.iloc[4, 4]).strip() == '0.92'
-    assert _strip_markup(df.iloc[5, 5]).strip() == '0.91'
-    assert df.iloc[5, 6] == ''
 
 
 def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
@@ -2386,7 +2384,6 @@ def test_plot_posterior_pairs_uses_default_max_parameter_limit(monkeypatch):
 
 def test_plot_posterior_pairs_prints_title_before_ascii_backend_warning(monkeypatch):
     import easydiffraction.display.plotting as plotting_mod
-
     from easydiffraction.display.plotting import Plotter
 
     events: list[tuple[str, str]] = []
@@ -2418,7 +2415,7 @@ def test_plot_param_correlations_shows_full_table_when_threshold_is_zero(monkeyp
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):
@@ -2490,7 +2487,7 @@ def test_plot_param_correlations_hides_subthreshold_table_values(monkeypatch):
         def render(self, df):
             captured['df'] = df
 
-    monkeypatch.setattr(TableRenderer, 'get', staticmethod(lambda: FakeTabler()))
+    monkeypatch.setattr(TableRenderer, 'get', staticmethod(FakeTabler))
 
     class Param:
         def __init__(self, uid, unique_name):

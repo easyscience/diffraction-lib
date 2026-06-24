@@ -13,8 +13,8 @@ dictionaries:
   [IUCr](https://www.iucr.org).
 - [pdCIF][2]{:.label-cif} – Powder CIF dictionary by the
   [IUCr](https://www.iucr.org).
-- [easydiffractionCIF][0]{:.label-cif} – Custom CIF dictionary developed
-  for EasyDiffraction.
+- [coreCIF][0]{:.label-cif} – Custom CIF dictionary developed for
+  EasyDiffraction.
 
 For more information about CIF, see the [Data Format](data-format.md)
 section.
@@ -36,7 +36,7 @@ experiment types:
 
 ### X-ray Diffraction
 
-- [pd-xray][0]{:.label-experiment} Powder X-ray diffraction.
+- [pd-xray][0]{:.label-experiment} – Powder X-ray diffraction.
 
 <!-- prettier-ignore-start -->
 [0]: #

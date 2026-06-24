@@ -1,5 +1,6 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Track and display fit and sampler progress during optimization."""
 
 from __future__ import annotations
 
@@ -34,7 +35,7 @@ SAMPLER_PHASE_POST_PROCESSING = 'post-processing'
 SAMPLER_PHASE_PRE_PROCESSING = 'pre-processing'
 DEFAULT_HEADERS = ['iteration', 'time (s)', 'χ²', 'change / status']
 DEFAULT_ALIGNMENTS = ['center', 'center', 'center', 'center']
-SAMPLER_HEADERS = ['iteration', 'progress', 'time (s)', 'log posterior', 'phase']
+SAMPLER_HEADERS = ['step', 'progress', 'time (s)', 'log posterior', 'phase']
 SAMPLER_ALIGNMENTS = ['center', 'center', 'center', 'center', 'center']
 
 _TerminalLiveHandle = _SharedTerminalLiveHandle
@@ -71,6 +72,7 @@ class FitProgressTracker:
     """
 
     def __init__(self) -> None:
+        """Initialize the tracker with empty progress state."""
         self._iteration: int = 0
         self._previous_chi2: float | None = None
         self._last_chi2: float | None = None
@@ -409,6 +411,9 @@ class FitProgressTracker:
         clamped_iteration: int,
         clamped_progress: float,
     ) -> list[str]:
+        """
+        Build the first sampler progress row of a run.
+        """
         if self._df_rows:
             return []
 
@@ -418,8 +423,11 @@ class FitProgressTracker:
         self._last_progress_time = update.elapsed_time
         if self._sampler_pre_processing_pending:
             self._sampler_pre_processing_pending = False
+            # Pre-processing is setup, not a sampling step, so the step
+            # cell is left blank; real step counts start at the first
+            # sampling row.
             return self._sampler_status_row(
-                iteration_label=self._sampler_iteration_label(clamped_iteration),
+                iteration_label='',
                 phase=SAMPLER_PHASE_PRE_PROCESSING,
                 elapsed_time=update.elapsed_time,
                 log_posterior=update.log_posterior,
@@ -440,6 +448,9 @@ class FitProgressTracker:
         clamped_iteration: int,
         clamped_progress: float,
     ) -> list[str]:
+        """
+        Build a subsequent sampler progress row, if one is due.
+        """
         if self._best_chi2 is not None and update.reduced_chi2 < self._best_chi2:
             self._best_chi2 = update.reduced_chi2
             self._best_iteration = update.iteration
@@ -473,6 +484,9 @@ class FitProgressTracker:
         force_report: bool,
         clamped_iteration: int,
     ) -> bool:
+        """
+        Return whether a sampler progress row should be rendered now.
+        """
         if iteration == self._last_reported_iteration:
             return False
 
@@ -493,6 +507,9 @@ class FitProgressTracker:
         phase: str,
         elapsed_time: float,
     ) -> list[str]:
+        """
+        Return a sampler row with iteration, progress and posterior.
+        """
         return [
             self._sampler_iteration_label(clamped_iteration),
             f'{clamped_progress:.1f}%',
@@ -521,6 +538,9 @@ class FitProgressTracker:
         ]
 
     def _finalize_sampler_tracking_row(self) -> None:
+        """
+        Append or replace the closing sampler tracking row.
+        """
         row = self._final_sampler_tracking_row()
         if row is None:
             return
@@ -537,6 +557,9 @@ class FitProgressTracker:
             self.add_tracking_info(row)
 
     def _final_sampler_tracking_row(self) -> list[str] | None:
+        """
+        Build the closing sampler row, or ``None`` if unavailable.
+        """
         if self._last_iteration is None or self._sampler_total_iterations is None:
             return None
 
@@ -562,6 +585,9 @@ class FitProgressTracker:
         ]
 
     def _finalize_fit_tracking_row(self) -> None:
+        """
+        Append or replace the closing least-squares fit row.
+        """
         row = self._final_fit_tracking_row()
         if row is None:
             return
@@ -578,6 +604,9 @@ class FitProgressTracker:
             self.add_tracking_info(row)
 
     def _final_fit_tracking_row(self) -> list[str] | None:
+        """
+        Build the closing fit row, or ``None`` if unavailable.
+        """
         if self._last_iteration is None:
             return None
 
@@ -589,6 +618,9 @@ class FitProgressTracker:
         ]
 
     def _resolved_final_sampler_progress(self) -> float:
+        """
+        Return the final sampler progress percentage.
+        """
         if self._last_sampler_progress_percent is not None:
             return self._last_sampler_progress_percent
 
@@ -602,11 +634,17 @@ class FitProgressTracker:
         )
 
     def _resolved_final_sampler_elapsed_time(self) -> float | None:
+        """
+        Return the final sampler elapsed time in seconds.
+        """
         if self._fitting_time is not None:
             return self._fitting_time
         return self._last_sampler_elapsed_time
 
     def _sampler_iteration_label(self, iteration: int) -> str:
+        """
+        Return an ``iteration/total`` label clamped to the total.
+        """
         if self._sampler_total_iterations is None:
             msg = 'Sampler iteration labels require a configured total iteration count.'
             raise RuntimeError(msg)
@@ -614,6 +652,9 @@ class FitProgressTracker:
         return f'{clamped_iteration}/{self._sampler_total_iterations}'
 
     def _print_completion_summary(self) -> None:
+        """
+        Print the closing summary for the completed run.
+        """
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             console.print('✅ Bayesian sampling complete.')
             return
@@ -657,6 +698,9 @@ class FitProgressTracker:
         return f'{resolved_time:.2f}'
 
     def _should_render_fit_row(self, elapsed_time: float | None) -> bool:
+        """
+        Return whether enough time elapsed to render a fit row.
+        """
         if elapsed_time is None or self._last_progress_time is None:
             return False
         return elapsed_time - self._last_progress_time >= FIT_PROGRESS_UPDATE_SECONDS
@@ -690,12 +734,18 @@ class FitProgressTracker:
             self._refresh_activity_indicator()
 
     def _default_activity_label(self) -> str:
+        """
+        Return the default activity label for the tracking mode.
+        """
         if self._tracking_mode == TRACKING_MODE_SAMPLER:
             return ACTIVITY_LABEL_PROCESSING
         return ACTIVITY_LABEL_FITTING
 
     @staticmethod
     def _activity_label_for_sampler_phase(phase: str) -> str:
+        """
+        Map a sampler phase name to its activity-indicator label.
+        """
         normalized_phase = phase.strip().lower()
         if normalized_phase == SAMPLER_PHASE_PRE_PROCESSING:
             return ACTIVITY_LABEL_PRE_PROCESSING
@@ -710,9 +760,15 @@ class FitProgressTracker:
         return ACTIVITY_LABEL_SAMPLING
 
     def _set_shared_display_handle(self, display_handle: object | None) -> None:
+        """
+        Store a display handle shared with the activity indicator.
+        """
         self._shared_display_handle = display_handle
 
     def _start_activity_indicator(self) -> None:
+        """
+        Create and start the live activity indicator.
+        """
         self._activity_indicator = ActivityIndicator(
             self._activity_label,
             verbosity=self._verbosity,
@@ -722,6 +778,9 @@ class FitProgressTracker:
         self._refresh_activity_indicator()
 
     def _stop_activity_indicator(self) -> None:
+        """
+        Stop and discard the live activity indicator.
+        """
         if self._activity_indicator is None:
             return
 
@@ -729,6 +788,9 @@ class FitProgressTracker:
         self._activity_indicator = None
 
     def _set_activity_label(self, label: str) -> None:
+        """
+        Update the activity-indicator label and refresh the view.
+        """
         if label == self._activity_label:
             return
 
@@ -736,6 +798,9 @@ class FitProgressTracker:
         self._refresh_activity_indicator()
 
     def _refresh_activity_indicator(self) -> None:
+        """
+        Refresh the activity indicator with the current table.
+        """
         if self._activity_indicator is None:
             return
 
@@ -749,6 +814,9 @@ class FitProgressTracker:
         self._activity_indicator.update(label=self._activity_label)
 
     def _table_renderable(self) -> object:
+        """
+        Build a renderable table from the accumulated rows.
+        """
         return build_table_renderable(
             columns_headers=self._headers(),
             columns_alignment=self._alignments(),

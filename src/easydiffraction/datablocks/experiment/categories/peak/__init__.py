@@ -1,9 +1,10 @@
 # SPDX-FileCopyrightText: 2026 EasyScience contributors <https://github.com/easyscience>
 # SPDX-License-Identifier: BSD-3-Clause
+"""Peak profile categories for CWL, TOF, and total scattering."""
 
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlPseudoVoigt
 from easydiffraction.datablocks.experiment.categories.peak.cwl import (
-    CwlPseudoVoigtEmpiricalAsymmetry,
+    CwlPseudoVoigtBerarBaldinozziAsymmetry,
 )
 from easydiffraction.datablocks.experiment.categories.peak.cwl import CwlThompsonCoxHastings
 from easydiffraction.datablocks.experiment.categories.peak.tof import TofDoubleJorgensenVonDreele

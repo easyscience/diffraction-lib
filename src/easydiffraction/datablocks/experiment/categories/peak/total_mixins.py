@@ -12,13 +12,14 @@ from easydiffraction.core.display_handler import DisplayHandler
 from easydiffraction.core.validation import AttributeSpec
 from easydiffraction.core.validation import RangeValidator
 from easydiffraction.core.variable import Parameter
-from easydiffraction.io.cif.handler import CifHandler
+from easydiffraction.io.cif.handler import TagSpec
 
 
 class TotalBroadeningMixin:
     """PDF broadening/damping/sharpening parameters."""
 
     def __init__(self) -> None:
+        """Initialize the PDF broadening parameters."""
         super().__init__()
 
         self._damp_q = Parameter(
@@ -33,10 +34,7 @@ class TotalBroadeningMixin:
                 default=0.05,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.damp_q'],
-                iucr_name='_easydiffraction_peak.damp_q',
-            ),
+            tags=TagSpec(edi_names=['_peak.damp_q'], cif_names=['_easydiffraction_peak.damp_q']),
         )
         self._broad_q = Parameter(
             name='broad_q',
@@ -50,10 +48,7 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.broad_q'],
-                iucr_name='_easydiffraction_peak.broad_q',
-            ),
+            tags=TagSpec(edi_names=['_peak.broad_q'], cif_names=['_easydiffraction_peak.broad_q']),
         )
         self._cutoff_q = Parameter(
             name='cutoff_q',
@@ -67,9 +62,8 @@ class TotalBroadeningMixin:
                 default=25.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.cutoff_q'],
-                iucr_name='_easydiffraction_peak.cutoff_q',
+            tags=TagSpec(
+                edi_names=['_peak.cutoff_q'], cif_names=['_easydiffraction_peak.cutoff_q']
             ),
         )
         self._sharp_delta_1 = Parameter(
@@ -84,9 +78,9 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.sharp_delta_1'],
-                iucr_name='_easydiffraction_peak.sharp_delta_1',
+            tags=TagSpec(
+                edi_names=['_peak.sharp_delta_1'],
+                cif_names=['_easydiffraction_peak.sharp_delta_1'],
             ),
         )
         self._sharp_delta_2 = Parameter(
@@ -101,9 +95,9 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.sharp_delta_2'],
-                iucr_name='_easydiffraction_peak.sharp_delta_2',
+            tags=TagSpec(
+                edi_names=['_peak.sharp_delta_2'],
+                cif_names=['_easydiffraction_peak.sharp_delta_2'],
             ),
         )
         self._damp_particle_diameter = Parameter(
@@ -118,9 +112,9 @@ class TotalBroadeningMixin:
                 default=0.0,
                 validator=RangeValidator(),
             ),
-            cif_handler=CifHandler(
-                names=['_peak.damp_particle_diameter'],
-                iucr_name='_easydiffraction_peak.damp_particle_diameter',
+            tags=TagSpec(
+                edi_names=['_peak.damp_particle_diameter'],
+                cif_names=['_easydiffraction_peak.damp_particle_diameter'],
             ),
         )
 
@@ -140,6 +134,9 @@ class TotalBroadeningMixin:
 
     @damp_q.setter
     def damp_q(self, value: float) -> None:
+        """
+        Set Q-resolution damping for high-r PDF amplitude (Å⁻¹).
+        """
         self._damp_q.value = value
 
     @property
@@ -154,6 +151,9 @@ class TotalBroadeningMixin:
 
     @broad_q.setter
     def broad_q(self, value: float) -> None:
+        """
+        Set quadratic broadening from thermal uncertainty (Å⁻²).
+        """
         self._broad_q.value = value
 
     @property
@@ -168,6 +168,9 @@ class TotalBroadeningMixin:
 
     @cutoff_q.setter
     def cutoff_q(self, value: float) -> None:
+        """
+        Set the Q-value cutoff for the Fourier transform (Å⁻¹).
+        """
         self._cutoff_q.value = value
 
     @property
@@ -182,6 +185,7 @@ class TotalBroadeningMixin:
 
     @sharp_delta_1.setter
     def sharp_delta_1(self, value: float) -> None:
+        """Set the peak sharpening coefficient (1/r dependence) (Å)."""
         self._sharp_delta_1.value = value
 
     @property
@@ -196,6 +200,7 @@ class TotalBroadeningMixin:
 
     @sharp_delta_2.setter
     def sharp_delta_2(self, value: float) -> None:
+        """Set the sharpening coefficient (1/r² dependence) (Å²)."""
         self._sharp_delta_2.value = value
 
     @property
@@ -210,4 +215,5 @@ class TotalBroadeningMixin:
 
     @damp_particle_diameter.setter
     def damp_particle_diameter(self, value: float) -> None:
+        """Set particle diameter for spherical envelope damping (Å)."""
         self._damp_particle_diameter.value = value
