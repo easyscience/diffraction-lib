@@ -319,8 +319,6 @@
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
 │   │   │   └── 📄 factory.py
-│   │   ├── 📁 publication
-│   │   ├── 📁 rendering
 │   │   ├── 📁 rendering_plot
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py
@@ -359,7 +357,6 @@
 │   ├── 📁 templates
 │   │   ├── 📁 html
 │   │   └── 📁 tex
-│   │       └── 📁 styles
 │   ├── 📄 __init__.py
 │   ├── 📄 data_context.py
 │   ├── 📄 enums.py

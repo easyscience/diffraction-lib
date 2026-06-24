@@ -83,6 +83,13 @@ term); these are marked below and inside the notebook.
   Jorgensen-Von Dreele profile (`size_g`/`strain_g`,
   `size_l`/`strain_l`).
 
+### Diamond structure
+
+- [pd-neut-tof Diamond DREAM](pd-neut-tof_diamond_dream.ipynb) –
+  **Jorgensen (back-to-back exponentials ⊗ Gaussian)** profile fitted to
+  **McStas-simulated reduced data from the DREAM diffractometer at ESS**
+  (scale-only adjustment between cryspy and FullProf).
+
 ## Powder, X-Ray, Constant Wavelength
 
 ### LiF structure
@@ -105,22 +112,29 @@ term); these are marked below and inside the notebook.
   anglesite X-ray round-robin case (**Pseudo-Voigt + Bérar-Baldinozzi
   asymmetry**).
 
-## Single Crystal, Neutron, Constant Wavelength
+## Single Crystal
 
 ### Pr2NiO4 structure
 
 - [sc-neut-cwl Pr2NiO4 basic](sc-neut-cwl_Pr2NiO4_basic.ipynb) –
-  calculated F² with **anisotropic β-tensor ADPs**.
+  **neutron, constant wavelength**; **anisotropic β-tensor ADPs**.
 
 ### Tb2Ti2O7 structure
 
 - [sc-neut-cwl Tb2Ti2O7 basic](sc-neut-cwl_Tb2Ti2O7_basic.ipynb) –
-  baseline with **isotropic ADPs**.
+  **neutron, constant wavelength**; baseline with **isotropic ADPs**.
 - [sc-neut-cwl Tb2Ti2O7 isotropic extinction](sc-neut-cwl_Tb2Ti2O7_isotropic-extinction.ipynb)
-  – **isotropic Becker-Coppens extinction** (Gaussian model). _Known
-  difference: cryspy and FullProf use different extinction conventions._
+  – **neutron, constant wavelength**; **isotropic Becker-Coppens
+  extinction** (Gaussian model). _Known difference: cryspy and FullProf
+  use different extinction conventions._
 - [sc-neut-cwl Tb2Ti2O7 anisotropic β ADPs](sc-neut-cwl_Tb2Ti2O7_anisotropic-adp.ipynb)
-  – **anisotropic β-tensor ADPs**.
+  – **neutron, constant wavelength**; **anisotropic β-tensor ADPs**.
+
+### Taurine structure
+
+- [sc-neut-tof Taurine basic](sc-neut-tof_taurine_basic.ipynb) –
+  **neutron, time-of-flight**; **isotropic ADPs** (without extinction
+  correction).
 
 ## Powder, Total Scattering (Pair Distribution Function)
 

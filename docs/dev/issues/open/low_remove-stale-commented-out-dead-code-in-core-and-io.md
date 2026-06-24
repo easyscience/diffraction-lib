@@ -16,3 +16,10 @@ removable.
 - [variable.py](src/easydiffraction/core/variable.py#L167)
 
 **Depends on:** nothing.
+
+**Audit note (2026-06-23):** further removable blocks found beyond those
+listed — a disabled `JupyterScrollManager.disable_jupyter_scroll()` call
+in `display/__init__.py:15-18` (TODO "breaks MkDocs builds"), a
+commented `_description` in `data/bragg_pd.py:742-744`, and a
+`# TODO: Check the following methods:` marker in
+`io/cif/serialize.py:860`.

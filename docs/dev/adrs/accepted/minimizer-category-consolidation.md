@@ -115,7 +115,7 @@ owner, category as a read-only attribute that gets swapped.
 ### 3. Per-parameter posterior data lives on `Parameter.posterior`
 
 Adopt the proposal from
-[`parameter-posterior-summary.md`](../suggestions/parameter-posterior-summary.md):
+[`parameter-posterior-summary.md`](parameter-posterior-summary.md):
 `GenericParameter.posterior` is `None` for deterministic fits and a
 `PosteriorParameterSummary` for Bayesian fits. The
 `_bayesian_parameter_posterior` CIF loop is removed; posterior summary
@@ -466,9 +466,9 @@ category's class-level `_engine_metadata` dict.
 
 ### Suggestions superseded or absorbed
 
-- [`parameter-posterior-summary.md`](../suggestions/parameter-posterior-summary.md)
-  — absorbed by §3 of this ADR. When this ADR is accepted, that
-  suggestion can be closed and a pointer added.
+- [`parameter-posterior-summary.md`](parameter-posterior-summary.md) —
+  absorbed by §3 of this ADR. When this ADR is accepted, that suggestion
+  can be closed and a pointer added.
 
 ## Alternatives Considered
 

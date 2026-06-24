@@ -97,11 +97,11 @@ The status icons:
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                            | LIB                     | CLI                | APP                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                         | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Space group IT number<br/>- :date: `easydiffraction`                                                                                                                                               | :date:                  | :date:             | :date:             |
-| IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-cancel: `pdffit2`<br/>- :material-link-variant: `FullProf` ":1" (origin choice) | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                            | LIB                     | CLI                     | APP                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| Hermann-Mauguin space-group symbol<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                         | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Space group IT number<br/>- :date: `easydiffraction`                                                                                                                                               | :date:                  | :date:                  | :date:             |
+| IT coordinate system code<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-cancel: `pdffit2`<br/>- :material-link-variant: `FullProf` ":1" (origin choice) | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
 
 </div>
 
@@ -120,15 +120,15 @@ The status icons:
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                             | LIB                     | CLI                | APP                |
-| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| X-ray scattering factors (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                        | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Neutron scattering lengths for natural elements (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                 | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Isotope-specific neutron scattering length _(e.g. ¹¹B, ²H)_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_11B.ipynb)<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2` | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Custom neutron scattering length<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2`<br/>- :material-link-variant: `FullProf` "Nsc (user-defined scattering)"                            | :date:                  | :date:             | :date:             |
-| Fractional coordinates _x, y, z_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                            | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Occupancy<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                                                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Symmetry _wyckoff_letter_<br/>- :white_check_mark: `easydiffraction`                                                                                                                                                                                | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                                                                             | LIB                     | CLI                     | APP                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| X-ray scattering factors (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                        | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Neutron scattering lengths for natural elements (tabulated)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                 | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Isotope-specific neutron scattering length _(e.g. ¹¹B, ²H)_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_11B.ipynb)<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2` | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Custom neutron scattering length<br/>- :material-cancel: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2`<br/>- :material-link-variant: `FullProf` "Nsc (user-defined scattering)"                            | :date:                  | :date:                  | :date:             |
+| Fractional coordinates _x, y, z_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                            | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Occupancy<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                                                                   | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Symmetry _wyckoff_letter_<br/>- :white_check_mark: `easydiffraction`                                                                                                                                                                                | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
 
 </div>
 
@@ -136,21 +136,25 @@ The status icons:
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                    | LIB                     | CLI                | APP                |
-| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Isotropic _Biso_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_isotropic-adp.ipynb)<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark: | :date:             |
-| Isotropic _Uiso_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Anisotropic _Bani_ (_B11…B23_)<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                 | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Anisotropic _Uani_ (_U11…U23_)<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :white_check_mark: `pdffit2`                                                                                 | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Anisotropic _β_ (_β11…β23_)<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_beta-adp.ipynb)<br/>- :date: `crysfml`<br/>- :date: `pdffit2`                   | :ballot_box_with_check: | :white_check_mark: | :date:             |
+| Feature                                                                                                                                                                                                                                                                                | LIB                     | CLI                     | APP                |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| Isotropic _Biso_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_isotropic-adp.ipynb)<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`<br/>- :white_check_mark: `easydiffraction` (B/U/β conversion)               | :white_check_mark:      | :white_check_mark:      | :date:             |
+| Isotropic _Uiso_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2`<br/>- :white_check_mark: `easydiffraction` (B/U/β conversion)                                                                                                 | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
+| Anisotropic _Bani_ (_B11…B23_)<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :white_check_mark: `pdffit2`<br/>- :white_check_mark: `easydiffraction` (B/U/β conversion)                                                                               | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Anisotropic _Uani_ (_U11…U23_)<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml`<br/>- :white_check_mark: `pdffit2`<br/>- :white_check_mark: `easydiffraction` (B/U/β conversion)                                                                               | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Anisotropic _β_ (_β11…β23_)<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_Y2O3_beta-adp.ipynb)<br/>- :material-help-circle: `crysfml`<br/>- :material-help-circle: `pdffit2`<br/>- :white_check_mark: `easydiffraction` (B/U/β conversion) | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
 
 </div>
 
 !!! note
 
     CrysFML refines only isotropic ADPs today; for anisotropic atoms it
-    uses the isotropic-equivalent _B_, hence the :date: for `crysfml` on
-    the anisotropic rows.
+    uses the isotropic-equivalent _B_, so true anisotropic refinement in
+    `crysfml` is unconfirmed (:material-help-circle: on the anisotropic
+    rows). EasyDiffraction stores ADPs type-neutrally and converts
+    between _B_, _U_, and _β_ for each engine, so the `easydiffraction`
+    line marks that conversion. `pdffit2` works in _U_; its _β_ support
+    is likewise unconfirmed.
 
 ---
 
@@ -245,9 +249,9 @@ calculated pattern; the engine is not involved.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                                             | LIB                     | CLI                | APP    |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------ |
-| March–Dollase: _march_r, random fraction, hkl axis_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LBCO_preferred-orientation.ipynb)<br/>- :construction: `crysfml`<br/>- :material-link-variant: `FullProf` "Nor=1", "Pref1/2, Pr1/2/3" | :ballot_box_with_check: | :white_check_mark: | :date: |
+| Feature                                                                                                                                                                                                                                                                             | LIB                     | CLI                     | APP    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------ |
+| March–Dollase: _march_r, random fraction, hkl axis_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LBCO_preferred-orientation.ipynb)<br/>- :construction: `crysfml`<br/>- :material-link-variant: `FullProf` "Nor=1", "Pref1/2, Pr1/2/3" | :ballot_box_with_check: | :ballot_box_with_check: | :date: |
 
 </div>
 
@@ -260,7 +264,7 @@ calculated pattern; the engine is not involved.
 | Wavelength: _λ_<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda1"                                                                                                                                                                                          | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
 | Second wavelength: _λ₂, I₂/I₁ ratio_<br/>- :white_check_mark: `easydiffraction` (Kα₁/Kα₂ doublet; engine run twice) [:material-check-decagram:](../verification/pd-xray-cwl_LiF_doublet.ipynb)<br/>- :material-cancel: `cryspy`<br/>- :construction: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda2, Ratio"         | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
 | 2θ offset<br/>- :white_check_mark: `easydiffraction`<br/>- :material-link-variant: `FullProf` "Zero"                                                                                                                                                                                                                             | :white_check_mark:      | :white_check_mark:      | :white_check_mark: |
-| Sample displacement and transparency corrections<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_sycos-sysin.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "SyCos, SySin"                                                                                | :ballot_box_with_check: | :white_check_mark:      | :date:             |
+| Sample displacement and transparency corrections<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_sycos-sysin.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "SyCos, SySin"                                                                                | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
 | Absorption correction (cylinder, Hewat)<br/>- :white_check_mark: `easydiffraction` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_absorption.ipynb)<br/>- :material-link-variant: `FullProf` "muR"                                                                                                                 | :white_check_mark:      | :white_check_mark:      | :date:             |
 | X-ray Lorentz-polarization correction: _polarization coefficient, monochromator 2θ_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single_polarization.ipynb)<br/>- :white_check_mark: `easydiffraction` (for `crysfml`)<br/>- :material-link-variant: `FullProf` "Cthm, Rpolarz" | :white_check_mark:      | :white_check_mark:      | :date:             |
 
@@ -270,10 +274,10 @@ calculated pattern; the engine is not involved.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                 | LIB                     | CLI                | APP                |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| 2θ bank<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "2-theta bank"                                                                                                | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| d → TOF conversion: _offset, linear, quadratic (reciprocal defined but not yet wired)_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Zero, Dtt1, Dtt2, Dtt_1overd" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
+| Feature                                                                                                                                                                                                                 | LIB                     | CLI                     | APP                |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| 2θ bank<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "2-theta bank"                                                                                                | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
+| d → TOF conversion: _offset, linear, quadratic (reciprocal defined but not yet wired)_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Zero, Dtt1, Dtt2, Dtt_1overd" | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
 
 </div>
 
@@ -290,9 +294,9 @@ and time-of-flight modes.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                             | LIB                     | CLI                | APP    |
-| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------ |
-| Peak-range cutoff (speed vs accuracy)<br/>_cutoff in FWHMs; 0 = full range_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "WDT" | :ballot_box_with_check: | :white_check_mark: | :date: |
+| Feature                                                                                                                                                                             | LIB                     | CLI                     | APP    |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------ |
+| Peak-range cutoff (speed vs accuracy)<br/>_cutoff in FWHMs; 0 = full range_<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "WDT" | :ballot_box_with_check: | :ballot_box_with_check: | :date: |
 
 </div>
 
@@ -300,11 +304,11 @@ and time-of-flight modes.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                                                                                                                                   | LIB                     | CLI                | APP                |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------ | ------------------ |
-| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian U, V, W<br/>Lorentzian X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7"                   | :white_check_mark:      | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian U, V, W<br/>Lorentzian X, Y_<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4"       | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian U, V, W<br/>Lorentzian X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :material-cancel: `cryspy`<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L" | :white_check_mark:      | :white_check_mark: | :date:             |
+| Feature                                                                                                                                                                                                                                                                                                                                                                                              | LIB                | CLI                | APP                |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
+| Thompson-Cox-Hastings pseudo-Voigt<br/>_Gaussian broadening U, V, W<br/>Lorentzian broadening X, Y_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_basic.ipynb)<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-xray-cwl_LiF_single.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7"                        | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Bérar-Baldinozzi asymmetry<br/>_Gaussian broadening U, V, W<br/>Lorentzian broadening X, Y_<br/>_Bérar-Baldinozzi asymmetry a₀, b₀, a₁, b₁_<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/pd-neut-cwl_PbSO4_beba-asymmetry.ipynb)<br/>- :material-cancel: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" + "Asy1-4" | :white_check_mark: | :white_check_mark: | :white_check_mark: |
+| Thompson-Cox-Hastings pseudo-Voigt + Finger-Cox-Jephcoat asymmetry<br/>_Gaussian broadening U, V, W<br/>Lorentzian broadening X, Y_<br/>_Finger-Cox-Jephcoat asymmetry 1, 2_<br/>- :material-cancel: `cryspy`<br/>- :white_check_mark: `crysfml` [:material-check-decagram:](../verification/pd-neut-cwl_LaB6_fcj-asymmetry.ipynb)<br/>- :material-link-variant: `FullProf` "Npr=7" + "S_L/D_L"      | :white_check_mark: | :white_check_mark: | :date:             |
 
 </div>
 
@@ -312,13 +316,13 @@ and time-of-flight modes.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                                                                                                                                                                                                                                                                                                                                                                      | LIB                     | CLI                | APP                |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ------------------ | ------------------ |
-| Pseudo-Voigt (non-convoluted)<br/>_Gaussian σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian γ₀, γ₁, γ₂, size_l, strain_l_<br/>- :white_check_mark: `cryspy` "non-conv-pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Fe_pseudo-voigt.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" (TOF)                                                                                                                 | :ballot_box_with_check: | :white_check_mark: | :date:             |
-| Jorgensen (back-to-back exp ⊗ Gaussian)<br/>_Gaussian σ₀, σ₁, σ₂, size_g, strain_g<br/>Asymmetry rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "Gauss" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9" (Gaussian limit)                                                                                                                   | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| Jorgensen-Von Dreele (back-to-back exp ⊗ pseudo-Voigt)<br/>_Gaussian σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian γ₀, γ₁, γ₂, size_l, strain_l<br/>Asymmetry rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9"; "Iso-GSize, Iso-GStrain, Iso-LorSize, Iso-LorStrain" | :ballot_box_with_check: | :white_check_mark: | :white_check_mark: |
-| Double back-to-back exp ⊗ pseudo-Voigt<br/>_Gaussian σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian γ₀, γ₁, γ₂, size_l, strain_l<br/>Asymmetry rise α₁, α₂; fast decay β₀₀, β₀₁; slow decay β₁₀; switching r₀₁, r₀₂, r₀₃_<br/>- :white_check_mark: `cryspy` "type0m"<br/>- :material-link-variant: Z-Rietveld "type0m" (no direct `FullProf` Npr; cf. Npr=10)                                                                                                   | :white_check_mark:      | :white_check_mark: | :date:             |
-| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Gaussian σ₀, σ₁, σ₂<br/>Lorentzian γ₀, γ₁, γ₂<br/>Moderator pulse α₀, α₁, β₀, κ_<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=13"                                                                                                                                                                                                                                          | :date:                  | :date:             | :date:             |
+| Feature                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | LIB                     | CLI                     | APP                |
+| --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------------------ |
+| Pseudo-Voigt (non-convoluted)<br/>_Gaussian σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian broadening γ₀, γ₁, γ₂, size_l, strain_l_<br/>- :white_check_mark: `cryspy` "non-conv-pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Fe_pseudo-voigt.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=7" (TOF)                                                                                                                                                                                                                                             | :ballot_box_with_check: | :ballot_box_with_check: | :date:             |
+| Jorgensen (back-to-back exp ⊗ Gaussian)<br/>_Gaussian broadening σ₀, σ₁, σ₂, size_g, strain_g<br/>Asymmetry rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "Gauss" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen.ipynb)<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9" (Gaussian limit)                                                                                                                                                                                                                                               | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
+| Jorgensen-Von Dreele (back-to-back exp ⊗ pseudo-Voigt)<br/>_Gaussian broadening σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian broadening γ₀, γ₁, γ₂, size_l, strain_l<br/>Asymmetry rise α₀, α₁; decay β₀, β₁_<br/>- :white_check_mark: `cryspy` "pseudo-Voigt" [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen-von-dreele.ipynb) (size/strain [:material-check-decagram:](../verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain.ipynb))<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=9"; "Iso-GSize, Iso-GStrain, Iso-LorSize, Iso-LorStrain" | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
+| Double back-to-back exp ⊗ pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂, size_g, strain_g<br/>Lorentzian broadening γ₀, γ₁, γ₂, size_l, strain_l<br/>Asymmetry rise α₁, α₂; fast decay β₀₀, β₀₁; slow decay β₁₀; switching r₀₁, r₀₂, r₀₃_<br/>- :white_check_mark: `cryspy` "type0m"<br/>- :material-link-variant: Z-Rietveld "type0m" (no direct `FullProf` Npr; cf. Npr=10)                                                                                                                                                                                                                    | :white_check_mark:      | :white_check_mark:      | :date:             |
+| Ikeda-Carpenter ⊗ pseudo-Voigt<br/>_Gaussian broadening σ₀, σ₁, σ₂<br/>Lorentzian broadening γ₀, γ₁, γ₂<br/>Moderator pulse α₀, α₁, β₀, κ_<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Npr=13"                                                                                                                                                                                                                                                                                                                                                           | :date:                  | :date:                  | :date:             |
 
 </div>
 
@@ -355,9 +359,9 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                          | LIB    | CLI    | APP    |
-| ---------------------------------------------------------------- | ------ | ------ | ------ |
-| Structural twinning<br/>- :date: `cryspy`<br/>- :date: `crysfml` | :date: | :date: | :date: |
+| Feature                                                                          | LIB    | CLI    | APP    |
+| -------------------------------------------------------------------------------- | ------ | ------ | ------ |
+| Structural twinning<br/>- :date: `cryspy`<br/>- :material-help-circle: `crysfml` | :date: | :date: | :date: |
 
 </div>
 
@@ -365,10 +369,10 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                           | LIB                | CLI                | APP                |
-| ------------------------------------------------------------------------------------------------- | ------------------ | ------------------ | ------------------ |
-| Wavelength<br/>- :white_check_mark: `cryspy`<br/>- :material-link-variant: `FullProf` "Lambda1"   | :white_check_mark: | :white_check_mark: | :white_check_mark: |
-| Half wavelength (λ/2)<br/>- :date: `cryspy`<br/>- :material-link-variant: `FullProf` "x-Lambda/2" | :date:             | :date:             | :date:             |
+| Feature                                                                                                                  | LIB                     | CLI                     | APP                |
+| ------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ----------------------- | ------------------ |
+| Wavelength<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "Lambda1"   | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark: |
+| Half wavelength (λ/2)<br/>- :date: `cryspy`<br/>- :date: `crysfml`<br/>- :material-link-variant: `FullProf` "x-Lambda/2" | :date:                  | :date:                  | :date:             |
 
 </div>
 
@@ -376,9 +380,9 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                | LIB                | CLI                | APP    |
-| ---------------------------------------------------------------------- | ------------------ | ------------------ | ------ |
-| Individual wavelength per reflection<br/>- :white_check_mark: `cryspy` | :white_check_mark: | :white_check_mark: | :date: |
+| Feature                                                                                                                                                                                    | LIB                     | CLI                     | APP    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ----------------------- | ------ |
+| Individual wavelength per reflection<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-tof_taurine_basic.ipynb)<br/>- :material-help-circle: `crysfml` | :ballot_box_with_check: | :ballot_box_with_check: | :date: |
 
 </div>
 
@@ -388,6 +392,8 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 Polarized-neutron powder diffraction is an epic. Planned: flipping-ratio
 method.
+
+---
 
 ### 2.4. Polarized Single-Crystal Diffraction
 
@@ -420,7 +426,7 @@ polarimetry.
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ----------------------- |
 | Calculate diffraction pattern (for fitting/comparison)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :white_check_mark: `pdffit2` | :white_check_mark:      | :white_check_mark:      | :white_check_mark:      |
 | Calculate diffraction pattern (simple view, no data)<br/>- :white_check_mark: `cryspy`<br/>- :white_check_mark: `crysfml`<br/>- :date: `pdffit2`               | :ballot_box_with_check: | :ballot_box_with_check: | :ballot_box_with_check: |
-| Calculate structure factors<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                           | :ballot_box_with_check: | :white_check_mark:      | :white_check_mark:      |
+| Calculate structure factors<br/>- :white_check_mark: `cryspy`<br/>- :date: `crysfml`                                                                           | :ballot_box_with_check: | :ballot_box_with_check: | :white_check_mark:      |
 
 </div>
 
