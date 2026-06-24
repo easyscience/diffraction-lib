@@ -380,9 +380,9 @@ a Gaussian or Lorentzian mosaicity distribution.
 
 <div class="ed-matrix" markdown="1">
 
-| Feature                                                                                                       | LIB                     | CLI                     | APP    |
-| ------------------------------------------------------------------------------------------------------------- | ----------------------- | ----------------------- | ------ |
-| Individual wavelength per reflection<br/>- :white_check_mark: `cryspy`<br/>- :material-help-circle: `crysfml` | :ballot_box_with_check: | :ballot_box_with_check: | :date: |
+| Feature                                                                                                                                                                                    | LIB                     | CLI                     | APP    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------- | ----------------------- | ------ |
+| Individual wavelength per reflection<br/>- :white_check_mark: `cryspy` [:material-check-decagram:](../verification/sc-neut-tof_taurine_basic.ipynb)<br/>- :material-help-circle: `crysfml` | :ballot_box_with_check: | :ballot_box_with_check: | :date: |
 
 </div>
 
