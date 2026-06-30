@@ -31,9 +31,9 @@ The tutorials are organized into the following categories:
   the La0.5Ba0.5CoO3 crystal structure can be performed when both the
   structure and experiment are loaded from CIF files. Data collected
   from constant wavelength neutron powder diffraction at HRPT at PSI.
-- [LBCO resume](load-and-fit-lbco-hrpt.ipynb) – The most minimal
-  example showing how to load a previously saved LBCO project from a
-  directory and continue working with it.
+- [LBCO resume](load-and-fit-lbco-hrpt.ipynb) – The most minimal example
+  showing how to load a previously saved LBCO project from a directory
+  and continue working with it.
 - [LBCO `complete`](refine-lbco-hrpt-report.ipynb) – Demonstrates the
   use of the EasyDiffraction API in a simplified, user-friendly manner
   that closely follows the GUI workflow for a Rietveld refinement of the

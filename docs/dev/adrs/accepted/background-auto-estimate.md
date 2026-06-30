@@ -369,10 +369,10 @@ one-line summary (§1). Empirical calibration was carried out in Phase 2:
 - The Stage-2 tolerance multiplier (`c · σ`, `c = 2`) and the width
   percentile (~75th) are first-cut constants; they were validated — not
   exhaustively swept — against the representative CWL
-  (`refine-lbco-hrpt-from-data`) and TOF
-  (`fitting-exercise-si-lbco`) datasets plus the analytic unit cases,
-  and produce sensible backgrounds there. Re-tuning stays possible if a
-  future dataset needs it.
+  (`refine-lbco-hrpt-from-data`) and TOF (`fitting-exercise-si-lbco`)
+  datasets plus the analytic unit cases, and produce sensible
+  backgrounds there. Re-tuning stays possible if a future dataset needs
+  it.
 - The single Stage-1 method (`arpls`) holds for both validated beam
   modes; no `beam_mode`/`radiation_probe` policy was required (it stays
   in §Deferred Work should a future corpus show otherwise).
@@ -489,14 +489,13 @@ representative datasets — CWL
 [`refine-lbco-hrpt-from-data.py`](../../../../docs/docs/tutorials/refine-lbco-hrpt-from-data.py)
 and TOF
 [`fitting-exercise-si-lbco.py`](../../../../docs/docs/tutorials/fitting-exercise-si-lbco.py)
-— comparing the
-estimated curve against the hand-placed reference to within a fraction
-of the measured signal scale; the single `arpls` default and the
-first-cut constants hold for both. Sloping and curved backgrounds are
-covered against exact analytic ground truth by the unit tests, not the
-corpus. A broader per-tutorial sweep (e.g. `ed-17`, `ed-16`) was not
-needed and stays available if a future dataset misbehaves. These checks
-run at the functional / unit level.
+— comparing the estimated curve against the hand-placed reference to
+within a fraction of the measured signal scale; the single `arpls`
+default and the first-cut constants hold for both. Sloping and curved
+backgrounds are covered against exact analytic ground truth by the unit
+tests, not the corpus. A broader per-tutorial sweep (e.g. `ed-17`,
+`ed-16`) was not needed and stays available if a future dataset
+misbehaves. These checks run at the functional / unit level.
 
 The estimator module mirrors into
 `tests/unit/easydiffraction/datablocks/experiment/categories/background/`

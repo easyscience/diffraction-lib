@@ -8,10 +8,10 @@ Core model.
 
 > This ADR follows [`AGENTS.md`](../../../../AGENTS.md). It is the
 > data-side counterpart to
-> [`plotting-docs-performance.md`](../accepted/plotting-docs-performance.md), which
-> handles **display** precision (downcasting plot arrays to float32).
-> This ADR concerns the precision of numbers we **store and serialize**
-> in CIF, which is a separate decision because CIF is a data
+> [`plotting-docs-performance.md`](../accepted/plotting-docs-performance.md),
+> which handles **display** precision (downcasting plot arrays to
+> float32). This ADR concerns the precision of numbers we **store and
+> serialize** in CIF, which is a separate decision because CIF is a data
 > source-of-truth, not a throwaway view.
 
 ## Context
