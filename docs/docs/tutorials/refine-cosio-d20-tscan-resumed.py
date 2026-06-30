@@ -112,5 +112,3 @@ project.display.fit.series(versus=temperature)
 
 # %%
 project.save_as(dir_path='projects/refine-cosio-d20-tscan-resumed')
-
-# %%
