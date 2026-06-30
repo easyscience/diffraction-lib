@@ -40,12 +40,30 @@ jobs:
       - name: Init pixi project
         run: pixi init easydiffraction
 
-      # Minimal macOS version needed for resolving scipp wheel
-      - name: Set the minimum system requirements
+      - name: Configure Pixi platforms
         working-directory: easydiffraction
+        shell: bash
         run: |
-          pixi workspace platform add linux-64-glibc-2-35=linux-64 --glibc 2.35 --no-install
-          pixi workspace platform add osx-arm64-macos-14-0=osx-arm64 --macos 14.0 --no-install
+          set -euo pipefail
+
+          case "$RUNNER_OS" in
+            Linux)
+              pixi_platforms='[{ name = "linux-64-glibc-2-35", platform = "linux-64", glibc = "2.35" }]'
+              ;;
+            macOS)
+              pixi_platforms='[{ name = "osx-arm64-macos-14-0", platform = "osx-arm64", macos = "14.0" }]'
+              ;;
+            Windows)
+              pixi_platforms='["win-64"]'
+              ;;
+            *)
+              echo "Unsupported runner OS: $RUNNER_OS"
+              exit 1
+              ;;
+          esac
+
+          PIXI_PLATFORMS="$pixi_platforms" python -c 'import os, pathlib; path = pathlib.Path("pixi.toml"); text = path.read_text(); path.write_text(text.replace(text.split("platforms = ", 1)[1].split("\n", 1)[0], os.environ["PIXI_PLATFORMS"], 1))'
+          pixi workspace platform list
 
       - name: Add Python 3.14
         working-directory: easydiffraction
