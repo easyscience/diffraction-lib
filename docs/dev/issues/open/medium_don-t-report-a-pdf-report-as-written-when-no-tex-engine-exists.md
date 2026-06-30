@@ -16,8 +16,8 @@ or distinguish "skipped" from "written".
 
 **TODOs / locations:**
 
-- [pdf_compiler.py](src/easydiffraction/report/pdf_compiler.py#L81)
-- [default.py](src/easydiffraction/project/categories/report/default.py#L274)
-- [project.py](src/easydiffraction/project/project.py#L556)
+- [pdf_compiler.py](../../../../src/easydiffraction/report/pdf_compiler.py#L81)
+- [default.py](../../../../src/easydiffraction/project/categories/report/default.py#L274)
+- [project.py](../../../../src/easydiffraction/project/project.py#L556)
 
 **Depends on:** nothing.

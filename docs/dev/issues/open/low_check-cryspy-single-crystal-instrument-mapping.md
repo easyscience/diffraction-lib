@@ -9,6 +9,6 @@ single crystal and a `TODO: Check this mapping!` marker.
 
 **TODOs:**
 
-- [cryspy.py](src/easydiffraction/analysis/calculators/cryspy.py#L506)
+- [cryspy.py](../../../../src/easydiffraction/analysis/calculators/cryspy.py#L506)
 
 **Depends on:** nothing.

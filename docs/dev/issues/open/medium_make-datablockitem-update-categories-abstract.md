@@ -10,7 +10,7 @@ experiments (calculation updates). Currently it is a concrete no-op.
 
 **TODOs:**
 
-- [datablock.py](src/easydiffraction/core/datablock.py#L39)
+- [datablock.py](../../../../src/easydiffraction/core/datablock.py#L39)
 
 **Depends on:** related to issue 11.
 

@@ -9,6 +9,6 @@ replaced with `TableRenderer`.
 
 **TODOs:**
 
-- [utils.py](src/easydiffraction/utils/utils.py#L510)
+- [utils.py](../../../../src/easydiffraction/utils/utils.py#L510)
 
 **Depends on:** nothing.

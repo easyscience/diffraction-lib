@@ -8,6 +8,6 @@
 
 **TODOs:**
 
-- [ascii.py](src/easydiffraction/io/ascii.py#L118)
+- [ascii.py](../../../../src/easydiffraction/io/ascii.py#L118)
 
 **Depends on:** nothing.

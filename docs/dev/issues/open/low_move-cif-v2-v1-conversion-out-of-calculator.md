@@ -10,6 +10,6 @@ conversion (dot-to-underscore rewriting). This should live in a shared
 
 **TODOs:**
 
-- [pdffit.py](src/easydiffraction/analysis/calculators/pdffit.py#L118)
+- [pdffit.py](../../../../src/easydiffraction/analysis/calculators/pdffit.py#L118)
 
 **Depends on:** nothing.

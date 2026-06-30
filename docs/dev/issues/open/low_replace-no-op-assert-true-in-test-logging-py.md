@@ -15,6 +15,6 @@ instead of `assert True`.
 
 **TODOs / locations:**
 
-- [test_logging.py](tests/unit/easydiffraction/utils/test_logging.py#L13)
+- [test_logging.py](../../../../tests/unit/easydiffraction/utils/test_logging.py#L13)
 
 **Depends on:** nothing.

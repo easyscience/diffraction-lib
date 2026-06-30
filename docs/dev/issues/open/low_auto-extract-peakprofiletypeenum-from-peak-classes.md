@@ -11,8 +11,8 @@ whether the same pattern can be reused for other enums.
 
 **TODOs:**
 
-- [enums.py](src/easydiffraction/datablocks/experiment/item/enums.py#L153)
-- [enums.py](src/easydiffraction/datablocks/experiment/item/enums.py#L157)
-- [enums.py](src/easydiffraction/datablocks/experiment/item/enums.py#L158)
+- [enums.py](../../../../src/easydiffraction/datablocks/experiment/item/enums.py#L153)
+- [enums.py](../../../../src/easydiffraction/datablocks/experiment/item/enums.py#L157)
+- [enums.py](../../../../src/easydiffraction/datablocks/experiment/item/enums.py#L158)
 
 **Depends on:** related to issue 9.

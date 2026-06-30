@@ -9,6 +9,6 @@
 
 **TODOs:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/item/bragg_pd.py#L112)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/item/bragg_pd.py#L112)
 
 **Depends on:** nothing.

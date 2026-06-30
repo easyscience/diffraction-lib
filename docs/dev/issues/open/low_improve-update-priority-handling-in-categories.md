@@ -11,10 +11,10 @@ are also marked.
 
 **TODOs:**
 
-- [category.py](src/easydiffraction/core/category.py#L21)
-- [category.py](src/easydiffraction/core/category.py#L23)
-- [category.py](src/easydiffraction/core/category.py#L32)
-- [category.py](src/easydiffraction/core/category.py#L174)
-- [category.py](src/easydiffraction/core/category.py#L199)
+- [category.py](../../../../src/easydiffraction/core/category.py#L21)
+- [category.py](../../../../src/easydiffraction/core/category.py#L23)
+- [category.py](../../../../src/easydiffraction/core/category.py#L32)
+- [category.py](../../../../src/easydiffraction/core/category.py#L174)
+- [category.py](../../../../src/easydiffraction/core/category.py#L199)
 
 **Depends on:** related to issues 10, 11.

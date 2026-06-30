@@ -16,9 +16,9 @@ string and parse lazily with a guarded message.
 
 **TODOs / locations:**
 
-- [default.py](src/easydiffraction/project/categories/info/default.py#L89)
+- [default.py](../../../../src/easydiffraction/project/categories/metadata/default.py#L89)
   — `_parse_timestamp`
-- [default.py](src/easydiffraction/project/categories/info/default.py#L152)
+- [default.py](../../../../src/easydiffraction/project/categories/metadata/default.py#L152)
   — `created` / `last_modified` getters
 
 **Depends on:** nothing.

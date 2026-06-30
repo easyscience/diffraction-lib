@@ -15,7 +15,7 @@ no feedback.
 
 **TODOs / locations:**
 
-- [default.py](src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L52)
-- [default.py](src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L163)
+- [default.py](../../../../src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L52)
+- [default.py](../../../../src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L163)
 
 **Depends on:** nothing.
