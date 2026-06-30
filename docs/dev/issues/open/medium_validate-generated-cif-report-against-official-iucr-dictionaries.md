@@ -7,7 +7,7 @@
 The runtime gemmi self-check in the IUCr CIF writer was removed (it
 validated our own deterministic output at write time and depended on
 dictionaries under `tmp/iucr-dicts/`; see the §2.5 amendment in
-[`iucr-cif-tag-alignment.md`](../adrs/accepted/iucr-cif-tag-alignment.md)).
+[`iucr-cif-tag-alignment.md`](../../adrs/accepted/iucr-cif-tag-alignment.md)).
 That spec-compliance guarantee now needs to live in a dev-time test
 instead.
 

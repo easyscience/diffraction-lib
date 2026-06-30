@@ -17,8 +17,8 @@ this path raises `AttributeError` instead of returning `None`.
 
 **TODOs / locations:**
 
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L1160)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L991) —
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L1160)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L991) —
   `_has_cif_loop` (the correct pattern)
 
 **Depends on:** nothing.

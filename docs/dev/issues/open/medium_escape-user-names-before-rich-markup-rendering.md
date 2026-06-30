@@ -17,9 +17,9 @@ segment rather than round-tripping through `.markup`.
 
 **TODOs / locations:**
 
-- [logging.py](src/easydiffraction/utils/logging.py#L710)
-- [project.py](src/easydiffraction/project/project.py#L501)
-- [default.py](src/easydiffraction/project/categories/info/default.py#L80)
+- [logging.py](../../../../src/easydiffraction/utils/logging.py#L710)
+- [project.py](../../../../src/easydiffraction/project/project.py#L501)
+- [default.py](../../../../src/easydiffraction/project/categories/metadata/default.py#L80)
   — `_validate_name`
 
 **Depends on:** nothing.

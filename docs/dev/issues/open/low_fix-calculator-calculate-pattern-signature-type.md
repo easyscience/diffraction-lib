@@ -9,6 +9,6 @@ TODO asks whether it should be `Structure` (singular).
 
 **TODOs:**
 
-- [base.py](src/easydiffraction/analysis/calculators/base.py#L40)
+- [base.py](../../../../src/easydiffraction/analysis/calculators/base.py#L40)
 
 **Depends on:** nothing.

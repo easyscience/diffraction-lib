@@ -16,6 +16,6 @@ width, producing a mis-aligned or wrapped header rule.
 
 **TODOs / locations:**
 
-- [logging.py](src/easydiffraction/utils/logging.py#L784)
+- [logging.py](../../../../src/easydiffraction/utils/logging.py#L784)
 
 **Depends on:** related to issue 109 (table/terminal width policy).

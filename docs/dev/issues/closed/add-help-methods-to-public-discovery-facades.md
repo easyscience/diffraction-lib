@@ -7,4 +7,4 @@ that do not inherit the guarded object hierarchy: `project.display`,
 Introduced `render_object_help()` so these helpers share the same
 property and method table style as `GuardedBase.help()`. Documented the
 convention in
-[`help-discoverability.md`](../adrs/accepted/help-discoverability.md).
+[`help-discoverability.md`](../../adrs/accepted/help-discoverability.md).

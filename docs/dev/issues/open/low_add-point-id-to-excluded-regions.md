@@ -9,6 +9,6 @@ categories.
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L33)
+- [default.py](../../../../src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L33)
 
 **Depends on:** nothing.

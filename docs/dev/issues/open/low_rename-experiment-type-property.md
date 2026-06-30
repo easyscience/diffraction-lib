@@ -9,6 +9,6 @@ the built-in `type`. A TODO suggests finding a better name.
 
 **TODOs:**
 
-- [base.py](src/easydiffraction/datablocks/experiment/item/base.py#L75)
+- [base.py](../../../../src/easydiffraction/datablocks/experiment/item/base.py#L75)
 
 **Depends on:** nothing.

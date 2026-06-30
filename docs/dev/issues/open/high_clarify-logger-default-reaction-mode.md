@@ -9,7 +9,7 @@
 
 **TODOs:**
 
-- [logging.py](src/easydiffraction/utils/logging.py#L430)
+- [logging.py](../../../../src/easydiffraction/utils/logging.py#L430)
 
 **Depends on:** nothing.
 

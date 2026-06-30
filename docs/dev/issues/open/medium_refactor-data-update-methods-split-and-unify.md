@@ -13,14 +13,14 @@ the pattern from `bragg_sc.py`.
 
 **TODOs:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L386)
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L389)
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L506)
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L585)
-- [bragg_sc.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_sc.py#L271)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L254)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L257)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L349)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L386)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L389)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L506)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L585)
+- [bragg_sc.py](../../../../src/easydiffraction/datablocks/experiment/categories/refln/bragg_sc.py#L271)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L254)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L257)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L349)
 
 **Depends on:** nothing.
 

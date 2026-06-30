@@ -9,6 +9,6 @@ be renamed to `CWL` and `TOF`.
 
 **TODOs:**
 
-- [enums.py](src/easydiffraction/datablocks/experiment/item/enums.py#L113)
+- [enums.py](../../../../src/easydiffraction/datablocks/experiment/item/enums.py#L113)
 
 **Depends on:** nothing.

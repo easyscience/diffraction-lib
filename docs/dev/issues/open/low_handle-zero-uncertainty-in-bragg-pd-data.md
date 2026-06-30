@@ -14,6 +14,6 @@ as the original narrow note; act on it through issue 140.
 
 **TODOs:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L442)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L442)
 
 **Depends on:** see issue 140.

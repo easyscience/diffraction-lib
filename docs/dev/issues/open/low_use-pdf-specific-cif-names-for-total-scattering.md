@@ -11,17 +11,17 @@ PDF-specific CIF names.
 
 **TODOs:**
 
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L48)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L48)
   — `_pd_data.point_id`
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L62)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L62)
   — `_pd_proc.r`
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L74)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L74)
   — `_pd_meas.intensity_total`
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L87)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L87)
   — `_pd_meas.intensity_total_su`
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L99)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L99)
   — `_pd_calc.intensity_total`
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L112)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L112)
   — `_pd_data.refinement_status`
 
 **Depends on:** nothing.

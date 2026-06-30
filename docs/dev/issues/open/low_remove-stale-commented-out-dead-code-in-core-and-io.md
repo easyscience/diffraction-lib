@@ -11,9 +11,9 @@ removable.
 
 **TODOs / locations:**
 
-- [parse.py](src/easydiffraction/io/cif/parse.py#L65)
-- [variable.py](src/easydiffraction/core/variable.py#L99)
-- [variable.py](src/easydiffraction/core/variable.py#L167)
+- [parse.py](../../../../src/easydiffraction/io/cif/parse.py#L65)
+- [variable.py](../../../../src/easydiffraction/core/variable.py#L99)
+- [variable.py](../../../../src/easydiffraction/core/variable.py#L167)
 
 **Depends on:** nothing.
 
