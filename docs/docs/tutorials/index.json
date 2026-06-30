@@ -56,7 +56,7 @@
     "level": "workshop"
   },
   "joint-si-bragg-pdf": {
-    "order": 16,
+    "order": 15,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/joint-si-bragg-pdf/joint-si-bragg-pdf.ipynb",
     "original_name": "advanced_joint-fit_bragg-pdf_pd-neut-tof_Si",
     "title": "Advanced: Si Joint Bragg+PDF Fit",
@@ -64,15 +64,15 @@
     "level": "advanced"
   },
   "load-and-fit-lbco-hrpt": {
-    "order": 4,
+    "order": 3,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/load-and-fit-lbco-hrpt/load-and-fit-lbco-hrpt.ipynb",
     "original_name": "",
-    "title": "Quick Start: LBCO Load Project",
-    "description": "Most minimal example: load a saved project and run a Rietveld refinement of La0.5Ba0.5CoO3 using constant wavelength neutron powder diffraction data from HRPT at PSI",
+    "title": "LBCO Resume",
+    "description": "Most minimal example: load a saved La0.5Ba0.5CoO3 project and run a Rietveld refinement using constant wavelength neutron powder diffraction data from HRPT at PSI",
     "level": "quick"
   },
   "pdf-nacl-xrd": {
-    "order": 13,
+    "order": 12,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-nacl-xrd/pdf-nacl-xrd.ipynb",
     "original_name": "pdf_pd-xray_NaCl",
     "title": "PDF Analysis: NaCl, XRD",
@@ -80,7 +80,7 @@
     "level": "intermediate"
   },
   "pdf-ni-npd": {
-    "order": 11,
+    "order": 10,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-ni-npd/pdf-ni-npd.ipynb",
     "original_name": "pdf_pd-neut-cwl_Ni",
     "title": "PDF Analysis: Ni, NPD",
@@ -88,7 +88,7 @@
     "level": "intermediate"
   },
   "pdf-si-nomad": {
-    "order": 12,
+    "order": 11,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/pdf-si-nomad/pdf-si-nomad.ipynb",
     "original_name": "pdf_pd-neut-tof_Si-NOMAD",
     "title": "PDF Analysis: Si, NOMAD (TOF)",
@@ -96,7 +96,7 @@
     "level": "intermediate"
   },
   "refine-cosio-d20": {
-    "order": 6,
+    "order": 5,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20/refine-cosio-d20.ipynb",
     "original_name": "cryst-struct_pd-neut-cwl_CoSiO4-D20",
     "title": "Crystal Structure: Co2SiO4, D20",
@@ -104,7 +104,7 @@
     "level": "intermediate"
   },
   "refine-cosio-d20-tscan": {
-    "order": 17,
+    "order": 16,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20-tscan/refine-cosio-d20-tscan.ipynb",
     "original_name": "",
     "title": "Structure Refinement: Co2SiO4, D20 (Temperature scan)",
@@ -112,11 +112,11 @@
     "level": "advanced"
   },
   "refine-cosio-d20-tscan-resumed": {
-    "order": 5,
+    "order": 17,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-cosio-d20-tscan-resumed/refine-cosio-d20-tscan-resumed.ipynb",
     "original_name": "",
-    "title": "Structure Refinement: Co2SiO4, D20 (Resumed scan)",
-    "description": "Resume an interrupted sequential Rietveld refinement of Co2SiO4 by reloading a saved project; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
+    "title": "Co2SiO4 T-scan Resume",
+    "description": "Resume a 213-file sequential Rietveld refinement of Co2SiO4 by reloading a saved project with 210 completed rows; the remaining temperature-scan datasets are processed and appended to analysis/results.csv",
     "level": "advanced"
   },
   "refine-yap-tscan": {
@@ -128,7 +128,7 @@
     "level": "advanced"
   },
   "refine-hs-hrpt": {
-    "order": 7,
+    "order": 6,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hs-hrpt/refine-hs-hrpt.ipynb",
     "original_name": "cryst-struct_pd-neut-cwl_HS-HRPT",
     "title": "Crystal Structure: HS, HRPT",
@@ -152,7 +152,7 @@
     "level": "quick"
   },
   "refine-lbco-hrpt-report": {
-    "order": 3,
+    "order": 4,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lbco-hrpt-report/refine-lbco-hrpt-report.ipynb",
     "original_name": "basic_single-fit_pd-neut-cwl_LBCO-HRPT",
     "title": "Complete Tutorial: LBCO, HRPT",
@@ -168,7 +168,7 @@
     "level": "intermediate"
   },
   "refine-ncaf-wish": {
-    "order": 15,
+    "order": 14,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-ncaf-wish/refine-ncaf-wish.ipynb",
     "original_name": "cryst-struct_pd-neut-tof_multidata_NCAF-WISH",
     "title": "Crystal Structure: NCAF, WISH (Multi-Data)",
@@ -176,7 +176,7 @@
     "level": "intermediate"
   },
   "refine-pbso4-joint": {
-    "order": 14,
+    "order": 13,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-pbso4-joint/refine-pbso4-joint.ipynb",
     "original_name": "advanced_joint-fit_pd-neut-xray-cwl_PbSO4",
     "title": "Advanced: PbSO4 Joint NPD+XRD Fit",
@@ -192,7 +192,7 @@
     "level": "intermediate"
   },
   "refine-si-sepd": {
-    "order": 8,
+    "order": 7,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-si-sepd/refine-si-sepd.ipynb",
     "original_name": "cryst-struct_pd-neut-tof_Si-SEPD",
     "title": "Crystal Structure: Si, SEPD (TOF)",
@@ -200,7 +200,7 @@
     "level": "intermediate"
   },
   "refine-taurine-senju": {
-    "order": 10,
+    "order": 9,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-taurine-senju/refine-taurine-senju.ipynb",
     "original_name": "",
     "title": "Crystal Structure: Taurine, SENJU (TOF)",
@@ -208,7 +208,7 @@
     "level": "intermediate"
   },
   "refine-tbti-heidi": {
-    "order": 9,
+    "order": 8,
     "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-tbti-heidi/refine-tbti-heidi.ipynb",
     "original_name": "",
     "title": "Crystal Structure: Tb2TiO7, HEiDi",
