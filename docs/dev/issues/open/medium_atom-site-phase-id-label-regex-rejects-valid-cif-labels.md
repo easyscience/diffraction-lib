@@ -18,9 +18,9 @@ pattern across categories.
 
 **TODOs / locations:**
 
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L71)
-- [default.py](src/easydiffraction/datablocks/experiment/categories/linked_phases/default.py#L38)
-- [default.py](src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L45)
+- [default.py](../../../../src/easydiffraction/datablocks/structure/categories/atom_sites/default.py#L71)
+- [default.py](../../../../src/easydiffraction/datablocks/experiment/categories/linked_structure/default.py#L38)
+- [default.py](../../../../src/easydiffraction/datablocks/experiment/categories/excluded_regions/default.py#L45)
 
 **Depends on:** subsumes part of issue 29 (standardise CIF ID validator
 pattern) with the concrete invalid-label consequence.

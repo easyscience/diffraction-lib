@@ -16,6 +16,6 @@ up a new minimizer author.
 
 **TODOs / locations:**
 
-- [base.py](src/easydiffraction/analysis/minimizers/base.py#L169)
+- [base.py](../../../../src/easydiffraction/analysis/minimizers/base.py#L169)
 
 **Depends on:** nothing.

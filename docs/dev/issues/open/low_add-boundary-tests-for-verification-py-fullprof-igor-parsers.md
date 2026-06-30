@@ -16,7 +16,7 @@ non-numeric rows in the existing mirror.
 
 **TODOs / locations:**
 
-- [verification.py](src/easydiffraction/analysis/verification.py) (tests
-  in `tests/unit/easydiffraction/analysis/test_verification.py`)
+- [verification.py](../../../../src/easydiffraction/analysis/verification.py)
+  (tests in `tests/unit/easydiffraction/analysis/test_verification.py`)
 
 **Depends on:** nothing.

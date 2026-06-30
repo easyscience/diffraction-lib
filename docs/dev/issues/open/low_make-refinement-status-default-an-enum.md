@@ -17,7 +17,7 @@ families and the excluded-regions mask logic. See also issue 151 (a dead
 
 **TODOs:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L156)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L116)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L156)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L116)
 
 **Depends on:** nothing.

@@ -9,8 +9,8 @@ are still incomplete.
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L31)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L32)
-- [default.py](src/easydiffraction/analysis/categories/joint_fit/default.py#L41)
+- [default.py](../../../../src/easydiffraction/analysis/categories/joint_fit/default.py#L31)
+- [default.py](../../../../src/easydiffraction/analysis/categories/joint_fit/default.py#L32)
+- [default.py](../../../../src/easydiffraction/analysis/categories/joint_fit/default.py#L41)
 
 **Depends on:** nothing.

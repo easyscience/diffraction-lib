@@ -15,7 +15,7 @@ the backend path is implemented.
 
 **TODOs / locations:**
 
-- [cryspy.py](src/easydiffraction/analysis/calculators/cryspy.py#L176)
-- [cryspy.py](src/easydiffraction/analysis/calculators/cryspy.py#L264)
+- [cryspy.py](../../../../src/easydiffraction/analysis/calculators/cryspy.py#L176)
+- [cryspy.py](../../../../src/easydiffraction/analysis/calculators/cryspy.py#L264)
 
 **Depends on:** nothing.

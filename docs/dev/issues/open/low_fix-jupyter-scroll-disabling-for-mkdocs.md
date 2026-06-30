@@ -9,6 +9,6 @@ breaks MkDocs builds.
 
 **TODOs:**
 
-- [**init**.py](src/easydiffraction/display/__init__.py#L15)
+- [**init**.py](../../../../src/easydiffraction/display/__init__.py#L15)
 
 **Depends on:** nothing.

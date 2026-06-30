@@ -8,7 +8,7 @@
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/datablocks/structure/categories/cell/default.py#L146)
+- [default.py](../../../../src/easydiffraction/datablocks/structure/categories/cell/default.py#L146)
 
 **Depends on:** related to issue 11.
 

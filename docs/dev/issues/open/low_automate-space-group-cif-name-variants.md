@@ -10,6 +10,6 @@ generation.
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/datablocks/structure/categories/space_group/default.py#L52)
+- [default.py](../../../../src/easydiffraction/datablocks/structure/categories/space_group/default.py#L52)
 
 **Depends on:** nothing.

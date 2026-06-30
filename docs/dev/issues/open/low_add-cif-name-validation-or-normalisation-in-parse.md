@@ -9,6 +9,6 @@ step.
 
 **TODOs:**
 
-- [parse.py](src/easydiffraction/io/cif/parse.py#L29)
+- [parse.py](../../../../src/easydiffraction/io/cif/parse.py#L29)
 
 **Depends on:** nothing.

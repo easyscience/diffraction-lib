@@ -1,11 +1,12 @@
 # %% [markdown]
-# # Structure Refinement: Co2SiO4, D20 (T-scan, resumed)
+# # Co2SiO4 T-scan Resume
 #
 # This example loads a previously saved Co2SiO4 project after a
 # sequential refinement was stopped before all scan files were
-# processed. If `analysis/results.csv` already contains completed rows,
-# running `project.analysis.fit()` again resumes from the remaining
-# datasets and appends the missing results.
+# processed. The saved project contains 213 scan files and a partial
+# `analysis/results.csv` with 210 completed rows. Running
+# `project.analysis.fit()` resumes from the remaining three datasets and
+# appends the missing results.
 
 # %% [markdown]
 # ## 🛠️ Import Library
@@ -20,7 +21,8 @@ import easydiffraction as edi
 # ### Locate Project
 #
 # Download and extract the saved Co2SiO4 scan project from the
-# EasyDiffraction data repository.
+# EasyDiffraction data repository. The project contains the scan data and
+# the partial sequential-fit results needed for resuming.
 
 # %%
 project_dir = edi.download_data('proj-cosio-d20-scan', destination='projects', overwrite=True)

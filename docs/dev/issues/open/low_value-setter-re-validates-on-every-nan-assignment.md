@@ -16,7 +16,7 @@ re-validate.
 
 **TODOs / locations:**
 
-- [variable.py](src/easydiffraction/core/variable.py#L152)
+- [variable.py](../../../../src/easydiffraction/core/variable.py#L152)
 
 **Depends on:** related to issue 13 (suppress redundant dirty-flag
 sets).

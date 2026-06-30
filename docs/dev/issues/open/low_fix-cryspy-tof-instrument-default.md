@@ -9,6 +9,6 @@ CrysPy does not accept `0`.
 
 **TODOs:**
 
-- [tof.py](src/easydiffraction/datablocks/experiment/categories/instrument/tof.py#L95)
+- [tof.py](../../../../src/easydiffraction/datablocks/experiment/categories/instrument/tof.py#L95)
 
 **Depends on:** upstream CrysPy fix.

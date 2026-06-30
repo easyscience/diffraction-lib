@@ -13,7 +13,7 @@ single-crystal plots.
 
 **TODOs:**
 
-- [plotting.py](src/easydiffraction/display/plotting.py#L459)
-- [\_\_main\_\_.py](src/easydiffraction/__main__.py#L105)
+- [plotting.py](../../../../src/easydiffraction/display/plotting.py#L459)
+- [\_\_main\_\_.py](../../../../src/easydiffraction/__main__.py#L105)
 
 **Depends on:** nothing.

@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Load Project and Fit: LBCO, HRPT
+# # LBCO Resume
 #
 # This is the most minimal example of using EasyDiffraction. It shows
 # how to load a previously saved project from a directory and run

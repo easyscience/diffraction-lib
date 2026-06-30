@@ -10,7 +10,7 @@ formatting for `StringDescriptor` values.
 
 **TODOs:**
 
-- [analysis.py](src/easydiffraction/analysis/analysis.py#L461)
-- [analysis.py](src/easydiffraction/analysis/analysis.py#L462)
+- [analysis.py](../../../../src/easydiffraction/analysis/analysis.py#L461)
+- [analysis.py](../../../../src/easydiffraction/analysis/analysis.py#L462)
 
 **Depends on:** nothing.

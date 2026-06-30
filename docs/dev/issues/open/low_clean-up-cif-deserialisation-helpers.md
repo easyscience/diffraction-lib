@@ -12,10 +12,10 @@ stripping, find a better way to set `_item_type` on
 
 **TODOs:**
 
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L454)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L562)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L617)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L619)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L656)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L454)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L562)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L617)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L619)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L656)
 
 **Depends on:** nothing.

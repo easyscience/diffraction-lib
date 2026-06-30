@@ -9,6 +9,6 @@ properly.
 
 **TODOs:**
 
-- [validation.py](src/easydiffraction/core/validation.py#L25)
+- [validation.py](../../../../src/easydiffraction/core/validation.py#L25)
 
 **Depends on:** nothing.

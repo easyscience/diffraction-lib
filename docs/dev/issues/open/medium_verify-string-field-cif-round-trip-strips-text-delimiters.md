@@ -18,8 +18,8 @@ text-field-aware reader (see issue 57).
 
 **TODOs / locations:**
 
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L1104)
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L1131)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L1104)
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L1131)
 
 **Depends on:** related to issue 57 (CIF deserialisation helper
 cleanup).

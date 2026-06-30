@@ -21,11 +21,11 @@ non-supporting backends raise a clear `NotImplementedError`.
 
 **TODOs / locations:**
 
-- [base.py](src/easydiffraction/analysis/calculators/base.py#L49)
-- [cryspy.py](src/easydiffraction/analysis/calculators/cryspy.py#L127)
-- [crysfml.py](src/easydiffraction/analysis/calculators/crysfml.py#L112)
-- [pdffit.py](src/easydiffraction/analysis/calculators/pdffit.py#L70)
-- [bragg_sc.py](src/easydiffraction/datablocks/experiment/categories/refln/bragg_sc.py#L400)
+- [base.py](../../../../src/easydiffraction/analysis/calculators/base.py#L49)
+- [cryspy.py](../../../../src/easydiffraction/analysis/calculators/cryspy.py#L127)
+- [crysfml.py](../../../../src/easydiffraction/analysis/calculators/crysfml.py#L112)
+- [pdffit.py](../../../../src/easydiffraction/analysis/calculators/pdffit.py#L70)
+- [bragg_sc.py](../../../../src/easydiffraction/datablocks/experiment/categories/refln/bragg_sc.py#L400)
 
 **Depends on:** related to issue 63 (the sibling `calculate_pattern`
 signature question).

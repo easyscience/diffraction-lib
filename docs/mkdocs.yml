@@ -221,10 +221,8 @@ nav:
       - Getting Started:
           - LBCO quick code: tutorials/refine-lbco-hrpt-from-data.ipynb
           - LBCO basic load: tutorials/refine-lbco-hrpt-from-cif.ipynb
+          - LBCO resume: tutorials/load-and-fit-lbco-hrpt.ipynb
           - LBCO complete: tutorials/refine-lbco-hrpt-report.ipynb
-      - Load Project:
-          - LBCO Single: tutorials/load-and-fit-lbco-hrpt.ipynb
-          - Co2SiO4 Sequential: tutorials/refine-cosio-d20-tscan-resumed.ipynb
       - Powder Diffraction:
           - Co2SiO4 pd-neut-cwl: tutorials/refine-cosio-d20.ipynb
           - HS pd-neut-cwl: tutorials/refine-hs-hrpt.ipynb
@@ -246,6 +244,7 @@ nav:
           - NCAF pd-neut-tof: tutorials/refine-ncaf-wish.ipynb
           - Si Bragg+PDF: tutorials/joint-si-bragg-pdf.ipynb
           - Co2SiO4 T-scan: tutorials/refine-cosio-d20-tscan.ipynb
+          - Co2SiO4 T-scan Resume: tutorials/refine-cosio-d20-tscan-resumed.ipynb
       - Simulated Data:
           - LBCO+Si McStas: tutorials/refine-lbco-si-mcstas.ipynb
           - BEER McStas: tutorials/calibrate-beer-ess.ipynb

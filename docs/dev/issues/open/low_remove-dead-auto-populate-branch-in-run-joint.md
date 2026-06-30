@@ -16,6 +16,6 @@ the default weight to 1.0).
 
 **TODOs / locations:**
 
-- [analysis.py](src/easydiffraction/analysis/analysis.py#L2761)
+- [analysis.py](../../../../src/easydiffraction/analysis/analysis.py#L2761)
 
 **Depends on:** related to issues 3, 15.

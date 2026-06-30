@@ -5,8 +5,8 @@
 **Type:** Display / Visualization
 
 The 3D structure view
-([builder.py](src/easydiffraction/display/structure/builder.py)) draws
-anisotropic displacement ellipsoids only for the `Bani`/`Uani` ADP
+([builder.py](../../../../src/easydiffraction/display/structure/builder.py))
+draws anisotropic displacement ellipsoids only for the `Bani`/`Uani` ADP
 types. Atoms stored as the dimensionless `beta` tensor currently fall
 through to a plain sphere. Drawing their ellipsoids needs a β→U
 conversion in the renderer (using the reciprocal cell), analogous to the

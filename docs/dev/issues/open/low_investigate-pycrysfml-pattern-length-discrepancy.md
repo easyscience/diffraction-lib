@@ -10,7 +10,7 @@ epsilon workaround appears in the dict builder.
 
 **TODOs:**
 
-- [crysfml.py](src/easydiffraction/analysis/calculators/crysfml.py#L124)
-- [crysfml.py](src/easydiffraction/analysis/calculators/crysfml.py#L253)
+- [crysfml.py](../../../../src/easydiffraction/analysis/calculators/crysfml.py#L124)
+- [crysfml.py](../../../../src/easydiffraction/analysis/calculators/crysfml.py#L253)
 
 **Depends on:** nothing.

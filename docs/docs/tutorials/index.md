@@ -31,6 +31,9 @@ The tutorials are organized into the following categories:
   the La0.5Ba0.5CoO3 crystal structure can be performed when both the
   structure and experiment are loaded from CIF files. Data collected
   from constant wavelength neutron powder diffraction at HRPT at PSI.
+- [LBCO resume](load-and-fit-lbco-hrpt.ipynb) – The most minimal example
+  showing how to load a previously saved LBCO project from a directory
+  and continue working with it.
 - [LBCO `complete`](refine-lbco-hrpt-report.ipynb) – Demonstrates the
   use of the EasyDiffraction API in a simplified, user-friendly manner
   that closely follows the GUI workflow for a Rietveld refinement of the
@@ -39,21 +42,6 @@ The tutorials are organized into the following categories:
   full explanation of the workflow with detailed comments and
   descriptions of every step, making it suitable for users who are new
   to EasyDiffraction or those who prefer a more guided approach.
-
-## Load Project
-
-- [LBCO Single Fit](load-and-fit-lbco-hrpt.ipynb) – The most minimal
-  example showing how to load a previously saved project from a
-  directory and continue working with it.
-- [Co2SiO4 Sequential Fit](refine-cosio-d20-tscan-resumed.ipynb) –
-  Resumes a sequential refinement from an existing
-  `analysis/results.csv` after an incomplete previous run.
-
-See also under [Bayesian Analysis](#bayesian-analysis):
-[LBCO Bayesian Resume (`bumps-dream`)](bayesian-dream-resume-lbco-hrpt.ipynb)
-and
-[LBCO Bayesian Resume (`emcee`)](bayesian-emcee-resume-lbco-hrpt.ipynb)
-— both load saved projects containing Bayesian fit state.
 
 ## Powder Diffraction
 
@@ -120,6 +108,9 @@ and
 - [Co2SiO4 Temperature scan](refine-cosio-d20-tscan.ipynb) – Sequential
   Rietveld refinement of Co2SiO4 using constant wavelength neutron
   powder diffraction data from D20 at ILL across a temperature scan.
+- [Co2SiO4 T-scan Resume](refine-cosio-d20-tscan-resumed.ipynb) –
+  Resumes a 213-file Co2SiO4 sequential refinement from an existing
+  `analysis/results.csv` with 210 completed rows.
 
 ## Simulated Data
 

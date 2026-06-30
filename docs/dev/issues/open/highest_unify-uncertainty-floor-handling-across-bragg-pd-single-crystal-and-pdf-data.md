@@ -25,11 +25,11 @@ non-positive values at the boundary.
 
 **TODOs / locations:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L648)
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L673)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L324)
-- [bragg_sc.py](src/easydiffraction/datablocks/experiment/categories/refln/bragg_sc.py#L466)
-- [fitting.py](src/easydiffraction/analysis/fitting.py#L449)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L648)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L673)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L324)
+- [bragg_sc.py](../../../../src/easydiffraction/datablocks/experiment/categories/refln/bragg_sc.py#L466)
+- [fitting.py](../../../../src/easydiffraction/analysis/fitting.py#L449)
 
 **Depends on:** supersedes the narrower issue 27 (Bragg PD zero
 uncertainty). Related to issue 15 (joint-fit weights).

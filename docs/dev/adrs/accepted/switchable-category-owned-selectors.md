@@ -164,7 +164,7 @@ single-purpose blocks aligned with the new `_<cat>.type` rule.
 
 `_minimizer.optimizer_name` and `_minimizer.method_name` are also
 **dropped**. Inspecting
-[`src/easydiffraction/analysis/minimizers/lmfit_leastsq.py`](../../../src/easydiffraction/analysis/minimizers/lmfit_leastsq.py)
+[`src/easydiffraction/analysis/minimizers/lmfit_leastsq.py`](../../../../src/easydiffraction/analysis/minimizers/lmfit_leastsq.py)
 (and the matching `bumps_lm.py`, `dfols.py`, …) shows that `name`
 defaults to the enum tag itself and `method` to a per-engine
 module-level constant. The public API never overrides them at
@@ -370,7 +370,7 @@ class PeakBase(CategoryItem, SwitchableCategoryBase):
 Categories that want to show aliases alongside canonical tags (peak)
 override `show_supported()` to add a third column; the per-category
 override pattern is the same as the existing
-[`base.show_peak_profile_types()`](../../../src/easydiffraction/datablocks/experiment/item/base.py)
+[`base.show_peak_profile_types()`](../../../../src/easydiffraction/datablocks/experiment/item/base.py)
 implementation, just moved onto the category.
 
 `type` is backed by a **real `StringDescriptor`** named `_type` that
@@ -382,12 +382,12 @@ the staleness checks.
 
 For `CategoryItem` substrates (minimizer, peak, extinction, calculator,
 chart, table, fitting_mode) the generic CIF emit/read path
-[`io/cif/serialize.py:170`](../../../src/easydiffraction/io/cif/serialize.py)
+[`io/cif/serialize.py:170`](../../../../src/easydiffraction/io/cif/serialize.py)
 picks the descriptor up by name automatically — no custom hook is
 needed. For the `CategoryCollection` substrate (background only),
-[`category.py:230`](../../../src/easydiffraction/core/category.py)'s
+[`category.py:230`](../../../../src/easydiffraction/core/category.py)'s
 `parameters` returns only loop-item parameters and
-[`io/cif/serialize.py:244`](../../../src/easydiffraction/io/cif/serialize.py)
+[`io/cif/serialize.py:244`](../../../../src/easydiffraction/io/cif/serialize.py)
 writes only the loop, so a collection-level `_type` descriptor needs a
 small additional path: the writer emits the scalar tag above the loop,
 and the reader peeks the scalar before iterating items. This is a
@@ -451,8 +451,8 @@ class ExperimentBase:
 ```
 
 The existing owner-level `show_<cat>_types()` methods
-([`bragg_pd.show_background_types()`](../../../src/easydiffraction/datablocks/experiment/item/bragg_pd.py),
-[`base.show_peak_profile_types()`](../../../src/easydiffraction/datablocks/experiment/item/base.py),
+([`bragg_pd.show_background_types()`](../../../../src/easydiffraction/datablocks/experiment/item/bragg_pd.py),
+[`base.show_peak_profile_types()`](../../../../src/easydiffraction/datablocks/experiment/item/base.py),
 `Calculation.show_calculator_types()`,
 `Analysis.show_supported_minimizer_types()`, …) are **deleted**. The
 mixin's `show_supported()` reproduces the same `['*', tag, description]`
@@ -722,7 +722,7 @@ Notes on the in-scope rows:
   renamed `calculator_type` → `type`, and the CIF block changes from
   `_calculation.*` to `_calculator.*`. The setter delegation pattern is
   already in place today
-  ([`calculation/default.py:61`](../../../src/easydiffraction/datablocks/experiment/categories/calculation/default.py)),
+  ([`calculator/default.py:61`](../../../../src/easydiffraction/datablocks/experiment/categories/calculator/default.py)),
   so no mechanism change is required.
 - Rows 6 and 7 involve §8a's `Rendering` → `Chart` + `Table` split
   (Python category restructure, CIF block split).
@@ -958,7 +958,7 @@ Three things change in this block:
 - `_peak.profile_type` becomes `_peak.type`; the existing
   `_peak.broad_gauss_*` and `_peak.broad_lorentz_*` parameter tags are
   unchanged (the names come from
-  [`src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py`](../../../src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py)).
+  [`src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py`](../../../../src/easydiffraction/datablocks/experiment/categories/peak/cwl_mixins.py)).
   The CIF value is the **canonical tag** (`cwl-pseudo-voigt` here, since
   the example experiment is constant-wavelength); the writable Python
   setter `experiment.peak.type` accepts the alias `'pseudo-voigt'` too
