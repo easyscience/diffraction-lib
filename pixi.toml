@@ -5,7 +5,13 @@
 [workspace]
 
 # Supported platforms for the lock file (pixi.lock)
-platforms = ['win-64', 'linux-64', 'osx-arm64']
+platforms = [
+  'win-64',
+  # Use glibc 2.35+ wheels for packages such as `crysfml`.
+  { platform = 'linux-64', glibc = '2.35' },
+  # Use macOS 14.0+ wheels for packages such as `scipp`.
+  { platform = 'osx-arm64', macos = '14.0' },
+]
 
 # Channels for fetching packages
 channels = ['nodefaults', 'conda-forge']
@@ -18,18 +24,6 @@ channels = ['nodefaults', 'conda-forge']
 
 [activation.env]
 PYTHONIOENCODING = 'utf-8'
-
-[system-requirements]
-# Set minimum supported version for macOS to be 14.0 to ensure packages
-# like `scipp` that only have wheels for macOS 14.0+ (macosx_14_0_arm64)
-# are used instead of building from source. This is a workaround for
-# Pixi, see https://github.com/prefix-dev/pixi/issues/5667
-macos = '14.0'
-# Set minimum supported version for glibc to be 2.35 to ensure packages
-# like `crysfml` that only have wheels for glibc 2.35+
-# (manylinux_2_35_x86_64) are used.
-#libc = { family = 'glibc', version = '2.35' }
-libc = '2.35'
 
 # Non-default features:
 
@@ -57,7 +51,7 @@ lychee = '*'      # Link checker for documentation
 [feature.dev.pypi-dependencies]
 pip = '*'
 #pycrysfml = { version = ">=0.4.0", index = "https://easyscience.github.io/pypi/" }
-#cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "hotfix-3-cutoff-performance" }
+cryspy = { git = "https://github.com/ikibalin/cryspy.git", branch = "fix-tof-lorentz-half-angle" }
 easydiffraction = { path = '.', editable = true, extras = ['dev'] }
 
 # User-like behavior for testing with pip-installed dependencies instead

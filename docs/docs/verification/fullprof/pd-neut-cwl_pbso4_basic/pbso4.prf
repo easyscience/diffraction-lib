@@ -3160,12 +3160,12 @@ X Modify mode(excl2)=7, hbFill(excl2)=4
 X Modify rgb(excl2)=(6421,62320,64794)
 X Append tik1 vs Phase1
 X Modify mode(tik1)=1
-X TextBox /F=2/S=3/A=RT "Files: pbso4\rDate of fit: \Z09 09/06/2026/ 12:49:24.2\Z12\rPbSO4\rChi2 =    4.72"
+X TextBox /F=2/S=3/A=RT "Files: pbso4\rDate of fit: \Z09 01/07/2026/ 21:01:05.9\Z12\rPbSO4\rChi2 =    4.72"
 X Label left "\Z14Intensity"
 X Label bottom "\Z142-Theta (in degrees)"
 X TileWindows/O=1/C
 X ShowInfo
 X | Title of data set:  PbSO4 D1A(ILL),Rietveld Round Robin, R.J. Hill,JApC 25,589(1992)
-X | Date of run: 09/06/2026 / 12:49:24.2
+X | Date of run: 01/07/2026 / 21:01:05.9
 X Beep
 X Beep

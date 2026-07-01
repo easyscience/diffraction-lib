@@ -17,7 +17,7 @@ COMM  Backscattering Bank (2theta= 144.845)  Si- Argonne
     29999.00    40000.00
 ! 
 !
-       2    !Number of refined parameters
+       0    !Number of refined parameters
 !
 !    Zero       Code      Dtt1      Code       Dtt2     Code  Dtt_1overd    Code  2ThetaBank  -> Patt#  1
     -8.56733   0.00  7476.91016    0.00    -1.54000    0.00     0.00000    0.00   144.845
@@ -40,11 +40,11 @@ Standard-Si
 !
 F d -3 m                 <--Space group symbol
 !Atom   Typ       X        Y        Z     Biso       Occ     In Fin N_t Spc /Codes
-Si     SI      0.12500  0.12500  0.12500  0.54095   1.00000   0   0   0    0  # color green conn Si Si 0 2.5
+Si     SI      0.12500  0.12500  0.12500  0.54095   0.04167   0   0   0    0  # color green conn Si Si 0 2.5
                   0.00     0.00     0.00     0.00      0.00
 !-------> Profile Parameters for Pattern #   1  ----> Phase #   1
 !  Scale          Extinc       Bov      Str1      Str2      Str3    Strain-Mode
- 0.6620058        0.0000    0.0000    0.0000    0.0000    0.0000         0
+  381.3153        0.0000    0.0000    0.0000    0.0000    0.0000         0
       0.00000      0.00      0.00      0.00      0.00      0.00
 !      Sigma-2       Sigma-1       Sigma-0       Sigma-Q   Iso-GStrain     Iso-GSize     Ani-LSize   Size-Model
         0.0000       29.6492        5.0790        0.0000        0.0000        0.0000        0.0000       0

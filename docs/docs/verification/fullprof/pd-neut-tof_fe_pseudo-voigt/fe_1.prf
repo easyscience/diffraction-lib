@@ -3043,12 +3043,12 @@ X Modify mode(excl2)=7, hbFill(excl2)=4
 X Modify rgb(excl2)=(6421,62320,64794)
 X Append tik1 vs Phase1
 X Modify mode(tik1)=1
-X TextBox /F=2/S=3/A=RT "Files: fe\rDate of fit: \Z09 19/06/2026/ 08:52:18.4\Z12\rferrite\rChi2 = 1426.65"
+X TextBox /F=2/S=3/A=RT "Files: fe\rDate of fit: \Z09 01/07/2026/ 21:01:08.9\Z12\rferrite\rChi2 = 1426.65"
 X Label left "\Z14Intensity"
 X Label bottom "\Z14 TOF(in micro-seconds)"
 X TileWindows/O=1/C
 X ShowInfo
 X | Title of data set: Fe ferrite high-resolution on BEER
-X | Date of run: 19/06/2026 / 08:52:18.4
+X | Date of run: 01/07/2026 / 21:01:08.9
 X Beep
 X Beep

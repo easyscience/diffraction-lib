@@ -129,7 +129,7 @@ structure.show_as_text()
 # %%
 FULLPROF_PROJECT_DIR = 'sc-neut-cwl_pr2nio4_basic'
 FULLPROF_OUT_FILE = 'prnio.out'
-FULLPROF_SCALE = 0.06298  # FullProf Scale
+FULLPROF_SCALE = 4.031  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.8302  # FullProf Lambda
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)

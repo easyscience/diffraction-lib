@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 10/06/2026  Time: 11:15:11.405                              
+    Date: 01/07/2026  Time: 21:31:54.824                              
 
  => PCR file code: tmpl_one_bank
  => DAT file code: 55025-5_6raw.gss     -> Relative contribution: 1.0000                                                            
@@ -48,12 +48,12 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- Ca1     0.46610(   0)  0.00000(   0)  0.25000(   0)  0.887(  0)  1.500(  0)   12
- Al1     0.25163(   0)  0.25163(   0)  0.25163(   0)  0.652(  0)  1.000(  0)    8
- Na1     0.08472(   0)  0.08472(   0)  0.08472(   0)  1.892(  0)  1.000(  0)    8
- F1      0.13748(   0)  0.30533(   0)  0.11947(   0)  0.895(  0)  3.000(  0)   24
- F2      0.36263(   0)  0.36333(   0)  0.18669(   0)  1.272(  0)  3.000(  0)   24
- F3      0.46120(   0)  0.46120(   0)  0.46120(   0)  0.780(  0)  1.000(  0)    8
+ Ca1     0.46610(   0)  0.00000(   0)  0.25000(   0)  0.887(  0)  0.500(  0)   12
+ Al1     0.25163(   0)  0.25163(   0)  0.25163(   0)  0.652(  0)  0.333(  0)    8
+ Na1     0.08472(   0)  0.08472(   0)  0.08472(   0)  1.892(  0)  0.333(  0)    8
+ F1      0.13748(   0)  0.30533(   0)  0.11947(   0)  0.895(  0)  1.000(  0)   24
+ F2      0.36263(   0)  0.36333(   0)  0.18669(   0)  1.272(  0)  1.000(  0)   24
+ F3      0.46120(   0)  0.46120(   0)  0.46120(   0)  0.780(  0)  0.333(  0)    8
 
  ==> PROFILE PARAMETERS FOR PATTERN#  1
 
@@ -66,7 +66,7 @@
                              90.00000   0.00000
  
 
- => Overall scale factor       :      4.019303799     0.000000000
+ => Overall scale factor       :     36.173740387     0.000000000
  => T.O.F. Extinction parameter:     0.000000    0.000000
  => Overall temperature  factor:     0.000000    0.000000
  => T.O.F. Gaussian variances Sig-2, Sig-1, Sig-0: 
@@ -131,7 +131,7 @@
  => Rp:  17.7     Rwp:  12.5     Rexp:    3.21 Chi2:  15.2    
  => Deviance:  0.338E+05     Dev*  :   8.929    
  => DW-Stat.:    0.3495     DW-exp:     1.8991
- => N-sigma of the GoF:      620.211
+ => N-sigma of the GoF:      620.207
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
@@ -142,7 +142,7 @@
  => Rp:  17.5     Rwp:  12.5     Rexp:    3.14 Chi2:  15.9    
  => Deviance:  0.336E+05     Dev*  :   9.232    
  => DW-Stat.:    0.3501     DW-exp:     1.8970
- => N-sigma of the GoF:      633.890
+ => N-sigma of the GoF:      633.887
 
  => Global user-weigthed Chi2 (Bragg contrib.):   15.9    
 
@@ -152,10 +152,10 @@
 
  => Phase:  1     Y5Al3O12 Nuclear
  => Bragg R-factor:   3.99       Vol: 1076.971( 0.000)  Fract(%):  100.00( 0.00)
- => Rf-factor=  19.6             ATZ:       17501.770   Brindley:  1.0000
+ => Rf-factor=  19.6             ATZ:        1944.635   Brindley:  1.0000
 
  
-              CPU Time:     0.281 seconds
-                            0.005 minutes
+              CPU Time:     0.203 seconds
+                            0.003 minutes
 
- => Run finished at:     Date: 10/06/2026  Time: 11:15:11.690                              
+ => Run finished at:     Date: 01/07/2026  Time: 21:31:55.027                              

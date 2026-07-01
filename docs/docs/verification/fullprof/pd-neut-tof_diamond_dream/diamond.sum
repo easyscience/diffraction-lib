@@ -8,7 +8,7 @@
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 24/06/2026  Time: 12:52:10.863                              
+    Date: 01/07/2026  Time: 21:31:54.626                              
 
  => PCR file code: diamond
  => DAT file code: diamond              -> Relative contribution: 1.0000                                                            
@@ -30,12 +30,12 @@
  =>-------> Pattern#  1
  => Crystal Structure Refinement for phase: 1
  => The density (volumic mass) of phase 1 is:    7.032 g/cm3
- => Scor: 4.8708
+ => Scor: 4.8743
 
  ==> RESULTS OF REFINEMENT:
 
 
- => No. of fitted parameters:   15
+ => No. of fitted parameters:    0
 
 
 ------------------------------------------------------------------------------
@@ -48,7 +48,7 @@
  ==> ATOM PARAMETERS:
 
   Name      x     sx       y     sy       z      sz      B   sB   occ. socc.  Mult
- C       0.12500(   0)  0.12500(   0)  0.12500(   0)  0.893( 30)  1.000(  0)   16
+ C       0.12500(   0)  0.12500(   0)  0.12500(   0)  0.893(  0)  0.083(  0)   16
 
  ==> PROFILE PARAMETERS FOR PATTERN#  1
 
@@ -61,13 +61,13 @@
                              90.00000   0.00000
  
 
- => Overall scale factor       :      0.101177976     0.000754629
+ => Overall scale factor       :     14.569629669     0.000000000
  => T.O.F. Extinction parameter:     0.000000    0.000000
  => Overall temperature  factor:     0.000000    0.000000
  => T.O.F. Gaussian variances Sig-2, Sig-1, Sig-0: 
          0.000000    0.000000
-      4887.917969  530.093811
-     46937.718750 1715.570068
+      4887.917969    0.000000
+     46937.718750    0.000000
 
  => T.O.F. Gaussian variance Sig-Q:     0.000000    0.000000
  => T.O.F. Isotropic Gaussian Strain parameter (G-strain):      0.00000     0.00000
@@ -96,7 +96,7 @@
 
  => T.O.F. Peak shape parameter alpha0,beta0,beta1,alphaQ,betaQ: 
         0.000000    0.000000    0.014330
-        0.001266    0.022544    0.002287
+        0.000000    0.022544    0.000000
         0.000000    0.000000    0.000000
         0.000000    0.000000    0.000000
 
@@ -111,55 +111,46 @@
 
 
  => Zero-point:     0.0000    0.0000
- => Background Parameters (linear interpolation)  ==>
-                               -0.228404       0.366523E-01
-                                0.391510       0.314979E-01
-                                0.695746       0.230111E-01
-                                0.569209       0.178506E-01
-                                0.302807       0.961624E-02
-                                0.613633       0.109574E-01
-                                0.737472       0.132017E-01
-                                0.614094       0.389527E-01
 
- => T.O.F.- dtt1       (    TOFo=dtt1*dsp     ):  28385.86      4.50
+ => T.O.F.- dtt1       (    TOFo=dtt1*dsp     ):  28385.86      0.00
  => T.O.F.- dtt2       (TOF=TOFo+dtt2*dsp*dsp ):      0.00      0.00
  => T.O.F.- dtt_1OverD (TOF=TOF+dtt_1overD/dsp):      0.00      0.00
 
  ==> RELIABILITY FACTORS WITH ALL NON-EXCLUDED POINTS FOR PATTERN:  1
 
-  => Cycle:100 => MaxCycle:100
- => N-P+C:  1933
+  => Cycle:  1 => MaxCycle:100
+ => N-P+C:  1948
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  15.6     Rwp:  16.9     Rexp:    3.96 Chi2:  18.1      L.S. refinement
+ => Rp:  15.7     Rwp:  17.0     Rexp:    3.97 Chi2:  18.2      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  22.8     Rwp:  20.6     Rexp:    4.83 Chi2:  18.1    
- => Deviance:   257.         Dev*  :  0.9772E-01
- => DW-Stat.:    0.3186     DW-exp:     1.8745
- => N-sigma of the GoF:      532.760
+ => Rp:  23.0     Rwp:  20.7     Rexp:    4.85 Chi2:  18.2    
+ => Deviance:   247.         Dev*  :  0.9640E-01
+ => DW-Stat.:    0.3165     DW-exp:     1.8590
+ => N-sigma of the GoF:      537.371
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
- => N-P+C:  1933
+ => N-P+C:  1948
  =>  R-factors (not corrected for background) for Pattern:  1
- => Rp:  15.6     Rwp:  16.9     Rexp:    3.96 Chi2:  18.1      L.S. refinement
+ => Rp:  15.7     Rwp:  17.0     Rexp:    3.97 Chi2:  18.2      L.S. refinement
  => Conventional Rietveld R-factors for Pattern:  1
- => Rp:  22.8     Rwp:  20.6     Rexp:    4.83 Chi2:  18.1    
- => Deviance:   257.         Dev*  :  0.9772E-01
- => DW-Stat.:    0.3186     DW-exp:     1.8745
- => N-sigma of the GoF:      532.760
+ => Rp:  23.0     Rwp:  20.7     Rexp:    4.85 Chi2:  18.2    
+ => Deviance:   247.         Dev*  :  0.9640E-01
+ => DW-Stat.:    0.3165     DW-exp:     1.8590
+ => N-sigma of the GoF:      537.371
 
- => Global user-weigthed Chi2 (Bragg contrib.):   18.1    
+ => Global user-weigthed Chi2 (Bragg contrib.):   18.2    
 
      -----------------------------------------------------
      BRAGG R-Factors and weight fractions for Pattern #  1
      -----------------------------------------------------
 
  => Phase:  1     Diamond
- => Bragg R-factor:   16.4       Vol:   45.385( 0.000)  Fract(%):  100.00( 1.05)
- => Rf-factor=  30.6             ATZ:       27673.344   Brindley:  1.0000
+ => Bragg R-factor:   16.6       Vol:   45.385( 0.000)  Fract(%):  100.00( 0.00)
+ => Rf-factor=  34.5             ATZ:         192.161   Brindley:  1.0000
 
  
-              CPU Time:     2.289 seconds
-                            0.038 minutes
+              CPU Time:     0.180 seconds
+                            0.003 minutes
 
- => Run finished at:     Date: 24/06/2026  Time: 12:52:13.144                              
+ => Run finished at:     Date: 01/07/2026  Time: 21:31:54.803                              

@@ -3155,12 +3155,12 @@ X Modify mode(excl2)=7, hbFill(excl2)=4
 X Modify rgb(excl2)=(6421,62320,64794)
 X Append tik1 vs Phase1
 X Modify mode(tik1)=1
-X TextBox /F=2/S=3/A=RT "Files: lbco\rDate of fit: \Z09 09/06/2026/ 12:42:02.4\Z12\rLBCO\rChi2 =    1.29"
+X TextBox /F=2/S=3/A=RT "Files: lbco\rDate of fit: \Z09 01/07/2026/ 21:01:05.3\Z12\rLBCO\rChi2 =    1.29"
 X Label left "\Z14Intensity"
 X Label bottom "\Z142-Theta (in degrees)"
 X TileWindows/O=1/C
 X ShowInfo
 X | Title of data set:  La0.5Ba0.5CoO3
-X | Date of run: 09/06/2026 / 12:42:02.4
+X | Date of run: 01/07/2026 / 21:01:05.3
 X Beep
 X Beep
