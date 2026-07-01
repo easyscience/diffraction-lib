@@ -38,7 +38,9 @@ jobs:
           frozen: false
 
       - name: Init pixi project
-        run: pixi init --platform linux-64 --platform osx-arm64 --platform win-64 easydiffraction
+        run:
+          pixi init --platform linux-64 --platform osx-arm64 --platform win-64
+          easydiffraction
 
       - name: Configure Pixi platforms
         working-directory: easydiffraction
