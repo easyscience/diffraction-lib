@@ -43,3 +43,4 @@ src/easydiffraction/display/plotters/assets/
 .cache
 deps/
 tmp/
+.hypothesis/
