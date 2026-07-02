@@ -77,7 +77,7 @@ structure.show_as_text()
 # %%
 FULLPROF_PROJECT_DIR = 'sc-neut-cwl_tbti_basic'
 FULLPROF_OUT_FILE = 'tbti.out'
-FULLPROF_SCALE = 0.2283  # FullProf Scale
+FULLPROF_SCALE = 3.653  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
 
 f2calc = verify.load_fullprof_sc_f2calc(FULLPROF_PROJECT_DIR, FULLPROF_OUT_FILE)

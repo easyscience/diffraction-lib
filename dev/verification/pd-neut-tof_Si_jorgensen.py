@@ -4,7 +4,7 @@
 # Verifies the Jorgensen back-to-back exponential profile for a silicon
 # time-of-flight powder pattern.
 #
-# **Refinement:** the overall scale only; all other parameters are
+# **Reference:** the FullProf scale and all other parameters are
 # taken from the FullProf reference.
 
 # %%
@@ -53,7 +53,7 @@ FULLPROF_BAC_FILE = 'arg_si.bac'
 FULLPROF_LABEL = verify.fullprof_label(FULLPROF_PROJECT_DIR, FULLPROF_SUM_FILE)
 
 FULLPROF_ZERO = -8.56733  # FullProf Zero
-FULLPROF_SCALE = 0.6620058  # FullProf Scale
+FULLPROF_SCALE = 381.3153  # FullProf Scale
 FULLPROF_TWOTHETA_BANK = 144.845  # FullProf 2ThetaBank
 FULLPROF_DTT1 = 7476.91016  # FullProf Dtt1
 FULLPROF_DTT2 = -1.54  # FullProf Dtt2
@@ -130,39 +130,15 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## Fit edi-cryspy to FullProf
-
-# %%
-experiment.linked_structures['si'].scale.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_cryspy_refined = experiment.data.intensity_calc
-LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='refined')
-
-project.display.pattern_comparison(
-    'si',
-    reference=calc_fullprof,
-    candidate=calc_ed_cryspy_refined,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSPY_REFINED,
-)
-
-# %%
-experiment.linked_structures['si'].scale
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         (
-            f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+            f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_cryspy_refined,
+            calc_ed_cryspy,
         ),
     ],
 )
