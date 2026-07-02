@@ -17,8 +17,8 @@ when numeric parsing fails, mirroring the INTEGER branch.
 
 **TODOs / locations:**
 
-- [serialize.py](src/easydiffraction/io/cif/serialize.py#L1121)
-- [utils.py](src/easydiffraction/utils/utils.py#L1094) — `str_to_ufloat`
-  fallback
+- [serialize.py](../../../../src/easydiffraction/io/cif/serialize.py#L1121)
+- [utils.py](../../../../src/easydiffraction/utils/utils.py#L1094) —
+  `str_to_ufloat` fallback
 
 **Depends on:** related to issue 59 (CIF parse validation).

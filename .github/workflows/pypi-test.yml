@@ -38,30 +38,28 @@ jobs:
           frozen: false
 
       - name: Init pixi project
-        run: pixi init easydiffraction
+        run:
+          pixi init --platform linux-64 --platform osx-arm64 --platform win-64
+          easydiffraction
 
-      - name: Set the minimum system requirements
+      - name: Configure Pixi platforms
         working-directory: easydiffraction
+        shell: bash
         run: |
-          pixi project system-requirements add macos 14.0
-          pixi project system-requirements add glibc 2.35
+          pixi workspace platform edit linux-64 --glibc 2.35 --no-install
+          pixi workspace platform edit osx-arm64 --macos 14.0 --no-install
 
-      - name: Add Python 3.14 from Conda
+      - name: Add Python 3.14
         working-directory: easydiffraction
         run: pixi add "python=3.14"
 
+      # GNU Scientific Library (required by diffpy.pdffit2)
+      # libc++ for macOS (required by diffpy.pdffit2)
       - name: Add other Conda dependencies
         working-directory: easydiffraction
         run: |
           pixi add gsl
           pixi add --platform osx-arm64 libcxx
-
-      #- name: Add pycrysfml calculator from custom PyPI index
-      #  working-directory: easydiffraction
-      #  run: |
-      #    echo '' >> pixi.toml
-      #    echo '[pypi-dependencies]' >> pixi.toml
-      #    echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
 
       - name: Add easydiffraction (with dev dependencies) from PyPI
         working-directory: easydiffraction

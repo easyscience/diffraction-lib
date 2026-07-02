@@ -12,7 +12,7 @@ to explore: a richer creation surface with type-aware convenience
 keywords (`b_iso=`/`u_iso=`/`beta=`) that set `adp_type` automatically,
 and/or CIF-style auto-attachment of the sibling isotropic/anisotropic
 values when `adp_type` is set. This revisits the accepted
-[type-neutral-adp-parameters](docs/dev/adrs/accepted/type-neutral-adp-parameters.md)
+[type-neutral-adp-parameters](../../../../docs/dev/adrs/accepted/type-neutral-adp-parameters.md)
 ADR — which deliberately chose type-neutral storage to keep parameter
 identity stable across switches — so it needs its own ADR + plan and is
 independent of the β-tensor work that surfaced it.

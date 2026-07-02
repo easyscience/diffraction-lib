@@ -15,6 +15,6 @@ public API to "unset" a project path.
 
 **TODOs / locations:**
 
-- [\_\_main\_\_.py](src/easydiffraction/__main__.py#L266)
+- [\_\_main\_\_.py](../../../../src/easydiffraction/__main__.py#L266)
 
 **Depends on:** nothing.

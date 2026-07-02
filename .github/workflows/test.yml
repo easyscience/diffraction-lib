@@ -228,17 +228,19 @@ jobs:
             echo "🔹🔸🔹🔸🔹 Python: $py_ver 🔹🔸🔹🔸🔹"
 
             echo "Initializing pixi project"
-            pixi init easydiffraction_py$py_ver
+            pixi init --platform linux-64 --platform osx-arm64 --platform win-64 easydiffraction_py$py_ver
             cd easydiffraction_py$py_ver
 
-            echo "Setting the minimum system requirements"
-            pixi project system-requirements add macos 14.0
-            pixi project system-requirements add glibc 2.35
+            echo "Configure Pixi platforms"
+            pixi workspace platform edit linux-64 --glibc 2.35 --no-install
+            pixi workspace platform edit osx-arm64 --macos 14.0 --no-install
 
-            echo "Adding Python $py_ver"
+            echo "Add Python $py_ver"
             pixi add "python=$py_ver"
 
-            echo "Adding GNU Scientific Library (required by diffpy.pdffit2)"
+            # Add other Conda dependencies
+            
+            echo "Add GNU Scientific Library (required by diffpy.pdffit2)"
             pixi add gsl
 
             # diffpy.pdffit2 wheel links @rpath/libc++.1.dylib, which must be
@@ -247,14 +249,6 @@ jobs:
             # platform-specific deps so this is a no-op on Linux/Windows.
             echo "Adding libc++ for macOS (required by diffpy.pdffit2)"
             pixi add --platform osx-arm64 libcxx
-
-            # Doing this in a hacky way, as pixi does not support adding 
-            # dependencies from a custom PyPI index with a CLI command without
-            # specifying full wheel name.
-            #echo "Adding pycrysfml from custom PyPI index"
-            #echo '' >> pixi.toml
-            #echo '[pypi-dependencies]' >> pixi.toml
-            #echo 'pycrysfml = { version = ">=0.2.1", index = "https://easyscience.github.io/pypi/" }' >> pixi.toml
 
             echo "Looking for wheel in ../dist/py$py_ver/"
             ls -l "../dist/py$py_ver/"
@@ -267,7 +261,7 @@ jobs:
 
             whl_abs_path="$(python -c 'import os,sys; print(os.path.abspath(sys.argv[1]))' "${whl_path[0]}")"
 
-            echo "Adding easydiffraction from: $whl_abs_path"
+            echo "Add easydiffraction from: $whl_abs_path"
             pixi add --pypi "easydiffraction[dev] @ ${whl_abs_path}"
 
             echo "Exiting pixi project directory"

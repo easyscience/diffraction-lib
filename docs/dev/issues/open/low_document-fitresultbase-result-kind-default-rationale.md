@@ -13,7 +13,7 @@ documented in code.
 
 **TODOs:**
 
-- [base.py](src/easydiffraction/analysis/categories/fit_result/base.py#L44)
+- [base.py](../../../../src/easydiffraction/analysis/categories/fit_result/base.py#L44)
 
 **Fix:** add a short code comment near the `result_kind` descriptor
 explaining why it keeps a concrete default while unknown result values

@@ -10,18 +10,18 @@ could live in the base `DatablockCollection`.
 
 **TODOs:**
 
-- [collection.py](src/easydiffraction/datablocks/experiment/collection.py#L29)
+- [collection.py](../../../../src/easydiffraction/datablocks/experiment/collection.py#L29)
   — `Make abstract in DatablockCollection?`
-- [collection.py](src/easydiffraction/datablocks/experiment/collection.py#L65)
+- [collection.py](../../../../src/easydiffraction/datablocks/experiment/collection.py#L65)
   — `Move to DatablockCollection?`
-- [collection.py](src/easydiffraction/datablocks/experiment/collection.py#L82)
-- [collection.py](src/easydiffraction/datablocks/experiment/collection.py#L145)
-- [collection.py](src/easydiffraction/datablocks/experiment/collection.py#L151)
-- [collection.py](src/easydiffraction/datablocks/structure/collection.py#L30)
-- [collection.py](src/easydiffraction/datablocks/structure/collection.py#L48)
-- [collection.py](src/easydiffraction/datablocks/structure/collection.py#L65)
-- [collection.py](src/easydiffraction/datablocks/structure/collection.py#L82)
-- [collection.py](src/easydiffraction/datablocks/structure/collection.py#L88)
+- [collection.py](../../../../src/easydiffraction/datablocks/experiment/collection.py#L82)
+- [collection.py](../../../../src/easydiffraction/datablocks/experiment/collection.py#L145)
+- [collection.py](../../../../src/easydiffraction/datablocks/experiment/collection.py#L151)
+- [collection.py](../../../../src/easydiffraction/datablocks/structure/collection.py#L30)
+- [collection.py](../../../../src/easydiffraction/datablocks/structure/collection.py#L48)
+- [collection.py](../../../../src/easydiffraction/datablocks/structure/collection.py#L65)
+- [collection.py](../../../../src/easydiffraction/datablocks/structure/collection.py#L82)
+- [collection.py](../../../../src/easydiffraction/datablocks/structure/collection.py#L88)
 
 **Depends on:** nothing.
 

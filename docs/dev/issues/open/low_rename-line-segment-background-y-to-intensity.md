@@ -8,7 +8,7 @@
 
 **TODOs:**
 
-- [line_segment.py](src/easydiffraction/datablocks/experiment/categories/background/line_segment.py#L67)
-- [line_segment.py](src/easydiffraction/datablocks/experiment/categories/background/line_segment.py#L72)
+- [line_segment.py](../../../../src/easydiffraction/datablocks/experiment/categories/background/line_segment.py#L67)
+- [line_segment.py](../../../../src/easydiffraction/datablocks/experiment/categories/background/line_segment.py#L72)
 
 **Depends on:** nothing.

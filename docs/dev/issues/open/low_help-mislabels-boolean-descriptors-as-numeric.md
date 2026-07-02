@@ -15,6 +15,6 @@ explicitly.
 
 **TODOs / locations:**
 
-- [category.py](src/easydiffraction/core/category.py#L108)
+- [category.py](../../../../src/easydiffraction/core/category.py#L108)
 
 **Depends on:** nothing.

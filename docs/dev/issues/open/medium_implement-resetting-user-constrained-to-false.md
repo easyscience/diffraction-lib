@@ -19,6 +19,6 @@ feature.
 
 **TODOs:**
 
-- [singleton.py](src/easydiffraction/core/singleton.py#L37)
+- [singleton.py](../../../../src/easydiffraction/core/singleton.py#L37)
 
 **Depends on:** nothing.

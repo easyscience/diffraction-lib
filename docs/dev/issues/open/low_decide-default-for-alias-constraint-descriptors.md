@@ -9,7 +9,7 @@
 
 **TODOs:**
 
-- [default.py](src/easydiffraction/analysis/categories/aliases/default.py#L40)
-- [default.py](src/easydiffraction/analysis/categories/constraints/default.py#L33)
+- [default.py](../../../../src/easydiffraction/analysis/categories/aliases/default.py#L40)
+- [default.py](../../../../src/easydiffraction/analysis/categories/constraints/default.py#L33)
 
 **Depends on:** nothing.

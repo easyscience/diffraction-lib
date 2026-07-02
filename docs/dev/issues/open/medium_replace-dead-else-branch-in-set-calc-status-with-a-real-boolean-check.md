@@ -16,7 +16,7 @@ Duplicated verbatim in both data classes.
 
 **TODOs / locations:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L407)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L224)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L407)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/total_pd.py#L224)
 
 **Depends on:** related to issue 30 (make `calc_status` an enum).

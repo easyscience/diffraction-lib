@@ -1130,7 +1130,7 @@ Summary, Software, Refinement, Structures (one subsection per phase),
 Experiments (one subsection per experiment). Tables use `booktabs`
 (`\toprule`/`\midrule`/`\bottomrule`) and `float`'s `[H]` placement;
 math uses inline LaTeX (`$Fd\bar{3}m$`, `\AA`, `$\deg$`). Reference
-example at [`tmp/latex/example.tex`](../../../../tmp/latex/example.tex).
+example at `tmp/latex/example.tex`.
 
 The `iucrjournals.cls` choice has two practical advantages over a bare
 `article`:

@@ -10,6 +10,6 @@ boilerplate.
 
 **TODOs:**
 
-- [enums.py](src/easydiffraction/datablocks/experiment/categories/background/enums.py#L10)
+- [enums.py](../../../../src/easydiffraction/datablocks/experiment/categories/background/enums.py#L10)
 
 **Depends on:** related to issue 9.

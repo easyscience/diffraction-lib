@@ -21,11 +21,11 @@ code is the concrete pre-ADR behaviour it would correct.
 
 **TODOs / locations:**
 
-- [base.py](src/easydiffraction/datablocks/experiment/item/base.py#L687)
+- [base.py](../../../../src/easydiffraction/datablocks/experiment/item/base.py#L687)
   — `_replace_peak_profile` `strict=False` path
-- [base.py](src/easydiffraction/datablocks/experiment/item/base.py#L350)
+- [base.py](../../../../src/easydiffraction/datablocks/experiment/item/base.py#L350)
   — `_swap_calculator`
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L206)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L206)
   — background swap
 
 **Depends on:** the Edi persistence ADR

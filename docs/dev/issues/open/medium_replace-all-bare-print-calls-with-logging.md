@@ -8,9 +8,9 @@ A few bare `print()` calls remain in `src/` (not `console.print()`, not
 commented out, excluding vendored code). All output should go through
 `log` or `console` so that verbosity is controllable. Current offenders:
 
-- [ascii.py](src/easydiffraction/display/plotters/ascii.py#L211)
-- [ascii.py](src/easydiffraction/display/plotters/ascii.py#L354)
-- [display.py](src/easydiffraction/project/display.py#L687)
+- [ascii.py](../../../../src/easydiffraction/display/plotters/ascii.py#L211)
+- [ascii.py](../../../../src/easydiffraction/display/plotters/ascii.py#L354)
+- [display.py](../../../../src/easydiffraction/project/display.py#L687)
 
 Most earlier offenders are already resolved; the remaining calculator
 import prints are commented out and tracked separately under issue 19.

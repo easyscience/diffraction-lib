@@ -6,7 +6,7 @@
 **Recommended:** fold into the emcee-minimizer plan.
 
 `_restore_persisted_fit_state`
-([serialize.py:595-611](../../../src/easydiffraction/io/cif/serialize.py))
+([serialize.py:595-611](../../../../src/easydiffraction/io/cif/serialize.py))
 calls `FitResultKindEnum(result_kind_value)` purely for the warning side
 effect; the result is discarded. After P1.10 absorbed the
 Bayesian-specific categories there is nothing else to do per

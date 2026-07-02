@@ -17,7 +17,7 @@ explained.
 
 **TODOs / locations:**
 
-- [bumps.py](src/easydiffraction/analysis/minimizers/bumps.py#L433)
-- [bumps.py](src/easydiffraction/analysis/minimizers/bumps.py#L466)
+- [bumps.py](../../../../src/easydiffraction/analysis/minimizers/bumps.py#L433)
+- [bumps.py](../../../../src/easydiffraction/analysis/minimizers/bumps.py#L466)
 
 **Depends on:** nothing.

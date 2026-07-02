@@ -17,8 +17,8 @@ the archived planning notes left two follow-up questions open:
 **TODOs** (paths updated — reflection categories moved from
 `categories/data/refln_pd.py` to `categories/refln/`):
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/refln/bragg_pd.py)
-- [base.py](src/easydiffraction/display/plotters/base.py#L24)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/refln/bragg_pd.py)
+- [base.py](../../../../src/easydiffraction/display/plotters/base.py#L24)
 
 **Note:** the Edi persistence ADR proposes renaming powder
 `refln.phase_id` → `structure_id`

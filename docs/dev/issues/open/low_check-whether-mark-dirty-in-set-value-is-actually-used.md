@@ -9,6 +9,6 @@ a TODO questioning whether this path is exercised.
 
 **TODOs:**
 
-- [variable.py](src/easydiffraction/core/variable.py#L154)
+- [variable.py](../../../../src/easydiffraction/core/variable.py#L154)
 
 **Depends on:** nothing.

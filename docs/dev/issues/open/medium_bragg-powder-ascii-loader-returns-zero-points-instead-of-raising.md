@@ -16,8 +16,8 @@ families.
 
 **TODOs / locations:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/item/bragg_pd.py#L138)
-- [total_pd.py](src/easydiffraction/datablocks/experiment/item/total_pd.py#L85)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/item/bragg_pd.py#L138)
+- [total_pd.py](../../../../src/easydiffraction/datablocks/experiment/item/total_pd.py#L85)
   — the consistent (raising) reference
 
 **Depends on:** related to issue 66 (`log.error` vs `raise` strategy).

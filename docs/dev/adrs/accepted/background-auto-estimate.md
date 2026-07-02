@@ -368,8 +368,9 @@ one-line summary (§1). Empirical calibration was carried out in Phase 2:
 
 - The Stage-2 tolerance multiplier (`c · σ`, `c = 2`) and the width
   percentile (~75th) are first-cut constants; they were validated — not
-  exhaustively swept — against the representative CWL (`ed-2`) and TOF
-  (`ed-13`) datasets plus the analytic unit cases, and produce sensible
+  exhaustively swept — against the representative CWL
+  (`refine-lbco-hrpt-from-data`) and TOF (`fitting-exercise-si-lbco`)
+  datasets plus the analytic unit cases, and produce sensible
   backgrounds there. Re-tuning stays possible if a future dataset needs
   it.
 - The single Stage-1 method (`arpls`) holds for both validated beam
@@ -485,15 +486,16 @@ line-segment points are a real-world reference: stripping them and
 re-running `auto_estimate()` should reproduce a comparable background
 curve. **Phase 2 outcome:** the functional regression validates two
 representative datasets — CWL
-[`ed-2.py`](../../../../docs/docs/tutorials/ed-2.py) and TOF
-[`ed-13.py`](../../../../docs/docs/tutorials/ed-13.py) — comparing the
-estimated curve against the hand-placed reference to within a fraction
-of the measured signal scale; the single `arpls` default and the
-first-cut constants hold for both. Sloping and curved backgrounds are
-covered against exact analytic ground truth by the unit tests, not the
-corpus. A broader per-tutorial sweep (e.g. `ed-17`, `ed-16`) was not
-needed and stays available if a future dataset misbehaves. These checks
-run at the functional / unit level.
+[`refine-lbco-hrpt-from-data.py`](../../../../docs/docs/tutorials/refine-lbco-hrpt-from-data.py)
+and TOF
+[`fitting-exercise-si-lbco.py`](../../../../docs/docs/tutorials/fitting-exercise-si-lbco.py)
+— comparing the estimated curve against the hand-placed reference to
+within a fraction of the measured signal scale; the single `arpls`
+default and the first-cut constants hold for both. Sloping and curved
+backgrounds are covered against exact analytic ground truth by the unit
+tests, not the corpus. A broader per-tutorial sweep (e.g. `ed-17`,
+`ed-16`) was not needed and stays available if a future dataset
+misbehaves. These checks run at the functional / unit level.
 
 The estimator module mirrors into
 `tests/unit/easydiffraction/datablocks/experiment/categories/background/`

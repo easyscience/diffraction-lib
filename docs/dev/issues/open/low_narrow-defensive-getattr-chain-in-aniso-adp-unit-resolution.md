@@ -18,6 +18,6 @@ tolerated cases.
 
 **TODOs / locations:**
 
-- [default.py](src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py#L62)
+- [default.py](../../../../src/easydiffraction/datablocks/structure/categories/atom_site_aniso/default.py#L62)
 
 **Depends on:** nothing.

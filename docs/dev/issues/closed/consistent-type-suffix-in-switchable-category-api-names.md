@@ -1,7 +1,7 @@
 # 76. Consistent `_type` Suffix in Switchable-Category API Names
 
 Closed by
-[`switchable-category-owned-selectors.md`](../adrs/accepted/switchable-category-owned-selectors.md).
+[`switchable-category-owned-selectors.md`](../../adrs/accepted/switchable-category-owned-selectors.md).
 The public suffix is dropped: owners expose categories, categories
 expose a uniform `type` property plus `show_supported()`, and CIF uses
 one `_<cat>.type` selector tag per category.

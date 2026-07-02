@@ -9,9 +9,9 @@ raise `ValueError` or provide better diagnostics.
 
 **TODOs:**
 
-- [crystallography.py](src/easydiffraction/crystallography/crystallography.py#L39)
-- [crystallography.py](src/easydiffraction/crystallography/crystallography.py#L45)
-- [crystallography.py](src/easydiffraction/crystallography/crystallography.py#L84)
+- [crystallography.py](../../../../src/easydiffraction/crystallography/crystallography.py#L39)
+- [crystallography.py](../../../../src/easydiffraction/crystallography/crystallography.py#L45)
+- [crystallography.py](../../../../src/easydiffraction/crystallography/crystallography.py#L84)
 
 **Depends on:** nothing.
 

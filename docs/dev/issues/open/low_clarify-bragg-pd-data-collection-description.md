@@ -9,7 +9,7 @@
 
 **TODOs:**
 
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L482)
-- [bragg_pd.py](src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L304)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L482)
+- [bragg_pd.py](../../../../src/easydiffraction/datablocks/experiment/categories/data/bragg_pd.py#L304)
 
 **Depends on:** nothing.
