@@ -262,8 +262,9 @@ docs-build = { cmd = 'pixi run docs-pre build --strict -f docs/mkdocs.yml', depe
 # Inherits --strict; --no-directory-urls makes the built site browsable
 # from disk (used by `all` so you can inspect it after verifying).
 docs-build-local = 'pixi run docs-build --no-directory-urls'
+docs-inventory-check = 'python -c "from pathlib import Path; p = Path(\"docs/site/objects.inv\"); raise SystemExit(0 if p.is_file() and p.stat().st_size > 0 else \"missing or empty docs/site/objects.inv\")"'
 
-docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type redirect'
+docs-deploy-pre = 'mike deploy -F docs/mkdocs.yml --push --branch gh-pages --update-aliases --alias-type copy'
 docs-set-default-pre = 'mike set-default -F docs/mkdocs.yml --push --branch gh-pages'
 
 docs-update-assets = 'python tools/update_docs_assets.py'

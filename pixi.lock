@@ -8888,6 +8888,7 @@ packages:
   - build ; extra == 'dev'
   - codespell ; extra == 'dev'
   - copier ; extra == 'dev'
+  - docstring-parser-fork!=0.0.15 ; extra == 'dev'
   - docstripy ; extra == 'dev'
   - format-docstring ; extra == 'dev'
   - gitpython ; extra == 'dev'
