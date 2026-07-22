@@ -207,6 +207,7 @@ nav:
       - Introduction: introduction/index.md
   - Features:
       - Features: features/index.md
+      - Expanded catalog: features/expanded-catalog.md
   - Installation & Setup:
       - Installation & Setup: installation-and-setup/index.md
   - User Guide:
