@@ -23,3 +23,18 @@ def test_background_factory_default_and_errors():
         match=r"Unsupported type: 'nonexistent'\. Supported: .*",
     ):
         BackgroundFactory.create('nonexistent')
+
+
+def test_background_factory_includes_chebyshev_for_crysfml():
+    from easydiffraction.datablocks.experiment.categories.background.factory import (
+        BackgroundFactory,
+    )
+    from easydiffraction.datablocks.experiment.item.enums import CalculatorEnum
+
+    tags = [
+        klass.type_info.tag
+        for klass in BackgroundFactory.supported_for(calculator=CalculatorEnum.CRYSFML)
+    ]
+
+    assert 'line-segment' in tags
+    assert 'chebyshev' in tags
