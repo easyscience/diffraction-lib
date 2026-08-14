@@ -19,6 +19,7 @@ from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'lm'
 DEFAULT_MAX_ITERATIONS = 1000
+_COVARIANCE_RELATIVE_STEP = 1e-4
 
 
 class _BumpsEvaluationLimitError(RuntimeError):
@@ -393,7 +394,7 @@ class BumpsMinimizer(MinimizerBase):
             var_names=[p.name for p in bumps_params],
         )
 
-    def _compute_covariance(  # noqa: PLR6301
+    def _compute_covariance(  # ruff: ignore[no-self-use, too-many-locals]
         self,
         bumps_params: list[BumpsParameter],
         fitness: _EasyDiffractionFitness,
@@ -420,22 +421,34 @@ class BumpsMinimizer(MinimizerBase):
         if n_points <= n_params:
             return None, None
 
-        step = np.sqrt(np.finfo(float).eps)
         jacobian = np.empty((n_points, n_params))
         for j in range(n_params):
             orig = bumps_params[j].value
-            h = step * max(abs(orig), 1.0)
-            bumps_params[j].value = orig + h
-            jacobian[:, j] = (fitness.residuals() - r0) / h
-            bumps_params[j].value = orig
+            h = _COVARIANCE_RELATIVE_STEP * max(abs(orig), 1.0)
+            try:
+                bumps_params[j].value = orig + h
+                residuals_upper = fitness.residuals()
+                bumps_params[j].value = orig - h
+                residuals_lower = fitness.residuals()
+            finally:
+                bumps_params[j].value = orig
+            jacobian[:, j] = (residuals_upper - residuals_lower) / (2.0 * h)
 
         chi2_reduced = np.sum(r0**2) / (n_points - n_params)
         try:
-            cov = np.linalg.inv(jacobian.T @ jacobian) * chi2_reduced
+            _u, singular_values, vh = np.linalg.svd(jacobian, full_matrices=False)
         except np.linalg.LinAlgError:
             return None, None
 
-        stderr = np.sqrt(np.abs(np.diag(cov)))
+        tolerance = max(jacobian.shape) * np.finfo(float).eps * singular_values[0]
+        if len(singular_values) < n_params or singular_values[-1] <= tolerance:
+            return None, None
+
+        inverse_squared = 1.0 / singular_values**2
+        cov = (vh.T * inverse_squared) @ vh * chi2_reduced
+        cov = (cov + cov.T) / 2.0
+
+        stderr = np.sqrt(np.clip(np.diag(cov), 0.0, None))
         return cov, stderr
 
     def _sync_result_to_parameters(  # noqa: PLR6301
