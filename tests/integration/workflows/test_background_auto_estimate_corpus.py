@@ -49,20 +49,20 @@ def _assert_tracks_reference(name, data_id, beam_mode, probe, excluded, ref_poin
     for start, end in excluded:
         experiment.excluded_regions.create(start=start, end=end)
 
-    data = experiment.background._parent.data
-    x = np.asarray(data.x, dtype=float)
-    measured = np.asarray(data.intensity_meas, dtype=float)
-    signal_scale = float(np.percentile(measured, 95) - np.percentile(measured, 5))
-
     # The tutorial's hand-placed background is the reference curve.
     for px, py in ref_points:
         experiment.background.create(position=px, intensity=py)
     ref_x = np.array([p.position.value for p in experiment.background])
     ref_y = np.array([p.intensity.value for p in experiment.background])
-    reference = np.interp(x, ref_x, ref_y)
 
     # Strip the reference and estimate the background automatically.
     experiment.background.auto_estimate()
+    # auto_estimate applies pending exclusions; compare on that active grid.
+    data = experiment.background._parent.data
+    x = np.asarray(data.x, dtype=float)
+    measured = np.asarray(data.intensity_meas, dtype=float)
+    signal_scale = float(np.percentile(measured, 95) - np.percentile(measured, 5))
+    reference = np.interp(x, ref_x, ref_y)
     points = list(experiment.background)
     est_x = np.array([p.position.value for p in points])
     est_y = np.array([p.intensity.value for p in points])
