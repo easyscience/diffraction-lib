@@ -263,7 +263,8 @@ nav:
           - LBCO pd emcee Resume: tutorials/bayesian-emcee-resume-lbco-hrpt.ipynb
           - Tb2TiO7 sg bumps-dream: tutorials/bayesian-emcee-tbti-heidi.ipynb
       - Workshops & Schools:
-          - DMSC Summer School: tutorials/fitting-exercise-si-lbco.ipynb
+          - DMSC Summer School - Refinement: tutorials/exercise-refine-si-lbco.ipynb
+          - DMSC Summer School - Bayesian (MCMC): tutorials/exercise-bayesian-si-lbco.ipynb
   - Verification:
       - Verification: verification/index.md
       - Powder, neutron, constant wavelength:

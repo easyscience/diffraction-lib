@@ -47,11 +47,19 @@
     "description": "Instrument calibration for BEER at ESS using time-of-flight neutron powder diffraction data simulated with McStas",
     "level": "intermediate"
   },
-  "fitting-exercise-si-lbco": {
+  "exercise-bayesian-si-lbco": {
+    "order": 30,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/exercise-bayesian-si-lbco/exercise-bayesian-si-lbco.ipynb",
+    "original_name": "",
+    "title": "DMSC Summer School: Bayesian Analysis (MCMC)",
+    "description": "Guided Bayesian analysis of the refined LBCO and Si model, followed by exercises using DREAM sampling to investigate and reduce parameter correlations",
+    "level": "workshop"
+  },
+  "exercise-refine-si-lbco": {
     "order": 29,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/fitting-exercise-si-lbco/fitting-exercise-si-lbco.ipynb",
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/exercise-refine-si-lbco/exercise-refine-si-lbco.ipynb",
     "original_name": "dmsc-summer-school-2025_analysis-powder-diffraction",
-    "title": "DMSC Summer School: Powder Diffraction Analysis",
+    "title": "DMSC Summer School: Powder Diffraction Refinement",
     "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
     "level": "workshop"
   },
