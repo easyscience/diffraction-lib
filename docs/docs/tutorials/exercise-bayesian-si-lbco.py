@@ -35,8 +35,6 @@
 # ## 🛠️ Import Libraries
 
 # %%
-from pathlib import Path
-
 import easydiffraction as edi
 
 # %% [markdown]
@@ -56,10 +54,17 @@ import easydiffraction as edi
 # %% [markdown]
 # ### 📂 Load the Refined Project
 #
-# Rather than rebuilding the experiment and structures, load the project
-# saved at the end of the refinement tutorial. This restores the
+# Rather than rebuilding the experiment and structures, download the
+# project saved at the end of the refinement tutorial. This restores the
 # measured data, both structures, the refined values, and the
 # free-parameter settings.
+#
+# The following cell downloads our pre-generated refined project from
+# the EasyDiffraction repository. This lets you continue even if you did
+# not complete the refinement tutorial or your saved project is missing.
+# The `download_data` function will not overwrite an existing project
+# unless you set `overwrite=True`, so it is safe to run even if the
+# project is already present.
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
@@ -67,25 +72,11 @@ import easydiffraction as edi
 # for more details about loading a saved project.
 
 # %%
-refinement_project_name = 'fitting-exercise-si-lbco-main'
-refinement_project_candidates = (
-    Path('projects') / refinement_project_name,
-    Path('tmp/tutorials/projects') / refinement_project_name,
-    Path('../../../tmp/tutorials/projects') / refinement_project_name,
+refinement_project_dir = edi.download_data(
+    'proj-fitting-exercise-si-lbco-main',
+    destination='projects',
 )
-refinement_project_dir = next(
-    (path for path in refinement_project_candidates if path.is_dir()),
-    None,
-)
-
-if refinement_project_dir is None:
-    msg = (
-        "Saved refinement project not found. Run 'exercise-refine-si-lbco.py' "
-        'before starting this notebook.'
-    )
-    raise FileNotFoundError(msg)
-
-project_1 = edi.Project.load(str(refinement_project_dir))
+project_1 = edi.Project.load(refinement_project_dir)
 
 # %% [markdown]
 # Save a copy under a new name before changing the analysis. This keeps
@@ -121,6 +112,12 @@ project_1.display.pattern(expt_name='sim_lbco')
 # is worth asking which parameters are needed to answer the scientific
 # question.
 #
+# First, display all free parameters in the refined project.
+
+# %%
+project_1.display.parameters.free()
+
+# %% [markdown]
 # The seven line-segment background intensities were refined in the
 # previous tutorial. If we left them free, this analysis would sample 14
 # parameters instead of 7. The larger space would require more model
@@ -305,7 +302,7 @@ project_1.display.fit.results()
 # together, and how strongly?*
 
 # %%
-project_1.display.fit.correlations(max_parameters=5)
+project_1.display.fit.correlations()
 
 # %% [markdown]
 # Compare this chart with the local chart above. Similar coefficients
@@ -335,7 +332,7 @@ project_1.display.fit.correlations(max_parameters=5)
 #   the lower triangle.
 
 # %%
-project_1.display.posterior.pairs(max_parameters=5)
+project_1.display.posterior.pairs()
 
 # %% [markdown]
 # In Jupyter, the default plotting engine resolves to interactive Plotly.
@@ -436,13 +433,13 @@ project_1.save()
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # Use `edi.Project.load()` with `refinement_project_dir`, which was
-# located in the introduction.
+# downloaded in the introduction.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2 = edi.Project.load(str(refinement_project_dir))
+project_2 = edi.Project.load(refinement_project_dir)
 project_2.metadata.title = 'Bayesian Analysis with Fixed broad_gauss_sigma_2'
 project_2.metadata.description = (
     'MCMC analysis of LBCO and Si with one peak-profile parameter fixed.'
@@ -595,6 +592,13 @@ project_2.analysis.fit()
 # parameter automatically guarantee convergence?
 
 # %% [markdown]
+# **Hint:**
+
+# %% [markdown] tags=["dmsc-school-hint"]
+# Use `project_2.display.fit.results()`, then compare the diagnostics
+# with those displayed for `project_1` in the introduction.
+
+# %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
@@ -624,10 +628,10 @@ project_2.display.fit.results()
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.fit.correlations(max_parameters=5)
+project_2.display.fit.correlations()
 
 # %% tags=["solution", "hide-input"]
-project_2.display.posterior.pairs(max_parameters=5)
+project_2.display.posterior.pairs()
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # The original pair is gone because only sampled parameters appear in
@@ -642,6 +646,13 @@ project_2.display.posterior.pairs(max_parameters=5)
 # Plot the marginal posterior for `broad_gauss_sigma_1` from both runs.
 # Compare the medians, shapes, and 95% credible intervals. Why might the
 # second interval be narrower?
+
+# %% [markdown]
+# **Hint:**
+
+# %% [markdown] tags=["dmsc-school-hint"]
+# Call `display.posterior.distribution()` for each project and pass the
+# corresponding `broad_gauss_sigma_1` parameter using `param`.
 
 # %% [markdown]
 # **Solution:**
@@ -669,6 +680,13 @@ project_2.display.posterior.distribution(
 # Plot the same zoomed posterior-predictive region for both analyses.
 # Does fixing `broad_gauss_sigma_2` noticeably change the best curve or
 # uncertainty band?
+
+# %% [markdown]
+# **Hint:**
+
+# %% [markdown] tags=["dmsc-school-hint"]
+# Call `display.posterior.predictive()` for both projects with the same
+# experiment name and the same `x_min` and `x_max` values.
 
 # %% [markdown]
 # **Solution:**
@@ -699,15 +717,22 @@ project_2.display.posterior.predictive(
 # Save the second posterior and its MCMC chain.
 
 # %% [markdown]
+# **Hint:**
+
+# %% [markdown] tags=["dmsc-school-hint"]
+# The project directory was set in Exercise 1, so use `project_2.save()`
+# to update the existing saved project.
+
+# %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
 project_2.save()
 
 # %% [markdown]
-# ## Final Remarks
+# #### Final Remarks
 #
-# In this notebook, you learned how to:
+# In this part of the notebook, you learned how to:
 #
 # - prepare a refined EasyDiffraction project for MCMC;
 # - reduce runtime by fixing nuisance parameters while recognizing the
@@ -725,4 +750,25 @@ project_2.save()
 # examine sensitivity to bounds and fixed values, and reconsider the
 # diffraction model when systematic residuals remain.
 
-# %%
+# %% [markdown]
+# ## 🎁 Bonus
+#
+# Congratulations — you've now completed the diffraction data analysis
+# part of the DMSC Summer School!
+#
+# If you'd like to keep exploring, the EasyDiffraction library offers
+# many additional tutorials and examples on the official documentation
+# site: 👉 https://docs.easydiffraction.org/lib/latest/tutorials
+#
+# Besides the Python package, EasyDiffraction also comes with a
+# graphical user interface (GUI) for deterministic diffraction
+# refinement workflows. Bayesian analysis is not yet available in the
+# GUI, so MCMC workflows currently require the Python library.
+#
+# If you prefer a point-and-click interface over coding, the GUI
+# provides a user-friendly way to perform deterministic refinements. You
+# can download it as a standalone application here: 👉
+# https://easydiffraction.org
+#
+# We'd love to hear your feedback on EasyDiffraction — both the library
+# and the GUI! 💬

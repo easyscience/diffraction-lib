@@ -1513,13 +1513,13 @@ project_2.save_as(dir_path='projects/fitting-exercise-si-lbco-main')
 # site: 👉 https://docs.easydiffraction.org/lib/latest/tutorials
 #
 # Besides the Python package, EasyDiffraction also comes with a
-# graphical user interface (GUI) that lets you perform similar analyses
-# without writing code. To be fair, it's not *quite* feature-complete
-# compared to the Python library yet — but we're working on it! 🚧
+# graphical user interface (GUI) for deterministic diffraction
+# refinement workflows. Bayesian analysis is not yet available in the
+# GUI, so MCMC workflows currently require the Python library.
 #
 # If you prefer a point-and-click interface over coding, the GUI
-# provides a user-friendly way to analyze diffraction data. You can
-# download it as a standalone application here: 👉
+# provides a user-friendly way to perform deterministic refinements. You
+# can download it as a standalone application here: 👉
 # https://easydiffraction.org
 #
 # We'd love to hear your feedback on EasyDiffraction — both the library
