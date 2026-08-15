@@ -196,8 +196,11 @@ project.display.structure(struct_name='tbti')
 
 # %% [markdown]
 # ## 📊 Report
+#
+# PDF generation can be enabled locally by uncommenting the line below,
+# but it requires Tectonic and may download a TeX bundle, so it is
+# disabled to keep this tutorial reproducible offline.
 
 # %%
-# Enable PDF report generation before the last save (time consuming)
-project.report.pdf = True
+# project.report.pdf = True
 project.save()
