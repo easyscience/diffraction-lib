@@ -680,17 +680,16 @@ project.display.structure(struct_name='lbco')
 #
 # This final section shows how to review the results of the analysis.
 #
-# By default, HTML report is generated after fitting. Here we also
-# show how to activate generation of CIF, TEX and PDF reports with
-# regular project saves.
-# Keep in mind, that PDF report generation requires additional
-# dependencies and is not that fast to be generated after each fit, so
-# use it with caution.
+# By default, HTML report is generated after fitting. Here we also show
+# how to activate generation of CIF and TEX reports with regular project
+# saves. PDF generation can be enabled locally by uncommenting the line
+# below, but it requires Tectonic and may download a TeX bundle, so it is
+# disabled to keep this tutorial reproducible offline.
 # The generated report files will be saved in the `reports` folder of
 # the project directory.
 
 # %%
 project.report.cif = True
 project.report.tex = True
-project.report.pdf = True
+# project.report.pdf = True
 project.save()
