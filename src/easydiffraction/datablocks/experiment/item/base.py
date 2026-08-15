@@ -577,7 +577,7 @@ class ScExperimentBase(ExperimentBase):
 
     @property
     def x_descriptor(self) -> NumericDescriptor | None:
-        """Return None because single-crystal data has no 1-D x axis."""
+        """No 1-D x-axis descriptor for single-crystal data."""
         return None
 
     @staticmethod

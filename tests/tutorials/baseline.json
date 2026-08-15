@@ -157,7 +157,7 @@
       "hep7c.cell.length_a": 5.46224,
       "hep7c.cell.length_b": 7.73306,
       "hep7c.cell.length_c": 5.49024,
-      "synchrotron.linked_structure.hep7c.scale": 3.654e-06
+      "synchrotron.linked_structure.hep7c.scale": 3.654e-6
     }
   },
   "refine-hs-hrpt": {

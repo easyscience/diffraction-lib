@@ -35,7 +35,7 @@ class DatablockItem(CategoryOwner):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this object."""
+        """CIF representation of this object."""
         from easydiffraction.io.cif.serialize import datablock_item_to_cif  # noqa: PLC0415
 
         self._update_categories()
@@ -104,7 +104,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections have no unique name."""
+        """Collections have no unique name."""
         return None
 
     @property
@@ -131,7 +131,7 @@ class DatablockCollection(CollectionBase):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this object."""
+        """CIF representation of this object."""
         from easydiffraction.io.cif.serialize import datablock_collection_to_cif  # noqa: PLC0415
 
         return datablock_collection_to_cif(self)

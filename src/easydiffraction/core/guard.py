@@ -166,13 +166,13 @@ class GuardedBase(ABC):
     @property
     @abstractmethod
     def parameters(self) -> list:
-        """Return a list of parameters (implemented by subclasses)."""
+        """A list of parameters (implemented by subclasses)."""
         raise NotImplementedError
 
     @property
     @abstractmethod
     def as_cif(self) -> str:
-        """Return CIF representation (implemented by subclasses)."""
+        """CIF representation (implemented by subclasses)."""
         raise NotImplementedError
 
     @staticmethod

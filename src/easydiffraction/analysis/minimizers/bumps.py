@@ -101,7 +101,7 @@ class _EasyDiffractionFitness:
 
     @property
     def evaluation_count(self) -> int:
-        """Return the live residual-evaluation count."""
+        """The live residual-evaluation count."""
         return self._evaluation_count
 
     def reset_evaluation_count(self) -> None:
@@ -114,7 +114,7 @@ class _EasyDiffractionFitness:
 
     @property
     def last_residuals(self) -> np.ndarray | None:
-        """Return the last successful residual vector."""
+        """The last successful residual vector."""
         return self._last_residuals
 
     def last_reduced_chi_square(self, *, n_parameters: int) -> float | None:

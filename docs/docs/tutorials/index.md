@@ -57,8 +57,8 @@ The tutorials are organized into the following categories:
 - [PbSO4 `pd-xray-cwl`](refine-pbso4-xray.ipynb) – Demonstrates a
   Rietveld refinement of PbSO4 using laboratory X-ray powder diffraction
   data with a Cu Kalpha doublet.
-- [HEP7C `pd-xray-cwl`](refine-hep7c-synchrotron.ipynb) – Demonstrates
-  a Rietveld refinement of a La-based high-entropy perovskite using
+- [HEP7C `pd-xray-cwl`](refine-hep7c-synchrotron.ipynb) – Demonstrates a
+  Rietveld refinement of a La-based high-entropy perovskite using
   synchrotron X-ray powder diffraction data. The background is estimated
   from the measured pattern and improved after an initial fit.
 - [LMO `pd-neut-cwl`](refine-lmo-echidna.ipynb) – Demonstrates a
@@ -166,9 +166,9 @@ The tutorials are organized into the following categories:
 
 - [DMSC Summer School: Powder Diffraction Refinement](exercise-refine-si-lbco.ipynb)
   – Introduces EasyDiffraction through a guided Si refinement, followed
-  by exercises that apply the same workflow to a two-phase La0.5Ba0.5CoO3
-  and Si model using simulated time-of-flight neutron powder diffraction
-  data.
+  by exercises that apply the same workflow to a two-phase
+  La0.5Ba0.5CoO3 and Si model using simulated time-of-flight neutron
+  powder diffraction data.
 - [DMSC Summer School: Bayesian Analysis (MCMC)](exercise-bayesian-si-lbco.ipynb)
   – Continues the refinement workshop with a guided DREAM analysis of
   the La0.5Ba0.5CoO3 and Si model, followed by exercises that explore

@@ -225,9 +225,9 @@ filterwarnings = [
 # as `Dum` and `HighT`, so they are excluded like vendored files.
 [tool.codespell]
 skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,*/verification/fullprof/*,docs/dev/crysfml-python-api-requests/fullprof/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
-# British spelling and a crystallographic abbreviation (B/U) flagged as
-# typos; element symbols live in skipped vendored files.
-ignore-words-list = 'pre-emptively,bu'
+# British spelling, crystallographic abbreviations, and a cited surname
+# flagged as typos; element symbols live in skipped vendored files.
+ignore-words-list = 'pre-emptively,bu,fo,fom,mattern'
 
 ########################
 # Configuration for ruff
@@ -330,6 +330,8 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Disable, as [tool.format_docstring] split one-line docstrings into the canonical multi-line layout
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
+  # Keep noqa compatibility and its established statement-level suppression semantics.
+  'RUF105', # https://docs.astral.sh/ruff/rules/noqa-comments/
 ]
 
 # Ignore specific rules in certain files or directories

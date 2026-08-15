@@ -44,5 +44,5 @@ class Verbosity(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this verbosity category."""
+        """CIF representation of this verbosity category."""
         return super().as_cif

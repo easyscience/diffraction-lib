@@ -271,7 +271,7 @@ class GenericDescriptorBase(GuardedBase):
     @property
     def parameters(self) -> list[GenericDescriptorBase]:
         """
-        Return a flat list of parameters contained by this object.
+        A flat list of parameters contained by this object.
 
         For a single descriptor, it returns a one-element list with
         itself. Composite objects override this to flatten nested
@@ -485,7 +485,7 @@ class GenericParameter(GenericNumericDescriptor):
     @property
     def symmetry_constrained(self) -> bool:
         """
-        Return whether symmetry constrains this parameter.
+        Whether symmetry constrains this parameter.
         """
         return self._symmetry_constrained
 
@@ -723,7 +723,7 @@ class EnumDescriptor(StringDescriptor):
 
     @property
     def enum(self) -> type[StrEnum]:
-        """Return the ``(str, Enum)`` class backing this selector."""
+        """The ``(str, Enum)`` class backing this selector."""
         return self._enum
 
     def show_supported(self) -> None:
