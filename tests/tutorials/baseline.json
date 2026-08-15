@@ -147,6 +147,19 @@
       "d20.linked_structure.cosio.scale": 1.331
     }
   },
+  "refine-hep7c-synchrotron": {
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "reduced_chi_square": 0.16212,
+    "r_factor_all": 0.010129,
+    "wr_factor_all": 0.015153,
+    "parameters": {
+      "hep7c.cell.length_a": 5.46224,
+      "hep7c.cell.length_b": 7.73306,
+      "hep7c.cell.length_c": 5.49024,
+      "synchrotron.linked_structure.hep7c.scale": 3.654e-06
+    }
+  },
   "refine-hs-hrpt": {
     "result_kind": "deterministic",
     "rtol": 0.02,

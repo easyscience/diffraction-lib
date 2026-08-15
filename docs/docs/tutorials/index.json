@@ -238,5 +238,13 @@
     "title": "Calculation Without Data: NaCl, X-ray",
     "description": "Calculate and plot an X-ray powder diffraction pattern for NaCl without measured data",
     "level": "quick"
+  },
+  "refine-hep7c-synchrotron": {
+    "order": 31,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hep7c-synchrotron/refine-hep7c-synchrotron.ipynb",
+    "original_name": "hep7c_I_cold",
+    "title": "Structure Refinement: HEP7C, Synchrotron XRD",
+    "description": "Rietveld refinement of a La-based high-entropy perovskite using synchrotron X-ray powder diffraction data, with two-stage automatic background estimation",
+    "level": "intermediate"
   }
 }

@@ -57,6 +57,10 @@ The tutorials are organized into the following categories:
 - [PbSO4 `pd-xray-cwl`](refine-pbso4-xray.ipynb) – Demonstrates a
   Rietveld refinement of PbSO4 using laboratory X-ray powder diffraction
   data with a Cu Kalpha doublet.
+- [HEP7C `pd-xray-cwl`](refine-hep7c-synchrotron.ipynb) – Demonstrates
+  a Rietveld refinement of a La-based high-entropy perovskite using
+  synchrotron X-ray powder diffraction data. The background is estimated
+  from the measured pattern and improved after an initial fit.
 
 ## Without Measured Data
 
