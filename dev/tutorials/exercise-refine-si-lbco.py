@@ -158,7 +158,7 @@ project_1.display.pattern(expt_name='sim_si')
 # and/or reduction process and is currently under investigation.
 # However, this is outside the scope of this school. Therefore, we will
 # simply exclude both the low and high TOF regions from the analysis by
-# adding an excluded regions to the experiment.
+# adding excluded regions to the experiment.
 #
 # In real experiments, it is often necessary to exclude certain regions
 # from the measured data. For example, the direct beam can significantly
@@ -328,7 +328,7 @@ project_1.experiments['sim_si'].peak.rise_alpha_1 = 0.0147
 #
 # The background of the diffraction pattern represents the portion of
 # the pattern that is not related to the crystal structure of the
-# sample. It's rather represents noise and other sources of scattering
+# sample. Instead, it represents noise and other sources of scattering
 # that can affect the measured intensities. This includes contributions
 # from the instrument, the sample holder, the sample environment, and
 # other sources of incoherent scattering.
@@ -889,7 +889,7 @@ project_2.experiments['sim_lbco'].background.create(id='7', position=110000, int
 # %% [markdown]
 # ### 🧩 Exercise 3: Define a Structure – LBCO
 #
-# The LBSO structure is not as simple as the Si one, as it contains
+# The LBCO structure is not as simple as the Si one, as it contains
 # multiple atoms in the unit cell. It is not in COD, so we give you the
 # structural parameters in CIF format to create the structure.
 #
@@ -1241,9 +1241,18 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing')
 # As you can see, the fit is now relatively good and the peak positions
 # are much closer to the measured data.
 #
-# The peak profile parameters were not refined, and their starting
-# values were set based on the previous fit of the Si standard sample.
-# Although these starting values are reasonable and provide a good
+# Peak-profile parameters contain contributions from both the instrument
+# and the sample. They can therefore differ between samples measured on
+# the same instrument.
+#
+# Instrumental resolution is usually determined by measuring a standard
+# sample. Instrument scientists may provide the resulting resolution
+# parameters in a separate file, allowing the sample-dependent
+# contribution to be refined relative to those values.
+#
+# In this example, we instead use the values obtained from the previous
+# Si fit as starting values. Although these values are reasonable and
+# provide a good
 # starting point for the fit, they are not necessarily optimal for the
 # LBCO phase. This can be seen while inspecting the individual peaks in
 # the diffraction pattern. For example, the calculated curve does not
@@ -1253,13 +1262,11 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing')
 project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max=1.40)
 
 # %% [markdown]
-# The peak profile parameters are determined based on both the
-# instrument and the sample characteristics, so they can vary when
-# analyzing different samples on the same instrument. Therefore, it is
-# better to refine them as well.
-#
-# Select the peak profile parameters to be refined during the fitting
-# process.
+# The measured pattern does not contain enough information to refine all
+# peak-profile parameters simultaneously without introducing strong
+# correlations. We will therefore refine four of them:
+# `broad_gauss_sigma_1`, `broad_gauss_sigma_2`, `decay_beta_1`, and
+# `rise_alpha_1`.
 
 # %% [markdown]
 # **Hint:**
@@ -1274,12 +1281,9 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.35, x_max
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_0.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_1.free = True
 project_2.experiments['sim_lbco'].peak.broad_gauss_sigma_2.free = True
-project_2.experiments['sim_lbco'].peak.decay_beta_0.free = True
 project_2.experiments['sim_lbco'].peak.decay_beta_1.free = True
-project_2.experiments['sim_lbco'].peak.rise_alpha_0.free = True
 project_2.experiments['sim_lbco'].peak.rise_alpha_1.free = True
 
 project_2.analysis.fit()
@@ -1369,7 +1373,7 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max
 # because the sample holder was not cleaned properly after the Si
 # experiment.
 #
-# You can visalize both the patterns of the Si and LBCO phases to
+# You can visualize the patterns of both the Si and LBCO phases to
 # confirm this hypothesis.
 
 # %% tags=["solution", "hide-input"]
@@ -1509,13 +1513,13 @@ project_2.save_as(dir_path='projects/fitting-exercise-si-lbco-main')
 # site: 👉 https://docs.easydiffraction.org/lib/latest/tutorials
 #
 # Besides the Python package, EasyDiffraction also comes with a
-# graphical user interface (GUI) that lets you perform similar analyses
-# without writing code. To be fair, it's not *quite* feature-complete
-# compared to the Python library yet — but we're working on it! 🚧
+# graphical user interface (GUI) for deterministic diffraction
+# refinement workflows. Bayesian analysis is not yet available in the
+# GUI, so MCMC workflows currently require the Python library.
 #
 # If you prefer a point-and-click interface over coding, the GUI
-# provides a user-friendly way to analyze diffraction data. You can
-# download it as a standalone application here: 👉
+# provides a user-friendly way to perform deterministic refinements. You
+# can download it as a standalone application here: 👉
 # https://easydiffraction.org
 #
 # We'd love to hear your feedback on EasyDiffraction — both the library

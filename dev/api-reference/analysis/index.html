@@ -21,7 +21,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -29,7 +29,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -1258,6 +1258,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -1397,6 +1401,62 @@
     
   
     PbSO4 pd-xray-cwl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/refine-hep7c-synchrotron/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HEP7C pd-xray-cwl
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/refine-lmo-echidna/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LMO pd-neut-cwl
   
 
     
@@ -2371,6 +2431,8 @@
       
         
       
+        
+      
     
     
     
@@ -2418,14 +2480,42 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/fitting-exercise-si-lbco/" class="md-nav__link">
+      <a href="../../tutorials/exercise-refine-si-lbco/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    DMSC Summer School
+    DMSC Summer School - Refinement
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/exercise-bayesian-si-lbco/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DMSC Summer School - Bayesian (MCMC)
   
 
     
@@ -7259,14 +7349,16 @@ pattern. The backend uses the CFL API exclusively.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end --></summary>
-  <p>The CFL <code>patterns_simulation</code> path only supports a uniform calculation
-grid (<code>GEN_PATT xmin step xmax</code>); the grid is derived from the
-experiment x-axis assuming uniform spacing. Constant-wavelength patterns
-are fully supported. The upstream CFL simulation currently parses but
-does not apply <code>Zero_Sy</code> when placing CW reflections, so the two-theta
-zero is encoded by shifting the calculation grid. Time-of-flight
-patterns parse but return zero intensities, because the upstream CFL
-simulation does not yet implement the TOF branch.</p>
+  <p>The CFL <code>patterns_simulation</code> path receives the experiment's explicit
+x-axis, so irregularly spaced measurements are calculated at their
+actual coordinates. <code>GEN_PATT xmin step xmax</code> remains in the CFL as a
+required pattern descriptor. Constant-wavelength patterns are fully
+supported. The upstream CFL simulation currently parses but does not
+apply <code>Zero_Sy</code> when placing CW reflections, so the zero, SyCos, and
+SySin corrections are applied to the explicit x-axis before it is passed
+to CrysFML. Time-of-flight patterns parse but return zero intensities,
+because the upstream CFL simulation does not yet implement the TOF
+branch.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10487,7 +10579,7 @@ serialization the parameter's <code>unique_name</code> is stored.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -10655,7 +10747,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11044,7 +11136,7 @@ parameter value.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11080,7 +11172,7 @@ parameter value.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11153,7 +11245,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -11203,7 +11295,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13223,7 +13315,7 @@ splitting the expression at the <code>=</code> sign.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13414,7 +13506,7 @@ splitting the expression at the <code>=</code> sign.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13854,7 +13946,7 @@ splitting the expression at the <code>=</code> sign.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13890,7 +13982,7 @@ splitting the expression at the <code>=</code> sign.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -13988,7 +14080,7 @@ splitting the expression at the <code>=</code> sign.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -14038,7 +14130,7 @@ splitting the expression at the <code>=</code> sign.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16137,7 +16229,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16349,7 +16441,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16738,7 +16830,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16774,7 +16866,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16847,7 +16939,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -16897,7 +16989,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -19190,7 +19282,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -19652,7 +19744,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -20094,7 +20186,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -20130,7 +20222,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -20203,7 +20295,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -20253,7 +20345,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -22423,7 +22515,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -22660,7 +22752,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -23178,7 +23270,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -23598,7 +23690,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -25113,7 +25205,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -25758,7 +25850,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -27004,7 +27096,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -27117,7 +27209,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -28589,7 +28681,7 @@ fitted simultaneously.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -28734,7 +28826,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -29123,7 +29215,7 @@ parameter value.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -29159,7 +29251,7 @@ parameter value.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -29232,7 +29324,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -29282,7 +29374,7 @@ parameter value.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -31359,7 +31451,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -31472,7 +31564,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32012,7 +32104,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32307,7 +32399,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32714,7 +32806,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -32846,7 +32938,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -33279,7 +33371,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -33411,7 +33503,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -33844,7 +33936,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -33976,7 +34068,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -34428,7 +34520,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -34704,7 +34796,7 @@ conflict).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -35293,7 +35385,7 @@ conflict).</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -35425,7 +35517,7 @@ conflict).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -35858,7 +35950,7 @@ conflict).</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -35990,7 +36082,7 @@ conflict).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -36442,7 +36534,7 @@ conflict).</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -36714,7 +36806,7 @@ conflict).</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -38262,7 +38354,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -38394,7 +38486,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -38827,7 +38919,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -38959,7 +39051,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -39392,7 +39484,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -39524,7 +39616,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -39976,7 +40068,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -40115,7 +40207,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -40656,7 +40748,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this sequential-fit category.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this sequential-fit category.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -40885,7 +40977,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this sequential-fit category.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this sequential-fit category.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -42424,7 +42516,7 @@ fit input files.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -42615,7 +42707,7 @@ fit input files.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -43004,7 +43096,7 @@ fit input files.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -43040,7 +43132,7 @@ fit input files.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -43113,7 +43205,7 @@ fit input files.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -43163,7 +43255,7 @@ fit input files.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45163,7 +45255,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45353,7 +45445,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45827,7 +45919,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return None; collections have no unique name.</p>
+                <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45863,7 +45955,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+                <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45936,7 +46028,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return None; collections have no unique name.</p>
+        <p>Collections have no unique name.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -45986,7 +46078,7 @@ empty key (<code>frozenset()</code>) acts as a universal fallback.</p>
 
     <div class="doc doc-contents ">
 
-        <p>Return <abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
+        <p><abbr title="Crystallographic Information File.">CIF</abbr> representation of this object.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -62736,7 +62828,7 @@ this call shows only the table and not an echoed return value. Call
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
         <script src="../../assets/javascripts/extra.js"></script>
       

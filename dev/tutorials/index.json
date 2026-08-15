@@ -47,11 +47,19 @@
     "description": "Instrument calibration for BEER at ESS using time-of-flight neutron powder diffraction data simulated with McStas",
     "level": "intermediate"
   },
-  "fitting-exercise-si-lbco": {
+  "exercise-bayesian-si-lbco": {
+    "order": 30,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/exercise-bayesian-si-lbco/exercise-bayesian-si-lbco.ipynb",
+    "original_name": "",
+    "title": "DMSC Summer School: Bayesian Analysis (MCMC)",
+    "description": "Guided Bayesian analysis of the refined LBCO and Si model, followed by exercises using DREAM sampling to investigate and reduce parameter correlations",
+    "level": "workshop"
+  },
+  "exercise-refine-si-lbco": {
     "order": 29,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/fitting-exercise-si-lbco/fitting-exercise-si-lbco.ipynb",
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/exercise-refine-si-lbco/exercise-refine-si-lbco.ipynb",
     "original_name": "dmsc-summer-school-2025_analysis-powder-diffraction",
-    "title": "DMSC Summer School: Powder Diffraction Analysis",
+    "title": "DMSC Summer School: Powder Diffraction Refinement",
     "description": "Comprehensive workshop tutorial covering Rietveld refinement of Si and La0.5Ba0.5CoO3 using simulated powder diffraction data",
     "level": "workshop"
   },
@@ -230,5 +238,21 @@
     "title": "Calculation Without Data: NaCl, X-ray",
     "description": "Calculate and plot an X-ray powder diffraction pattern for NaCl without measured data",
     "level": "quick"
+  },
+  "refine-hep7c-synchrotron": {
+    "order": 31,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hep7c-synchrotron/refine-hep7c-synchrotron.ipynb",
+    "original_name": "hep7c_I_cold",
+    "title": "Structure Refinement: HEP7C, Synchrotron XRD",
+    "description": "Rietveld refinement of a La-based high-entropy perovskite using synchrotron X-ray powder diffraction data, with two-stage automatic background estimation",
+    "level": "intermediate"
+  },
+  "refine-lmo-echidna": {
+    "order": 32,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lmo-echidna/refine-lmo-echidna.ipynb",
+    "original_name": "lmo_fp_cold",
+    "title": "Structure Refinement: LMO, ECHIDNA",
+    "description": "Rietveld refinement of an LMO structure with constrained Li/Ni site mixing using constant wavelength neutron powder diffraction data from ECHIDNA at ANSTO",
+    "level": "intermediate"
   }
 }
