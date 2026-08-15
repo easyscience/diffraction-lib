@@ -218,6 +218,18 @@
       "mcstas.linked_structure.si.scale": 0.0305
     }
   },
+  "refine-lmo-echidna": {
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "reduced_chi_square": 2.407703,
+    "r_factor_all": 0.039371,
+    "wr_factor_all": 0.050195,
+    "parameters": {
+      "lmo.cell.length_a": 2.875254,
+      "lmo.cell.length_c": 14.18372,
+      "echidna.linked_structure.lmo.scale": 15.992
+    }
+  },
   "refine-ncaf-wish": {
     "result_kind": "deterministic",
     "rtol": 0.02,

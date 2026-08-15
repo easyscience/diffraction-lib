@@ -61,6 +61,10 @@ The tutorials are organized into the following categories:
   a Rietveld refinement of a La-based high-entropy perovskite using
   synchrotron X-ray powder diffraction data. The background is estimated
   from the measured pattern and improved after an initial fit.
+- [LMO `pd-neut-cwl`](refine-lmo-echidna.ipynb) – Demonstrates a
+  Rietveld refinement of an LMO structure with constrained Li/Ni site
+  mixing using constant wavelength neutron powder diffraction data from
+  ECHIDNA at ANSTO.
 
 ## Without Measured Data
 

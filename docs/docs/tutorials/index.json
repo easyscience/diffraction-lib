@@ -246,5 +246,13 @@
     "title": "Structure Refinement: HEP7C, Synchrotron XRD",
     "description": "Rietveld refinement of a La-based high-entropy perovskite using synchrotron X-ray powder diffraction data, with two-stage automatic background estimation",
     "level": "intermediate"
+  },
+  "refine-lmo-echidna": {
+    "order": 32,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lmo-echidna/refine-lmo-echidna.ipynb",
+    "original_name": "lmo_fp_cold",
+    "title": "Structure Refinement: LMO, ECHIDNA",
+    "description": "Rietveld refinement of an LMO structure with constrained Li/Ni site mixing using constant wavelength neutron powder diffraction data from ECHIDNA at ANSTO",
+    "level": "intermediate"
   }
 }
