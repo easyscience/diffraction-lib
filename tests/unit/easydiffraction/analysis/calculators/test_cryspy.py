@@ -704,10 +704,10 @@ def test_tof_fast_dict_update_refreshes_size_strain():
     from easydiffraction.datablocks.experiment.categories.peak.tof import TofJorgensenVonDreele
 
     peak = TofJorgensenVonDreele()
-    peak.broad_gauss_size_g = 12.0
-    peak.broad_gauss_strain_g = 3.0
-    peak.broad_lorentz_size_l = 2.0
-    peak.broad_lorentz_strain_l = 1.0
+    peak.broad_gauss_size = 12.0
+    peak.broad_gauss_strain = 3.0
+    peak.broad_lorentz_size = 2.0
+    peak.broad_lorentz_strain = 1.0
 
     cryspy_expt_dict = {
         'profile_gammas': [0.0, 0.0, 0.0],

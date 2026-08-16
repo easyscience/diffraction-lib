@@ -1392,12 +1392,12 @@ def _update_tof_peak_in_cryspy_dict(
     # The CIF/object-recreate path emits these, but the minimizer
     # fast-dict path must refresh them too, otherwise refining them is a
     # silent no-op once the cryspy dict is cached.
-    if hasattr(peak, 'broad_gauss_size_g'):
-        cryspy_expt_dict['profile_size_g'] = peak.broad_gauss_size_g.value
-        cryspy_expt_dict['profile_strain_g'] = peak.broad_gauss_strain_g.value
-    if hasattr(peak, 'broad_lorentz_size_l'):
-        cryspy_expt_dict['profile_size_l'] = peak.broad_lorentz_size_l.value
-        cryspy_expt_dict['profile_strain_l'] = peak.broad_lorentz_strain_l.value
+    if hasattr(peak, 'broad_gauss_size'):
+        cryspy_expt_dict['profile_size_g'] = peak.broad_gauss_size.value
+        cryspy_expt_dict['profile_strain_g'] = peak.broad_gauss_strain.value
+    if hasattr(peak, 'broad_lorentz_size'):
+        cryspy_expt_dict['profile_size_l'] = peak.broad_lorentz_size.value
+        cryspy_expt_dict['profile_strain_l'] = peak.broad_lorentz_strain.value
     # TODO: Need to improve this logic to be more robust and extensible
     #  for future profiles
     if not hasattr(peak, 'decay_beta_0') and not hasattr(peak, 'dexp_decay_beta_00'):
@@ -1462,10 +1462,10 @@ def _cif_peak_section(
             'broad_lorentz_gamma_0': '_tof_profile_gamma0',
             'broad_lorentz_gamma_1': '_tof_profile_gamma1',
             'broad_lorentz_gamma_2': '_tof_profile_gamma2',
-            'broad_gauss_size_g': '_tof_profile_size_g',
-            'broad_gauss_strain_g': '_tof_profile_strain_g',
-            'broad_lorentz_size_l': '_tof_profile_size_l',
-            'broad_lorentz_strain_l': '_tof_profile_strain_l',
+            'broad_gauss_size': '_tof_profile_size_g',
+            'broad_gauss_strain': '_tof_profile_strain_g',
+            'broad_lorentz_size': '_tof_profile_size_l',
+            'broad_lorentz_strain': '_tof_profile_strain_l',
         }
 
         peak_tag = peak.type_info.tag

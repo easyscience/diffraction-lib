@@ -114,10 +114,10 @@ experiment.peak.broad_lorentz_gamma_0 = FULLPROF_GAMMA_0
 experiment.peak.broad_lorentz_gamma_1 = FULLPROF_GAMMA_1 - STRAIN_L
 experiment.peak.broad_lorentz_gamma_2 = FULLPROF_GAMMA_2 - SIZE_L
 # Microstructural size/strain components
-experiment.peak.broad_gauss_size_g = SIZE_G
-experiment.peak.broad_gauss_strain_g = STRAIN_G
-experiment.peak.broad_lorentz_size_l = SIZE_L
-experiment.peak.broad_lorentz_strain_l = STRAIN_L
+experiment.peak.broad_gauss_size = SIZE_G
+experiment.peak.broad_gauss_strain = STRAIN_G
+experiment.peak.broad_lorentz_size = SIZE_L
+experiment.peak.broad_lorentz_strain = STRAIN_L
 experiment.peak.rise_alpha_0 = FULLPROF_ALPHA_0
 experiment.peak.rise_alpha_1 = FULLPROF_ALPHA_1
 experiment.peak.decay_beta_0 = FULLPROF_BETA_0
