@@ -43,7 +43,7 @@ class RendererBase(SingletonBase, ABC):
     @property
     def engine(self) -> str:
         """
-        Return the name of the currently active rendering engine.
+        The name of the currently active rendering engine.
 
         Returns
         -------

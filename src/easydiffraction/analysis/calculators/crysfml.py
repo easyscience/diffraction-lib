@@ -10,14 +10,16 @@ pattern. The backend uses the CFL API exclusively.
 
 Notes
 -----
-The CFL ``patterns_simulation`` path only supports a uniform calculation
-grid (``GEN_PATT xmin step xmax``); the grid is derived from the
-experiment x-axis assuming uniform spacing. Constant-wavelength patterns
-are fully supported. The upstream CFL simulation currently parses but
-does not apply ``Zero_Sy`` when placing CW reflections, so the two-theta
-zero is encoded by shifting the calculation grid. Time-of-flight
-patterns parse but return zero intensities, because the upstream CFL
-simulation does not yet implement the TOF branch.
+The CFL ``patterns_simulation`` path receives the experiment's explicit
+x-axis, so irregularly spaced measurements are calculated at their
+actual coordinates. ``GEN_PATT xmin step xmax`` remains in the CFL as a
+required pattern descriptor. Constant-wavelength patterns are fully
+supported. The upstream CFL simulation currently parses but does not
+apply ``Zero_Sy`` when placing CW reflections, so the zero, SyCos, and
+SySin corrections are applied to the explicit x-axis before it is passed
+to CrysFML. Time-of-flight patterns parse but return zero intensities,
+because the upstream CFL simulation does not yet implement the TOF
+branch.
 """
 
 from __future__ import annotations
@@ -242,10 +244,11 @@ class CrysfmlCalculator(CalculatorBase):
         experiment: ExperimentBase,
     ) -> list[float]:
         """Calculate a Crysfml pattern and match experiment length."""
+        x = self._cw_x(experiment)
         if self._cw_doublet_is_active(experiment):
-            y = self._calculate_cw_doublet_pattern(cfl, experiment)
+            y = self._calculate_cw_doublet_pattern(cfl, experiment, x)
         else:
-            y = self._calculate_raw_pattern(cfl)
+            y = self._calculate_raw_pattern(cfl, x)
         if y is None or len(y) == 0:
             return []
         return self._adjust_pattern_length(list(y), len(experiment.data.x))
@@ -254,6 +257,7 @@ class CrysfmlCalculator(CalculatorBase):
         self,
         cfl: list[str],
         experiment: ExperimentBase,
+        x: np.ndarray,
     ) -> list[float] | None:
         """Calculate an active CW doublet pattern through CrysFML."""
         if not self._cw_doublet_fallback_warned:
@@ -262,21 +266,24 @@ class CrysfmlCalculator(CalculatorBase):
                 '[CrysfmlCalculator] Native CrysFML CW doublet is disabled; '
                 'using two single-wavelength CFL simulations.'
             )
-        return self._calculate_cw_doublet_from_single_wavelengths(cfl, experiment)
+        return self._calculate_cw_doublet_from_single_wavelengths(cfl, experiment, x)
 
     def _calculate_cw_doublet_from_single_wavelengths(
         self,
         cfl: list[str],
         experiment: ExperimentBase,
+        x: np.ndarray,
     ) -> list[float] | None:
         """Calculate a CW doublet as weighted single-wavelength runs."""
         instrument = getattr(experiment, 'instrument', None)
         wavelength_1, wavelength_2, wavelength_ratio = self._cw_wavelengths(instrument)
         y_1 = self._calculate_raw_pattern(
-            self._cfl_with_lambda(cfl, wavelength_1, wavelength_1, 0.0)
+            self._cfl_with_lambda(cfl, wavelength_1, wavelength_1, 0.0),
+            x,
         )
         y_2 = self._calculate_raw_pattern(
-            self._cfl_with_lambda(cfl, wavelength_2, wavelength_2, 0.0)
+            self._cfl_with_lambda(cfl, wavelength_2, wavelength_2, 0.0),
+            x,
         )
         if y_1 is None or y_2 is None or len(y_1) == 0 or len(y_2) == 0:
             return None
@@ -309,9 +316,12 @@ class CrysfmlCalculator(CalculatorBase):
         ]
 
     @staticmethod
-    def _calculate_raw_pattern(cfl: list[str]) -> list[float] | None:
+    def _calculate_raw_pattern(
+        cfl: list[str],
+        x: np.ndarray,
+    ) -> list[float] | None:
         """Run CrysFML and return first pattern y."""
-        patterns = cfml_py_utilities.patterns_simulation(cfl)
+        patterns = cfml_py_utilities.patterns_simulation(cfl, x=x)
         if not patterns:
             return None
         return patterns[0]['y']
@@ -478,11 +488,22 @@ class CrysfmlCalculator(CalculatorBase):
         return xmin, step, xmax
 
     def _cw_x_grid(self, experiment: ExperimentBase) -> tuple[float, float, float]:
-        """Return the CW grid with two-theta zero encoded in x."""
-        xmin, step, xmax = self._x_grid(experiment)
+        """Return the CW grid with position corrections encoded in x."""
+        x = self._cw_x(experiment)
+        xmin = float(x[0])
+        xmax = float(x[-1])
+        step = (xmax - xmin) / (len(x) - 1) if len(x) > 1 else 1.0
+        return xmin, step, xmax
+
+    def _cw_x(self, experiment: ExperimentBase) -> np.ndarray:
+        """Return measured x coordinates corrected outside CrysFML."""
+        x = np.asarray(experiment.data.x, dtype=float)
         instrument = getattr(experiment, 'instrument', None)
         zero = self._param(instrument, 'calib_twotheta_offset', 0.0)
-        return xmin - zero, step, xmax - zero
+        sycos = self._param(instrument, 'calib_sample_displacement', 0.0)
+        sysin = self._param(instrument, 'calib_sample_transparency', 0.0)
+        angle = np.deg2rad(x)
+        return x - zero - sycos * np.cos(angle) - sysin * np.sin(angle)
 
     def _phase_block(self, structure: Structure) -> list[str]:
         """Build the ``PHASE_*`` block for the structure."""

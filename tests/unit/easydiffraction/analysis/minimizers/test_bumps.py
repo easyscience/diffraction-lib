@@ -497,7 +497,51 @@ def test_compute_covariance_basic():
     assert stderr is not None
     assert cov.shape == (1, 1)
     assert len(stderr) == 1
-    assert stderr[0] > 0
+    assert stderr[0] == pytest.approx(0.5)
+
+
+def test_compute_covariance_resolves_float32_quantized_objective():
+    from bumps.parameter import Parameter as BumpsParameter
+
+    from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+
+    minimizer = BumpsMinimizer()
+    parameter = BumpsParameter(value=100.0, name='quantized')
+
+    def objective(values):
+        value = float(np.float32(values[0]))
+        return np.array([value - 99.0] * 5)
+
+    fitness = _EasyDiffractionFitness([parameter], objective)
+
+    covariance, stderr = minimizer._compute_covariance([parameter], fitness)
+
+    assert covariance is not None
+    assert stderr is not None
+    assert stderr[0] == pytest.approx(0.5, rel=5e-4)
+
+
+def test_compute_covariance_rank_deficient():
+    from bumps.parameter import Parameter as BumpsParameter
+
+    from easydiffraction.analysis.minimizers.bumps import BumpsMinimizer
+    from easydiffraction.analysis.minimizers.bumps import _EasyDiffractionFitness
+
+    minimizer = BumpsMinimizer()
+    parameters = [
+        BumpsParameter(value=1.0, name='a'),
+        BumpsParameter(value=2.0, name='unused'),
+    ]
+    fitness = _EasyDiffractionFitness(
+        parameters,
+        lambda values: np.array([values[0] - 1.0] * 5),
+    )
+
+    covariance, stderr = minimizer._compute_covariance(parameters, fitness)
+
+    assert covariance is None
+    assert stderr is None
 
 
 def test_compute_covariance_underdetermined():

@@ -94,5 +94,5 @@ class RenderingStructure(CategoryItem, SwitchableCategoryBase):
 
     @property
     def as_cif(self) -> str:
-        """Return the CIF text for this rendering_structure category."""
+        """The CIF text for this rendering_structure category."""
         return super().as_cif

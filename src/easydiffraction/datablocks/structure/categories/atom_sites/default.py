@@ -215,7 +215,7 @@ class AtomSite(CategoryItem):
     @property
     def _type_symbol_allowed_values(self) -> list[str]:
         """
-        Return chemical symbols accepted by *cryspy*.
+        Chemical symbols accepted by *cryspy*.
 
         Returns
         -------
@@ -261,7 +261,7 @@ class AtomSite(CategoryItem):
     @property
     def _wyckoff_letter_default_value(self) -> str:
         """
-        Return the default Wyckoff letter.
+        The default Wyckoff letter.
 
         Returns
         -------
@@ -797,7 +797,7 @@ class AtomSite(CategoryItem):
     @property
     def adp_iso_as_b(self) -> float:
         """
-        Return the isotropic ADP as a B-factor value.
+        The isotropic ADP as a B-factor value.
 
         When ``adp_type`` is ``Uiso`` or ``Uani`` the stored U value is
         converted to B via B = 8π²U. For a ``beta`` atom the equivalent

@@ -86,8 +86,8 @@ class TofGaussianBroadeningMixin:
                 cif_names=['_easydiffraction_peak.broad_gauss_sigma_2'],
             ),
         )
-        self._broad_gauss_size_g = Parameter(
-            name='broad_gauss_size_g',
+        self._broad_gauss_size = Parameter(
+            name='broad_gauss_size',
             description='Gaussian isotropic size broadening (adds to sigma2)',
             units='microseconds_squared_per_angstrom_squared',
             display_handler=DisplayHandler(
@@ -99,12 +99,12 @@ class TofGaussianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.broad_gauss_size_g'],
-                cif_names=['_easydiffraction_peak.broad_gauss_size_g'],
+                edi_names=['_peak.broad_gauss_size'],
+                cif_names=['_easydiffraction_peak.broad_gauss_size'],
             ),
         )
-        self._broad_gauss_strain_g = Parameter(
-            name='broad_gauss_strain_g',
+        self._broad_gauss_strain = Parameter(
+            name='broad_gauss_strain',
             description='Gaussian isotropic strain broadening (adds to sigma1)',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -116,8 +116,8 @@ class TofGaussianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.broad_gauss_strain_g'],
-                cif_names=['_easydiffraction_peak.broad_gauss_strain_g'],
+                edi_names=['_peak.broad_gauss_strain'],
+                cif_names=['_easydiffraction_peak.broad_gauss_strain'],
             ),
         )
         self._cutoff_fwhm = NumericDescriptor(
@@ -205,32 +205,32 @@ class TofGaussianBroadeningMixin:
         self._broad_gauss_sigma_2.value = value
 
     @property
-    def broad_gauss_size_g(self) -> Parameter:
+    def broad_gauss_size(self) -> Parameter:
         """
         Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).
         """
-        return self._broad_gauss_size_g
+        return self._broad_gauss_size
 
-    @broad_gauss_size_g.setter
-    def broad_gauss_size_g(self, value: float) -> None:
+    @broad_gauss_size.setter
+    def broad_gauss_size(self, value: float) -> None:
         """
         Set Gaussian isotropic size broadening, additive to σ₂ (μs²/Å²).
         """
-        self._broad_gauss_size_g.value = value
+        self._broad_gauss_size.value = value
 
     @property
-    def broad_gauss_strain_g(self) -> Parameter:
+    def broad_gauss_strain(self) -> Parameter:
         """
         Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).
         """
-        return self._broad_gauss_strain_g
+        return self._broad_gauss_strain
 
-    @broad_gauss_strain_g.setter
-    def broad_gauss_strain_g(self, value: float) -> None:
+    @broad_gauss_strain.setter
+    def broad_gauss_strain(self, value: float) -> None:
         """
         Set Gaussian isotropic strain broadening, additive to σ₁ (μs/Å).
         """
-        self._broad_gauss_strain_g.value = value
+        self._broad_gauss_strain.value = value
 
 
 class TofLorentzianBroadeningMixin:
@@ -291,8 +291,8 @@ class TofLorentzianBroadeningMixin:
                 cif_names=['_easydiffraction_peak.broad_lorentz_gamma_2'],
             ),
         )
-        self._broad_lorentz_size_l = Parameter(
-            name='broad_lorentz_size_l',
+        self._broad_lorentz_size = Parameter(
+            name='broad_lorentz_size',
             description='Lorentzian isotropic size broadening (adds to gamma2)',
             units='microseconds_squared_per_angstrom_squared',
             display_handler=DisplayHandler(
@@ -304,12 +304,12 @@ class TofLorentzianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.broad_lorentz_size_l'],
-                cif_names=['_easydiffraction_peak.broad_lorentz_size_l'],
+                edi_names=['_peak.broad_lorentz_size'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_size'],
             ),
         )
-        self._broad_lorentz_strain_l = Parameter(
-            name='broad_lorentz_strain_l',
+        self._broad_lorentz_strain = Parameter(
+            name='broad_lorentz_strain',
             description='Lorentzian isotropic strain broadening (adds to gamma1)',
             units='microseconds_per_angstrom',
             display_handler=DisplayHandler(
@@ -321,8 +321,8 @@ class TofLorentzianBroadeningMixin:
                 validator=RangeValidator(),
             ),
             tags=TagSpec(
-                edi_names=['_peak.broad_lorentz_strain_l'],
-                cif_names=['_easydiffraction_peak.broad_lorentz_strain_l'],
+                edi_names=['_peak.broad_lorentz_strain'],
+                cif_names=['_easydiffraction_peak.broad_lorentz_strain'],
             ),
         )
 
@@ -376,30 +376,30 @@ class TofLorentzianBroadeningMixin:
         self._broad_lorentz_gamma_2.value = value
 
     @property
-    def broad_lorentz_size_l(self) -> Parameter:
+    def broad_lorentz_size(self) -> Parameter:
         """
         Lorentzian isotropic size broadening, additive to γ₂ (μs²/Å²).
         """
-        return self._broad_lorentz_size_l
+        return self._broad_lorentz_size
 
-    @broad_lorentz_size_l.setter
-    def broad_lorentz_size_l(self, value: float) -> None:
+    @broad_lorentz_size.setter
+    def broad_lorentz_size(self, value: float) -> None:
         """Set Lorentzian isotropic size broadening (adds to γ₂)."""
-        self._broad_lorentz_size_l.value = value
+        self._broad_lorentz_size.value = value
 
     @property
-    def broad_lorentz_strain_l(self) -> Parameter:
+    def broad_lorentz_strain(self) -> Parameter:
         """
         Lorentzian isotropic strain broadening, additive to γ₁ (μs/Å).
         """
-        return self._broad_lorentz_strain_l
+        return self._broad_lorentz_strain
 
-    @broad_lorentz_strain_l.setter
-    def broad_lorentz_strain_l(self, value: float) -> None:
+    @broad_lorentz_strain.setter
+    def broad_lorentz_strain(self, value: float) -> None:
         """
         Set Lorentzian isotropic strain broadening (adds to γ₁).
         """
-        self._broad_lorentz_strain_l.value = value
+        self._broad_lorentz_strain.value = value
 
 
 class TofBackToBackExponentialMixin:

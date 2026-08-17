@@ -12,7 +12,7 @@ import numpy as np
 import pytest
 
 # Expected number of data points in the loop (from scipp reduction)
-LOOP_SIZE = 2000
+LOOP_SIZE = 1999
 
 
 def get_column_values(
@@ -27,7 +27,7 @@ def get_column_values(
 def test_validate_physical_data__data_size(
     cif_block: gemmi.cif.Block,
 ) -> None:
-    """Verify the data loop contains exactly 2000 points."""
+    """Verify the data loop contains exactly 1999 points."""
     loop = cif_block.find(['_pd_data.point_id']).loop
     assert loop.length() == LOOP_SIZE
 

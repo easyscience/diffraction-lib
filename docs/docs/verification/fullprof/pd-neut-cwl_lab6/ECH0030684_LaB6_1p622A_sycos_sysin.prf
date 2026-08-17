@@ -3255,12 +3255,12 @@ X Modify mode(excl2)=7, hbFill(excl2)=4
 X Modify rgb(excl2)=(6421,62320,64794)
 X Append tik1 vs Phase1
 X Modify mode(tik1)=1
-X TextBox /F=2/S=3/A=RT "Files: ECH0030684_LaB6_1p622A_sycos_sysin\rDate of fit: \Z09 18/06/2026/ 23:03:41.9\Z12\rnuclear\rChi2 =   64.26"
+X TextBox /F=2/S=3/A=RT "Files: ECH0030684_LaB6_1p622A_sycos_sysin\rDate of fit: \Z09 01/07/2026/ 21:01:05.1\Z12\rnuclear\rChi2 =   64.26"
 X Label left "\Z14Intensity"
 X Label bottom "\Z142-Theta (in degrees)"
 X TileWindows/O=1/C
 X ShowInfo
 X | Title of data set:  LaB6 Ge(331)
-X | Date of run: 18/06/2026 / 23:03:41.9
+X | Date of run: 01/07/2026 / 21:01:05.1
 X Beep
 X Beep

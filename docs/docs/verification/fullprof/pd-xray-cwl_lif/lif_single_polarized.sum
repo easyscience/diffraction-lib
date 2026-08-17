@@ -1,14 +1,14 @@
 
 
         **********************************************************
-        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
+        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
         **********************************************************
                        M U L T I -- P A T T E R N                 
             Rietveld, Profile Matching & Integrated Intensity     
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 18/06/2026  Time: 09:28:28.674                              
+    Date: 01/07/2026  Time: 21:01:10.426                              
 
  => PCR file code: lif_single_polarized
  => DAT file code: lif_single_polarized -> Relative contribution: 1.0000                                                            
@@ -32,7 +32,7 @@
  =>-------> Pattern#  1
  => Crystal Structure Refinement for phase: 1
  => The density (volumic mass) of phase 1 is:    2.639 g/cm3
- => Scor:46.5018
+ => Scor:46.5019
 
  ==> RESULTS OF REFINEMENT:
 
@@ -63,7 +63,7 @@
                              90.00000   0.00000
                              90.00000   0.00000
  
- => overall scale factor :      0.010000000     0.000000000
+ => overall scale factor :  0.1000000E-01  0.000000    
  => Eta(p-v) or m(p-vii) :    0.00000   0.00000
  => Overall tem. factor  :    0.00000   0.00000
  => Halfwidth parameters :    0.04846   0.00000
@@ -84,8 +84,8 @@
                               0.00000   0.00000
 
  => Add. shape parameters: 
-                              0.00000   0.00000
-                              0.00000   0.00000
+                              0.00000       0.00000    
+                              0.00000       0.00000    
 
 
 
@@ -114,7 +114,7 @@
  => Rp:  99.8     Rwp:  100.     Rexp:    4.94 Chi2:  412.    
  => Deviance:  0.249E+08     Dev*  :   0.000    
  => DW-Stat.:    0.0135     DW-exp:     1.9199
- => N-sigma of the GoF:    22530.158
+ => N-sigma of the GoF:    22530.150
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
@@ -125,7 +125,7 @@
  => Rp:  99.7     Rwp:  101.     Rexp:    5.29 Chi2:  361.    
  => Deviance:  0.249E+08     Dev*  :         NaN
  => DW-Stat.:    0.0191     DW-exp:     1.9108
- => N-sigma of the GoF:    17743.977
+ => N-sigma of the GoF:    17743.961
 
  => Global user-weigthed Chi2 (Bragg contrib.):   510.    
 
@@ -138,7 +138,7 @@
  => Rf-factor=  86.8             ATZ:         103.724   Brindley:  1.0000
 
  
-              CPU Time:     0.117 seconds
+              CPU Time:     0.133 seconds
                             0.002 minutes
 
- => Run finished at:     Date: 18/06/2026  Time: 09:28:28.790                              
+ => Run finished at:     Date: 01/07/2026  Time: 21:01:10.551                              

@@ -279,6 +279,9 @@ def test_shared_loader_owns_theme_resize_and_legend_behaviour():
     assert 'window.edFigures.watchTheme = watchTheme;' in loader
     assert 'window.edFigures.watchResize = watchResize;' in loader
     assert 'window.edFigures.installLegendToggle = installLegendToggle;' in loader
+    # Colab waits for rendering before releasing its output frame.
+    assert 'return window.Plotly.newPlot(' in loader
+    assert 'return renderInto(figureEl, spec);' in loader
 
 
 def test_serialize_html_standalone_embeds_loader_once():

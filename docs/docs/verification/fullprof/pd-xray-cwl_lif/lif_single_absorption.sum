@@ -1,14 +1,14 @@
 
 
         **********************************************************
-        ** PROGRAM FullProf.2k (Version 7.95 - Jan2023-ILL JRC) **
+        ** PROGRAM FullProf.2k (Version 8.40 - Feb2026-ILL JRC) **
         **********************************************************
                        M U L T I -- P A T T E R N                 
             Rietveld, Profile Matching & Integrated Intensity     
                  Refinement of X-ray and/or Neutron Data
 
 
-    Date: 18/06/2026  Time: 09:28:39.096                              
+    Date: 01/07/2026  Time: 21:01:10.290                              
 
  => PCR file code: lif_single_absorption
  => DAT file code: lif_single_absorptio -> Relative contribution: 1.0000                                                            
@@ -64,7 +64,7 @@
                              90.00000   0.00000
                              90.00000   0.00000
  
- => overall scale factor :      0.010000000     0.000000000
+ => overall scale factor :  0.1000000E-01  0.000000    
  => Eta(p-v) or m(p-vii) :    0.00000   0.00000
  => Overall tem. factor  :    0.00000   0.00000
  => Halfwidth parameters :    0.04846   0.00000
@@ -85,8 +85,8 @@
                               0.00000   0.00000
 
  => Add. shape parameters: 
-                              0.00000   0.00000
-                              0.00000   0.00000
+                              0.00000       0.00000    
+                              0.00000       0.00000    
 
 
 
@@ -115,7 +115,7 @@
  => Rp:  99.8     Rwp:  99.8     Rexp:    4.94 Chi2:  407.    
  => Deviance:  0.303E+08     Dev*  :   0.000    
  => DW-Stat.:    0.0111     DW-exp:     1.9199
- => N-sigma of the GoF:    22261.715
+ => N-sigma of the GoF:    22261.719
 
  ==> RELIABILITY FACTORS FOR POINTS WITH BRAGG CONTRIBUTIONS FOR PATTERN:  1
 
@@ -126,7 +126,7 @@
  => Rp:  99.7     Rwp:  99.7     Rexp:    5.29 Chi2:  355.    
  => Deviance:  0.303E+08     Dev*  :         NaN
  => DW-Stat.:    0.0158     DW-exp:     1.9108
- => N-sigma of the GoF:    17445.307
+ => N-sigma of the GoF:    17445.311
 
  => Global user-weigthed Chi2 (Bragg contrib.):   504.    
 
@@ -139,7 +139,7 @@
  => Rf-factor=  92.1             ATZ:         103.724   Brindley:  1.0000
 
  
-              CPU Time:     0.148 seconds
+              CPU Time:     0.117 seconds
                             0.002 minutes
 
- => Run finished at:     Date: 18/06/2026  Time: 09:28:39.242                              
+ => Run finished at:     Date: 01/07/2026  Time: 21:01:10.404                              

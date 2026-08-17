@@ -369,7 +369,7 @@ one-line summary (§1). Empirical calibration was carried out in Phase 2:
 - The Stage-2 tolerance multiplier (`c · σ`, `c = 2`) and the width
   percentile (~75th) are first-cut constants; they were validated — not
   exhaustively swept — against the representative CWL
-  (`refine-lbco-hrpt-from-data`) and TOF (`fitting-exercise-si-lbco`)
+  (`refine-lbco-hrpt-from-data`) and TOF (`exercise-refine-si-lbco`)
   datasets plus the analytic unit cases, and produce sensible
   backgrounds there. Re-tuning stays possible if a future dataset needs
   it.
@@ -488,7 +488,7 @@ curve. **Phase 2 outcome:** the functional regression validates two
 representative datasets — CWL
 [`refine-lbco-hrpt-from-data.py`](../../../../docs/docs/tutorials/refine-lbco-hrpt-from-data.py)
 and TOF
-[`fitting-exercise-si-lbco.py`](../../../../docs/docs/tutorials/fitting-exercise-si-lbco.py)
+[`exercise-refine-si-lbco.py`](../../../../docs/docs/tutorials/exercise-refine-si-lbco.py)
 — comparing the estimated curve against the hand-placed reference to
 within a fraction of the measured signal scale; the single `arpls`
 default and the first-cut constants hold for both. Sloping and curved

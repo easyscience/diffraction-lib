@@ -187,5 +187,5 @@ class StructureView(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this structure_view category."""
+        """CIF representation of this structure_view category."""
         return super().as_cif

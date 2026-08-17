@@ -218,7 +218,7 @@ class TotalDataBase(CategoryCollection):
 
     @property
     def _calc_items(self) -> list:
-        """Get only the items included in calculations."""
+        """Only the items included in calculations."""
         return [item for item, mask in zip(self._items, self._calc_mask, strict=False) if mask]
 
     # Misc
@@ -394,7 +394,7 @@ class TotalData(TotalDataBase):
 
     @property
     def x(self) -> np.ndarray:
-        """Get the r values for data points included in calculations."""
+        """The r values for data points included in calculations."""
         return np.fromiter(
             (p.r.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -402,7 +402,7 @@ class TotalData(TotalDataBase):
 
     @property
     def unfiltered_x(self) -> np.ndarray:
-        """Get the r values for all data points."""
+        """The r values for all data points."""
         return np.fromiter(
             (p.r.value for p in self._items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?

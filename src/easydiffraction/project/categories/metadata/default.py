@@ -123,7 +123,7 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def name(self) -> str:
-        """Return the project name."""
+        """The project name."""
         return self._project_id.value
 
     @name.setter
@@ -133,7 +133,7 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def title(self) -> str:
-        """Return the project title."""
+        """The project title."""
         return self._title_descriptor.value
 
     @title.setter
@@ -142,7 +142,7 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def description(self) -> str:
-        """Return sanitized description with single spaces."""
+        """The sanitized description with single spaces."""
         return ' '.join(self._description_descriptor.value.split())
 
     @description.setter
@@ -151,7 +151,7 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def path(self) -> pathlib.Path | None:
-        """Return the project path as a Path object."""
+        """The project path as a Path object."""
         return self._path
 
     @path.setter
@@ -161,17 +161,17 @@ class ProjectMetadata(CategoryItem):
 
     @property
     def created(self) -> datetime.datetime:
-        """Return the creation timestamp."""
+        """The creation timestamp."""
         return self._parse_timestamp(self._created_descriptor.value)
 
     @property
     def last_modified(self) -> datetime.datetime:
-        """Return the last modified timestamp."""
+        """The last modified timestamp."""
         return self._parse_timestamp(self._last_modified_descriptor.value)
 
     @property
     def timestamp(self) -> str | None:
-        """Return the latest fit timestamp."""
+        """The latest fit timestamp."""
         return self._timestamp_descriptor.value
 
     @timestamp.setter

@@ -92,23 +92,23 @@ Gaussian broadening (dependent on d-spacing).
 
 Gaussian broadening (instrument-dependent term).
 
-### :material-arrow-expand-horizontal: broad_gauss_size_g { #peak-broad-gauss-size-g }
+### :material-arrow-expand-horizontal: broad_gauss_size { #peak-broad-gauss-size }
 
-| Access                                    | Source                    |
-| ----------------------------------------- | ------------------------- |
-| peak.broad_gauss_size_g                   | [code][0]{:.label-cif}    |
-| \_peak.broad_gauss_size_g                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.broad_gauss_size_g | [coreCIF][0]{:.label-cif} |
+| Access                                  | Source                    |
+| --------------------------------------- | ------------------------- |
+| peak.broad_gauss_size                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_size                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_size | [coreCIF][0]{:.label-cif} |
 
 Gaussian isotropic size broadening (adds to sigma2).
 
-### :material-arrow-expand-horizontal: broad_gauss_strain_g { #peak-broad-gauss-strain-g }
+### :material-arrow-expand-horizontal: broad_gauss_strain { #peak-broad-gauss-strain }
 
-| Access                                      | Source                    |
-| ------------------------------------------- | ------------------------- |
-| peak.broad_gauss_strain_g                   | [code][0]{:.label-cif}    |
-| \_peak.broad_gauss_strain_g                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.broad_gauss_strain_g | [coreCIF][0]{:.label-cif} |
+| Access                                    | Source                    |
+| ----------------------------------------- | ------------------------- |
+| peak.broad_gauss_strain                   | [code][0]{:.label-cif}    |
+| \_peak.broad_gauss_strain                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_gauss_strain | [coreCIF][0]{:.label-cif} |
 
 Gaussian isotropic strain broadening (adds to sigma1).
 
@@ -142,23 +142,23 @@ Lorentzian broadening (dependent on d-spacing).
 
 Lorentzian broadening (instrument-dependent term).
 
-### :material-arrow-expand-horizontal: broad_lorentz_size_l { #peak-broad-lorentz-size-l }
+### :material-arrow-expand-horizontal: broad_lorentz_size { #peak-broad-lorentz-size }
 
-| Access                                      | Source                    |
-| ------------------------------------------- | ------------------------- |
-| peak.broad_lorentz_size_l                   | [code][0]{:.label-cif}    |
-| \_peak.broad_lorentz_size_l                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.broad_lorentz_size_l | [coreCIF][0]{:.label-cif} |
+| Access                                    | Source                    |
+| ----------------------------------------- | ------------------------- |
+| peak.broad_lorentz_size                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_size                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_size | [coreCIF][0]{:.label-cif} |
 
 Lorentzian isotropic size broadening (adds to gamma2).
 
-### :material-arrow-expand-horizontal: broad_lorentz_strain_l { #peak-broad-lorentz-strain-l }
+### :material-arrow-expand-horizontal: broad_lorentz_strain { #peak-broad-lorentz-strain }
 
-| Access                                        | Source                    |
-| --------------------------------------------- | ------------------------- |
-| peak.broad_lorentz_strain_l                   | [code][0]{:.label-cif}    |
-| \_peak.broad_lorentz_strain_l                 | [Edi][0]{:.label-cif}     |
-| \_easydiffraction_peak.broad_lorentz_strain_l | [coreCIF][0]{:.label-cif} |
+| Access                                      | Source                    |
+| ------------------------------------------- | ------------------------- |
+| peak.broad_lorentz_strain                   | [code][0]{:.label-cif}    |
+| \_peak.broad_lorentz_strain                 | [Edi][0]{:.label-cif}     |
+| \_easydiffraction_peak.broad_lorentz_strain | [coreCIF][0]{:.label-cif} |
 
 Lorentzian isotropic strain broadening (adds to gamma1).
 

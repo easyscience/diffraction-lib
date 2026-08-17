@@ -70,5 +70,5 @@ class Geom(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this geom category."""
+        """CIF representation of this geom category."""
         return super().as_cif

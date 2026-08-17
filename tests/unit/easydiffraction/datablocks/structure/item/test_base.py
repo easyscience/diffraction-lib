@@ -10,3 +10,22 @@ def test_structure_base_str_and_properties():
     assert m.name == 'm2'
     s = str(m)
     assert 'Structure' in s or '<' in s
+
+
+def test_structure_name_rejects_uppercase_on_creation_and_rename():
+    import pytest
+
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid structure name 'LaM7O3'.*Use 'lam7o3' instead",
+    ):
+        Structure(name='LaM7O3')
+
+    structure = Structure(name='lam7o3')
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid structure name 'LMO'.*Use 'lmo' instead",
+    ):
+        structure.name = 'LMO'
+
+    assert structure.name == 'lam7o3'

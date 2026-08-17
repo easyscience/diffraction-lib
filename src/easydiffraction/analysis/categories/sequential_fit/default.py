@@ -156,7 +156,7 @@ class SequentialFit(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this sequential-fit category."""
+        """CIF representation of this sequential-fit category."""
         return super().as_cif
 
     def from_cif(self, block: object, idx: int = 0) -> None:

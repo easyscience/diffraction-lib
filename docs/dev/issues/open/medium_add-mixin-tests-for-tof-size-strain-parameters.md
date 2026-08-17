@@ -5,8 +5,8 @@
 **Type:** Testing
 
 The microstructural size/strain feature added four `Parameter`s to the
-TOF peak mixin (`broad_gauss_size_g`, `broad_gauss_strain_g`,
-`broad_lorentz_size_l`, `broad_lorentz_strain_l` in
+TOF peak mixin (`broad_gauss_size`, `broad_gauss_strain`,
+`broad_lorentz_size`, `broad_lorentz_strain` in
 `src/easydiffraction/datablocks/experiment/categories/peak/tof_mixins.py`),
 but they are never asserted at the mixin-test level. Their value
 hand-off is covered indirectly via
