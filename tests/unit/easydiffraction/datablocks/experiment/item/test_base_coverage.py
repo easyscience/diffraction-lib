@@ -50,6 +50,24 @@ class TestExperimentBaseName:
         ex.name = 'ex2'
         assert ex.name == 'ex2'
 
+    def test_name_rejects_uppercase_on_creation_and_rename(self):
+        import pytest
+
+        with pytest.raises(
+            ValueError,
+            match=r"Invalid experiment name 'P021'.*Use 'p021' instead",
+        ):
+            ConcreteBase(name='P021', experiment_type=_mk_type_powder_cwl_bragg())
+
+        ex = ConcreteBase(name='p021', experiment_type=_mk_type_powder_cwl_bragg())
+        with pytest.raises(
+            ValueError,
+            match=r"Invalid experiment name 'HRPT'.*Use 'hrpt' instead",
+        ):
+            ex.name = 'HRPT'
+
+        assert ex.name == 'p021'
+
     def test_type_property(self):
         et = _mk_type_powder_cwl_bragg()
         ex = ConcreteBase(name='ex1', experiment_type=et)
