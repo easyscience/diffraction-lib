@@ -75,7 +75,7 @@ class CategoryItem(GuardedBase):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this object."""
+        """CIF representation of this object."""
         return category_item_to_cif(self)
 
     def from_cif(self, block: object, idx: int = 0) -> None:
@@ -215,7 +215,7 @@ class CategoryCollection(CollectionBase):
 
     @property
     def unique_name(self) -> str | None:
-        """Return None; collections have no unique name."""
+        """Collections have no unique name."""
         return None
 
     @property
@@ -233,7 +233,7 @@ class CategoryCollection(CollectionBase):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF representation of this object."""
+        """CIF representation of this object."""
         return category_collection_to_cif(self)
 
     def from_cif(self, block: object) -> None:

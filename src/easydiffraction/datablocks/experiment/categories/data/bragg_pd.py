@@ -448,7 +448,7 @@ class PdDataBase(CategoryCollection):
 
     @property
     def _calc_items(self) -> list:
-        """Get only the items included in calculations."""
+        """Only the items included in calculations."""
         cache = getattr(self, '_calc_items_cache', None)
         if cache is None:
             cache = [
@@ -798,7 +798,7 @@ class PdCwlData(PdDataBase):
 
     @property
     def two_theta(self) -> np.ndarray:
-        """Get 2θ values for data points included in calculations."""
+        """2θ values for data points included in calculations."""
         return np.fromiter(
             (p.two_theta.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -818,7 +818,7 @@ class PdCwlData(PdDataBase):
 
     @property
     def unfiltered_x(self) -> np.ndarray:
-        """Get the 2θ values for all data points in this collection."""
+        """The 2θ values for all data points in this collection."""
         return np.fromiter(
             (p.two_theta.value for p in self._items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -887,7 +887,7 @@ class PdTofData(PdDataBase):
 
     @property
     def time_of_flight(self) -> np.ndarray:
-        """Get TOF values for data points included in calculations."""
+        """TOF values for data points included in calculations."""
         return np.fromiter(
             (p.time_of_flight.value for p in self._calc_items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?
@@ -907,7 +907,7 @@ class PdTofData(PdDataBase):
 
     @property
     def unfiltered_x(self) -> np.ndarray:
-        """Get the TOF values for all data points in this collection."""
+        """The TOF values for all data points in this collection."""
         return np.fromiter(
             (p.time_of_flight.value for p in self._items),
             dtype=float,  # TODO: needed? DataTypes.NUMERIC?

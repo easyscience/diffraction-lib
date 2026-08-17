@@ -5,6 +5,7 @@
 from typeguard import typechecked
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.core.validation import validate_datablock_name
 from easydiffraction.datablocks.structure.categories.atom_site_aniso import AtomSiteAnisoCollection
 from easydiffraction.datablocks.structure.categories.atom_site_aniso.default import AtomSiteAniso
 from easydiffraction.datablocks.structure.categories.atom_site_aniso.factory import (
@@ -38,7 +39,7 @@ class Structure(DatablockItem):
         name: str,
     ) -> None:
         super().__init__()
-        self._name = name
+        self._name = validate_datablock_name(name, kind='structure')
         self._cell_type: str = CellFactory.default_tag()
         self._cell = CellFactory.create(self._cell_type)
         self._space_group_type: str = SpaceGroupFactory.default_tag()
@@ -80,7 +81,7 @@ class Structure(DatablockItem):
         new : str
             New name string.
         """
-        self._name = new
+        self._name = validate_datablock_name(new, kind='structure')
 
     # ------------------------------------------------------------------
     #  Cell (read-only, single type)

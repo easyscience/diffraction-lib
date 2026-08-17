@@ -110,7 +110,7 @@ class SpaceGroup(CategoryItem):
     @property
     def _name_h_m_allowed_values(self) -> list[str]:
         """
-        Return the list of recognised Hermann-Mauguin short symbols.
+        The list of recognised Hermann-Mauguin short symbols.
 
         Returns
         -------
@@ -122,7 +122,7 @@ class SpaceGroup(CategoryItem):
     @property
     def _coord_system_code_allowed_values(self) -> list[str]:
         """
-        Return allowed IT coordinate system codes for the current group.
+        Allowed IT coordinate system codes for the current group.
 
         Returns
         -------
@@ -138,7 +138,7 @@ class SpaceGroup(CategoryItem):
     @property
     def _coord_system_code_default_value(self) -> str:
         """
-        Return the default IT coordinate system code.
+        The default IT coordinate system code.
 
         Returns
         -------

@@ -170,6 +170,76 @@ def _patch_helper(monkeypatch, captured, anchors=None):
     monkeypatch.setattr(line_segment, 'estimate', SimpleNamespace(estimate_background_curve=fake))
 
 
+def test_auto_estimate_applies_pending_excluded_regions_before_sampling(monkeypatch):
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
+    from easydiffraction.datablocks.experiment.categories.excluded_regions import ExcludedRegions
+
+    captured = {}
+    _patch_helper(monkeypatch, captured)
+    data = PdCwlData()
+    x = np.array([0.0, 1.0, 2.0, 3.0, 4.0])
+    intensity_meas = np.array([10.0, 20.0, 30.0, 40.0, 50.0])
+    data._create_items_set_xcoord_and_id(x)
+    data._set_intensity_meas(intensity_meas)
+    data._set_intensity_meas_su(np.ones_like(x))
+
+    excluded_regions = ExcludedRegions()
+    parent = SimpleNamespace(data=data, excluded_regions=excluded_regions)
+    object.__setattr__(data, '_parent', parent)
+    object.__setattr__(excluded_regions, '_parent', parent)
+
+    obj = LineSegmentBackground()
+    object.__setattr__(obj, '_parent', parent)
+    excluded_regions.create(id='1', start=1.0, end=3.0)
+
+    np.testing.assert_array_equal(data.calc_status, np.full(x.shape, 'incl', dtype=object))
+
+    obj.auto_estimate()
+
+    np.testing.assert_array_equal(
+        data.calc_status,
+        np.array(['incl', 'excl', 'excl', 'excl', 'incl'], dtype=object),
+    )
+    np.testing.assert_allclose(captured['x'], np.array([0.0, 4.0]))
+    np.testing.assert_allclose(captured['y'], np.array([10.0, 50.0]))
+    np.testing.assert_allclose(
+        [point.position.value for point in obj._items],
+        np.array([0.0, 4.0]),
+    )
+
+
+def test_auto_estimate_respects_existing_calc_status_without_regions(monkeypatch):
+    from easydiffraction.datablocks.experiment.categories.data.bragg_pd import PdCwlData
+    from easydiffraction.datablocks.experiment.categories.excluded_regions import ExcludedRegions
+
+    captured = {}
+    _patch_helper(monkeypatch, captured)
+    data = PdCwlData()
+    x = np.array([0.0, 1.0, 2.0])
+    intensity_meas = np.array([10.0, 20.0, 30.0])
+    data._create_items_set_xcoord_and_id(x)
+    data._set_intensity_meas(intensity_meas)
+    data._set_intensity_meas_su(np.ones_like(x))
+    data._set_calc_status([True, False, True])
+
+    excluded_regions = ExcludedRegions()
+    parent = SimpleNamespace(data=data, excluded_regions=excluded_regions)
+    object.__setattr__(data, '_parent', parent)
+    object.__setattr__(excluded_regions, '_parent', parent)
+
+    obj = LineSegmentBackground()
+    object.__setattr__(obj, '_parent', parent)
+
+    obj.auto_estimate()
+
+    np.testing.assert_array_equal(
+        data.calc_status,
+        np.array(['incl', 'excl', 'incl'], dtype=object),
+    )
+    np.testing.assert_allclose(captured['x'], np.array([0.0, 2.0]))
+    np.testing.assert_allclose(captured['y'], np.array([10.0, 30.0]))
+
+
 def test_auto_estimate_forwards_resolved_method(monkeypatch):
     captured = {}
     _patch_helper(monkeypatch, captured)

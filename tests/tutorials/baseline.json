@@ -51,20 +51,20 @@
     "r_factor_all": 0.049714,
     "wr_factor_all": 0.068833,
     "parameters": {
-      "expt_s2.linked_structure.ferrite.scale": 284.72,
-      "expt_s2.linked_structure.austenite.scale": 67.91
+      "expt_s2.linked_structure.ferrite.scale": 402.7,
+      "expt_s2.linked_structure.austenite.scale": 96.04
     }
   },
   "fitting-exercise-si-lbco-main": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 1.537656,
-    "r_factor_all": 0.046201,
-    "wr_factor_all": 0.05534,
+    "reduced_chi_square": 1.605742,
+    "r_factor_all": 0.050573,
+    "wr_factor_all": 0.056757,
     "parameters": {
-      "lbco.cell.length_a": 3.89125,
-      "sim_lbco.linked_structure.lbco.scale": 31.33,
-      "sim_lbco.linked_structure.si.scale": 0.2408
+      "lbco.cell.length_a": 3.89147,
+      "sim_lbco.linked_structure.lbco.scale": 42.36,
+      "sim_lbco.linked_structure.si.scale": 0.327
     }
   },
   "fitting-exercise-si-lbco-reference": {
@@ -74,19 +74,19 @@
     "r_factor_all": 0.068706,
     "wr_factor_all": 0.091774,
     "parameters": {
-      "sim_si.linked_structure.si.scale": 11.051,
+      "sim_si.linked_structure.si.scale": 14.078,
       "sim_si.peak.rise_alpha_0": -0.00662
     }
   },
   "joint-si-bragg-pdf": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 53.004381,
-    "r_factor_all": 0.086405,
+    "reduced_chi_square": 53.004419,
+    "r_factor_all": 0.086404,
     "wr_factor_all": 0.09185,
     "parameters": {
-      "si.cell.length_a": 5.43061,
-      "sepd.linked_structure.si.scale": 634.2,
+      "si.cell.length_a": 5.430611,
+      "sepd.linked_structure.si.scale": 383.1,
       "nomad.linked_structure.si.scale": 1.5668
     }
   },
@@ -147,6 +147,20 @@
       "d20.linked_structure.cosio.scale": 1.331
     }
   },
+  "refine-lam7o3-p021": {
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "reduced_chi_square": 0.161439,
+    "r_factor_all": 0.010111,
+    "wr_factor_all": 0.015115,
+    "parameters": {
+      "lam7o3.cell.length_a": 5.46225,
+      "lam7o3.cell.length_b": 7.73307,
+      "lam7o3.cell.length_c": 5.49024,
+      "lam7o3.atom_site.O1.fract_x": 0.50828,
+      "p021.linked_structure.lam7o3.scale": 3.653e-6
+    }
+  },
   "refine-hs-hrpt": {
     "result_kind": "deterministic",
     "rtol": 0.02,
@@ -201,19 +215,31 @@
     "parameters": {
       "lbco.cell.length_a": 3.89046,
       "si.cell.length_a": 5.4358,
-      "mcstas.linked_structure.lbco.scale": 28.95,
-      "mcstas.linked_structure.si.scale": 0.0305
+      "mcstas.linked_structure.lbco.scale": 39.15,
+      "mcstas.linked_structure.si.scale": 0.0412
+    }
+  },
+  "refine-lmo-echidna": {
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "reduced_chi_square": 2.407703,
+    "r_factor_all": 0.039371,
+    "wr_factor_all": 0.050195,
+    "parameters": {
+      "lmo.cell.length_a": 2.875254,
+      "lmo.cell.length_c": 14.18372,
+      "echidna.linked_structure.lmo.scale": 15.992
     }
   },
   "refine-ncaf-wish": {
     "result_kind": "deterministic",
     "rtol": 0.02,
     "reduced_chi_square": 15.486737,
-    "r_factor_all": 0.069775,
+    "r_factor_all": 0.069774,
     "wr_factor_all": 0.081356,
     "parameters": {
-      "wish_5_6.linked_structure.ncaf.scale": 77.7,
-      "wish_4_7.linked_structure.ncaf.scale": 37.07
+      "wish_5_6.linked_structure.ncaf.scale": 36.51,
+      "wish_4_7.linked_structure.ncaf.scale": 36.14
     }
   },
   "refine-pbso4-joint": {

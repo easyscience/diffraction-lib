@@ -11,6 +11,7 @@ from typing import Any
 import numpy as np
 
 from easydiffraction.core.datablock import DatablockItem
+from easydiffraction.core.validation import validate_datablock_name
 from easydiffraction.datablocks.experiment.categories.absorption.factory import AbsorptionFactory
 from easydiffraction.datablocks.experiment.categories.background.factory import BackgroundFactory
 from easydiffraction.datablocks.experiment.categories.calculator import CalculatorCategoryFactory
@@ -74,7 +75,7 @@ class ExperimentBase(DatablockItem):
         experiment_type: ExperimentType,
     ) -> None:
         super().__init__()
-        self._name = name
+        self._name = validate_datablock_name(name, kind='experiment')
         self._experiment_type = experiment_type
         self._calculator = None
         self._identity.datablock_entry_name = lambda: self.name
@@ -303,7 +304,7 @@ class ExperimentBase(DatablockItem):
         new : str
             New name for this experiment.
         """
-        self._name = new
+        self._name = validate_datablock_name(new, kind='experiment')
 
     @property
     def experiment_type(self) -> object:
@@ -577,7 +578,7 @@ class ScExperimentBase(ExperimentBase):
 
     @property
     def x_descriptor(self) -> NumericDescriptor | None:
-        """Return None because single-crystal data has no 1-D x axis."""
+        """No 1-D x-axis descriptor for single-crystal data."""
         return None
 
     @staticmethod

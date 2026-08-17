@@ -130,6 +130,13 @@ project.display.pattern_comparison(
 
 # %% [markdown]
 # ## Fit edi-cryspy to FullProf
+#
+# Cryspy applies polarization natively from the `K` and `cthm` values
+# passed by EasyDiffraction. FullProf's characteristic X-ray convention
+# for `Rpolarz = 0.5` uses the same polarization expression multiplied
+# by two, so the seeded FullProf scale leaves the native Cryspy pattern
+# half as intense. This fit documents the convention mismatch by letting
+# the scale absorb that factor.
 
 # %%
 experiment.linked_structures['lif'].scale.free = True
@@ -153,6 +160,23 @@ project.display.pattern_comparison(
 # ## Agreement check
 
 # %%
+verify.assert_patterns_agree(
+    [
+        (
+            f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}',
+            calc_fullprof,
+            calc_ed_cryspy,
+        ),
+    ],
+    known_discrepancy=True,
+    reason=(
+        'Cryspy applies the native K/cthm polarization factor directly, '
+        'while FullProf multiplies the characteristic X-ray Rpolarz=0.5 '
+        'form by two; before scale refinement the Cryspy pattern is '
+        'therefore half as intense.'
+    ),
+)
+
 verify.assert_patterns_agree([
     (
         f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',

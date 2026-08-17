@@ -277,7 +277,7 @@ There is no `ed-19` tutorial — id 19 is a dataset only.
 | ed-10  | PDF: Ni, NPD                                 | `pdf-ni-npd`                      |
 | ed-11  | PDF: Si, NOMAD (SNS)                         | `pdf-si-nomad`                    |
 | ed-12  | PDF: NaCl, XRD                               | `pdf-nacl-xrd`                    |
-| ed-13  | Fitting exercise: Si, LBCO                   | `fitting-exercise-si-lbco`        |
+| ed-13  | Refinement exercise: Si, LBCO                | `exercise-refine-si-lbco`         |
 | ed-14  | Refinement: Tb2Ti2O7, HEiDi                  | `refine-tbti-heidi`               |
 | ed-15  | Refinement: Taurine, SENJU                   | `refine-taurine-senju`            |
 | ed-16  | Joint: Si, Bragg+PDF                         | `joint-si-bragg-pdf`              |

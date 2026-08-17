@@ -232,7 +232,7 @@ class _PosteriorPairsContext:
 
     @property
     def n_parameters(self) -> int:
-        """Return the number of plotted parameters."""
+        """The number of plotted parameters."""
         return len(self.parameter_names)
 
 
@@ -248,12 +248,12 @@ class _CorrelationHeatmapContext:
 
     @property
     def n_rows(self) -> int:
-        """Return the number of displayed rows."""
+        """The number of displayed rows."""
         return self.corr_df.shape[0]
 
     @property
     def n_cols(self) -> int:
-        """Return the number of displayed columns."""
+        """The number of displayed columns."""
         return self.corr_df.shape[1]
 
 

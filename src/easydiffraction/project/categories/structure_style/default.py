@@ -101,5 +101,5 @@ class StructureStyle(CategoryItem):
 
     @property
     def as_cif(self) -> str:
-        """Return CIF text for this structure_style category."""
+        """CIF text for this structure_style category."""
         return super().as_cif

@@ -37,8 +37,8 @@ dependencies = [
   'emcee',            # Affine-invariant MCMC sampler
   'dfo-ls',           # Non-linear optimization and curve fitting
   'gemmi',            # Crystallography library
-  'cryspy>=0.12.1',   # Calculations of diffraction patterns
-  'crysfml>=0.7.0',   # Calculations of diffraction patterns
+  'cryspy>=0.13.0',   # Calculations of diffraction patterns
+  'crysfml>=0.8.0',   # Calculations of diffraction patterns
   'diffpy.pdffit2',   # Calculations of Pair Distribution Function (PDF)
   'diffpy.utils',     # Utilities for PDF calculations
   'uncertainties',    # Propagation of uncertainties
@@ -74,6 +74,7 @@ dev = [
   'jupytext',                        # Jupyter notebook text format support
   'jupyterquiz',                     # Quizzes in Jupyter notebooks
   'pydoclint',                       # Docstring linter
+  'docstring-parser-fork!=0.0.15',   # Parser used by pydoclint. 0.0.15 splits NumPy-style defaults -> DOC105 failures
   'format-docstring',                # Docstring formatter
   'docstripy',                       # Convert docstrings to other formats
   'interrogate',                     # Docstring coverage checker
@@ -224,9 +225,9 @@ filterwarnings = [
 # as `Dum` and `HighT`, so they are excluded like vendored files.
 [tool.codespell]
 skip = '*.ipynb,*.lock,*.svg,*.min.js,*.json.gz,*/vendor/*,*/_vendored/*,*/verification/fullprof/*,docs/dev/crysfml-python-api-requests/fullprof/*,docs/dev/package-structure/*,docs/site/*,docs/overrides/*,*/structure/assets/*,node_modules,.pixi'
-# British spelling and a crystallographic abbreviation (B/U) flagged as
-# typos; element symbols live in skipped vendored files.
-ignore-words-list = 'pre-emptively,bu'
+# British spelling, crystallographic abbreviations, and a cited surname
+# flagged as typos; element symbols live in skipped vendored files.
+ignore-words-list = 'pre-emptively,bu,fo,fom,mattern'
 
 ########################
 # Configuration for ruff
@@ -329,6 +330,8 @@ ignore = [
   'DOC', # https://docs.astral.sh/ruff/rules/#pydoclint-doc
   # Disable, as [tool.format_docstring] split one-line docstrings into the canonical multi-line layout
   'D200', # https://docs.astral.sh/ruff/rules/unnecessary-multiline-docstring/
+  # Keep noqa compatibility and its established statement-level suppression semantics.
+  'RUF105', # https://docs.astral.sh/ruff/rules/noqa-comments/
 ]
 
 # Ignore specific rules in certain files or directories

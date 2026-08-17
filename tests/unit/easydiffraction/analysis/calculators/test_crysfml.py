@@ -44,6 +44,8 @@ def _cw_cfl_experiment_stub(
     x,
     zero,
     *,
+    sample_displacement=0.0,
+    sample_transparency=0.0,
     radiation_probe=None,
     wavelength_2=0.0,
     wavelength_2_to_1_ratio=0.0,
@@ -64,6 +66,8 @@ def _cw_cfl_experiment_stub(
         data=SimpleNamespace(x=np.asarray(x, dtype=float)),
         instrument=SimpleNamespace(
             calib_twotheta_offset=_parameter(zero),
+            calib_sample_displacement=_parameter(sample_displacement),
+            calib_sample_transparency=_parameter(sample_transparency),
             setup_wavelength=_parameter(1.494),
             setup_wavelength_2=_parameter(wavelength_2),
             setup_wavelength_2_to_1_ratio=_parameter(wavelength_2_to_1_ratio),
@@ -175,6 +179,22 @@ def test_crysfml_cw_pattern_block_encodes_zero_in_grid():
     assert '  GEN_PATT  9.5  1  11.5' in block
 
 
+def test_crysfml_cw_x_preserves_irregular_points_and_applies_corrections():
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    calc = CrysfmlCalculator()
+    x = np.array([10.0, 10.7, 12.0])
+    experiment = _cw_cfl_experiment_stub(
+        x,
+        zero=0.5,
+        sample_displacement=0.2,
+        sample_transparency=0.3,
+    )
+
+    expected = x - 0.5 - 0.2 * np.cos(np.deg2rad(x)) - 0.3 * np.sin(np.deg2rad(x))
+    assert np.allclose(calc._cw_x(experiment), expected)
+
+
 def test_crysfml_cw_pattern_block_uses_xray_patt_type():
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
     from easydiffraction.datablocks.experiment.item.enums import RadiationProbeEnum
@@ -234,9 +254,9 @@ def test_crysfml_cw_doublet_uses_single_wavelength_runs(monkeypatch):
     cfl = calc._pattern_block(experiment)
     calls = []
 
-    def _raw_pattern(lines):
+    def _raw_pattern(lines, x):
         lambda_line = next(line for line in lines if line.lstrip().startswith('LAMBDA'))
-        calls.append(lambda_line)
+        calls.append((lambda_line, x.copy()))
         if lambda_line == '  LAMBDA  1.494  1.494  0':
             return [10.0, 20.0]
         if lambda_line == '  LAMBDA  1.5444  1.5444  0':
@@ -247,8 +267,31 @@ def test_crysfml_cw_doublet_uses_single_wavelength_runs(monkeypatch):
 
     out = calc._calculate_adjusted_pattern(cfl, experiment)
 
-    assert calls == ['  LAMBDA  1.494  1.494  0', '  LAMBDA  1.5444  1.5444  0']
+    assert [call[0] for call in calls] == [
+        '  LAMBDA  1.494  1.494  0',
+        '  LAMBDA  1.5444  1.5444  0',
+    ]
+    assert all(np.array_equal(call[1], [10.0, 11.0]) for call in calls)
     assert out == [11.0, 22.0]
+
+
+def test_crysfml_raw_pattern_passes_explicit_x(monkeypatch):
+    import easydiffraction.analysis.calculators.crysfml as MUT
+
+    calc = MUT.CrysfmlCalculator()
+    x = np.array([10.0, 10.7, 12.0])
+    received = {}
+
+    def _patterns_simulation(cfl, *, x):
+        received['cfl'] = cfl
+        received['x'] = x
+        return [{'y': [1.0, 2.0, 3.0]}]
+
+    monkeypatch.setattr(MUT.cfml_py_utilities, 'patterns_simulation', _patterns_simulation)
+
+    assert calc._calculate_raw_pattern(['PATTERN_test'], x) == [1.0, 2.0, 3.0]
+    assert received['cfl'] == ['PATTERN_test']
+    assert received['x'] is x
 
 
 def test_crysfml_adjust_pattern_length_truncates():

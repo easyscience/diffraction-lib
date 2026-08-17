@@ -51,7 +51,7 @@ class AtomViewEnum(StrEnum):
 
     @property
     def is_adp(self) -> bool:
-        """Return whether atoms are drawn as displacement surfaces."""
+        """Whether atoms are drawn as displacement surfaces."""
         return self is AtomViewEnum.ADP
 
     def radius_model(self) -> str:

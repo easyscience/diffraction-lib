@@ -4,8 +4,8 @@
 # Verifies the simple non-convoluted pseudo-Voigt time-of-flight peak
 # profile.
 #
-# **Refinement:** the overall scale only; all other parameters are
-# taken from the FullProf reference.
+# **Refinement:** none. The calculation uses parameters from the
+# FullProf reference directly.
 
 # %%
 import easydiffraction as edi
@@ -122,36 +122,15 @@ project.display.pattern_comparison(
 )
 
 # %% [markdown]
-# ## Fit edi-cryspy to FullProf
-
-# %%
-experiment.linked_structures['fe'].scale.free = True
-
-project.analysis.fit()
-project.display.fit.results()
-
-project.analysis.calculate()
-calc_ed_cryspy_refined = experiment.data.intensity_calc
-LABEL_ED_CRYSPY_REFINED = verify.engine_label('cryspy', note='scale only')
-
-project.display.pattern_comparison(
-    'fe',
-    reference=calc_fullprof,
-    candidate=calc_ed_cryspy_refined,
-    reference_label=FULLPROF_LABEL,
-    candidate_label=LABEL_ED_CRYSPY_REFINED,
-)
-
-# %% [markdown]
 # ## Agreement check
 
 # %%
 verify.assert_patterns_agree(
     [
         (
-            f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}',
+            f'{LABEL_ED_CRYSPY} vs {FULLPROF_LABEL}',
             verify.restrict_to_included(experiment, calc_fullprof),
-            calc_ed_cryspy_refined,
+            calc_ed_cryspy,
         ),
     ],
 )

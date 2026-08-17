@@ -352,7 +352,7 @@ class Project(GuardedBase):  # noqa: PLR0904
     @property
     def full_name(self) -> str:
         """
-        Return the full project name (alias for :attr:`name`).
+        The full project name (alias for :attr:`name`).
 
         Returns
         -------
@@ -423,12 +423,12 @@ class Project(GuardedBase):  # noqa: PLR0904
 
     @property
     def parameters(self) -> list:
-        """Return parameters from all structures and experiments."""
+        """Parameters from all structures and experiments."""
         return self.structures.parameters + self.experiments.parameters
 
     @property
     def free_parameters(self) -> list:
-        """Return free parameters from structures and experiments."""
+        """Free parameters from structures and experiments."""
         return self.structures.free_parameters + self.experiments.free_parameters
 
     @property

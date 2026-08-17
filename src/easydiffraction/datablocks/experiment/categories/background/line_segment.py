@@ -8,6 +8,8 @@ Interpolate user-specified points to form a background curve.
 
 from __future__ import annotations
 
+from typing import NamedTuple
+
 import numpy as np
 from scipy.interpolate import interp1d
 from scipy.signal import find_peaks
@@ -36,6 +38,15 @@ from easydiffraction.utils.logging import log
 from easydiffraction.utils.utils import render_table
 
 _MIN_ANCHOR_POINTS = 2  # Minimum line-segment anchors (the two endpoints)
+
+
+class _EstimationArrays(NamedTuple):
+    """Included data arrays used by the background estimator."""
+
+    x: np.ndarray
+    intensity_meas: np.ndarray
+    intensity_calc: np.ndarray
+    intensity_bkg: np.ndarray
 
 
 class LineSegment(CategoryItem):
@@ -244,6 +255,115 @@ def _model_peak_mask(peak_only: np.ndarray) -> np.ndarray:
     return mask
 
 
+def _sync_excluded_regions(parent: object) -> None:
+    """
+    Apply pending excluded-region edits before reading active arrays.
+    """
+    excluded_regions = getattr(parent, 'excluded_regions', None)
+    update = getattr(excluded_regions, '_update', None)
+    has_regions = bool(getattr(excluded_regions, '_items', ()))
+    last_signature = getattr(excluded_regions, '_last_applied_signature', None)
+    had_applied_regions = bool(last_signature and last_signature[1])
+    if update is not None and (has_regions or had_applied_regions):
+        update(called_by_minimizer=False)
+
+
+def _status_included_mask(data: object, x: np.ndarray) -> np.ndarray | None:
+    """
+    Return a ``calc_status == 'incl'`` mask aligned with ``x``.
+    """
+    try:
+        calc_status = np.asarray(data.calc_status)
+    except AttributeError:
+        return None
+    if calc_status.shape != x.shape:
+        return None
+    return calc_status == 'incl'
+
+
+def _point_descriptor_values(data: object, name: str) -> np.ndarray | None:
+    """
+    Return all-point descriptor values from ``data._items``.
+    """
+    items = getattr(data, '_items', None)
+    if items is None:
+        return None
+
+    values = []
+    for item in items:
+        descriptor = getattr(item, name, None)
+        if descriptor is None:
+            return None
+        values.append(descriptor.value)
+    return np.asarray(values, dtype=float)
+
+
+def _aligned_intensity_array(
+    data: object,
+    name: str,
+    public_values: np.ndarray,
+    full_shape: tuple[int, ...],
+) -> np.ndarray | None:
+    """
+    Return an array aligned with the full grid, if available.
+    """
+    values = _point_descriptor_values(data, name)
+    if values is None:
+        values = public_values
+    if values.shape != full_shape:
+        return None
+    return values
+
+
+def _active_estimation_arrays(
+    data: object,
+) -> _EstimationArrays:
+    """
+    Return included arrays for background estimation.
+
+    Powder data properties are already included-only after
+    ``calc_status`` has been applied. When a full-grid status array is
+    available, use it directly so excluded points cannot leak into
+    background anchors.
+    """
+    public_x = np.asarray(data.x, dtype=float)
+    public_meas = np.asarray(data.intensity_meas, dtype=float)
+    public_calc = np.asarray(data.intensity_calc, dtype=float)
+    public_bkg = np.asarray(data.intensity_bkg, dtype=float)
+
+    full_x = np.asarray(getattr(data, 'unfiltered_x', public_x), dtype=float)
+    included = _status_included_mask(data, full_x)
+    if included is None:
+        return _EstimationArrays(public_x, public_meas, public_calc, public_bkg)
+
+    full_meas = _aligned_intensity_array(data, 'intensity_meas', public_meas, full_x.shape)
+    full_calc = _aligned_intensity_array(data, 'intensity_calc', public_calc, full_x.shape)
+    full_bkg = _aligned_intensity_array(data, 'intensity_bkg', public_bkg, full_x.shape)
+    if full_meas is None or full_calc is None or full_bkg is None:
+        return _EstimationArrays(public_x, public_meas, public_calc, public_bkg)
+
+    return _EstimationArrays(
+        full_x[included],
+        full_meas[included],
+        full_calc[included],
+        full_bkg[included],
+    )
+
+
+def _estimate_curve_inputs(
+    arrays: _EstimationArrays,
+    *,
+    use_model: bool,
+) -> tuple[np.ndarray, np.ndarray | None]:
+    """
+    Return estimator y-values and a forbidden-peak mask.
+    """
+    if use_model and np.any(arrays.intensity_calc):
+        peak_only = arrays.intensity_calc - arrays.intensity_bkg
+        return arrays.intensity_meas - peak_only, _model_peak_mask(peak_only)
+    return arrays.intensity_meas, None
+
+
 @BackgroundFactory.register
 class LineSegmentBackground(BackgroundBase):
     """Linear-interpolation background between user-defined points."""
@@ -327,24 +447,17 @@ class LineSegmentBackground(BackgroundBase):
         """
         resolved = _resolve_method(method)
         _validate_overrides(width, smoothness, n_points)
+        _sync_excluded_regions(self._parent)
         data = self._parent.data
-        x = np.asarray(data.x, dtype=float)
-        if x.size == 0:
+        arrays = _active_estimation_arrays(data)
+        if arrays.x.size == 0:
             log.warning('No active data points; cannot estimate a background.')
             return
-        intensity_meas = np.asarray(data.intensity_meas, dtype=float)
-        intensity_calc = np.asarray(data.intensity_calc, dtype=float)
 
-        if use_model and np.any(intensity_calc):
-            peak_only = intensity_calc - np.asarray(data.intensity_bkg, dtype=float)
-            y = intensity_meas - peak_only
-            peaks = _model_peak_mask(peak_only)
-        else:
-            y = intensity_meas
-            peaks = None
+        y, peaks = _estimate_curve_inputs(arrays, use_model=use_model)
 
         result = estimate.estimate_background_curve(
-            x,
+            arrays.x,
             y,
             method=resolved,
             peaks=peaks,
@@ -354,7 +467,7 @@ class LineSegmentBackground(BackgroundBase):
         )
 
         anchor_x = result.anchors[:, 0]
-        measured = np.interp(anchor_x, x, intensity_meas)
+        measured = np.interp(anchor_x, arrays.x, arrays.intensity_meas)
         heights = np.clip(result.anchors[:, 1], 0.0, measured)
 
         if len(self):
@@ -365,10 +478,9 @@ class LineSegmentBackground(BackgroundBase):
         for point in self._items:
             point.intensity.free = False
 
-        count = len(self)
-        width_pts = result.width
-        summary = f'Background estimate: {resolved}, {count} points, width {width_pts:.0f} pts'
-        log.info(summary)
+        log.info(
+            f'Background estimate: {resolved}, {len(self)} points, width {result.width:.0f} pts'
+        )
 
     def show(self) -> None:
         """Print a table of control points (position, intensity)."""

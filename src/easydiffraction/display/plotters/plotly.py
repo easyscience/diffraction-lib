@@ -55,9 +55,11 @@ from easydiffraction.display.theme import display_theme_colors
 from easydiffraction.display.theme import display_theme_colors_for_template
 from easydiffraction.utils._vendored.theme_detect import is_dark
 from easydiffraction.utils.environment import FigureEmbedMode
+from easydiffraction.utils.environment import in_colab
 from easydiffraction.utils.environment import in_jupyter
 from easydiffraction.utils.environment import in_pycharm
 from easydiffraction.utils.environment import resolve_figure_embed_mode
+from easydiffraction.utils.utils import _get_version_for_url
 
 # Live notebooks self-host the Plotly runtime and the shared figure
 # loader (both ship in the wheel) instead of fetching Plotly from a CDN.
@@ -66,6 +68,14 @@ from easydiffraction.utils.environment import resolve_figure_embed_mode
 # attribute that resets with each new kernel process).
 _PLOTLY_RUNTIME_ASSET = 'vendor/plotly/plotly-cartesian.min.js'
 _FIGURE_LOADER_ASSET = 'assets/ed-figures.js'
+_DOCS_ASSET_BASE_URL = 'https://easyscience.github.io/diffraction-lib'
+_TAG_ASSET_CDN_BASE_URL = 'https://cdn.jsdelivr.net/gh/easyscience/diffraction-lib'
+_COLAB_PLOTLY_ASSET_PATH = 'assets/javascripts/vendor/plotly/plotly-cartesian.min.js'
+_COLAB_FIGURE_LOADER_ASSET_PATH = 'assets/javascripts/ed-figures.js'
+_SOURCE_PLOTLY_ASSET_PATH = (
+    'src/easydiffraction/display/plotters/vendor/plotly/plotly-cartesian.min.js'
+)
+_SOURCE_FIGURE_LOADER_ASSET_PATH = 'src/easydiffraction/display/plotters/assets/ed-figures.js'
 
 
 @cache
@@ -1233,8 +1243,18 @@ class PlotlyPlotter(PlotterBase):
 
         # The docs site (SHARED) bakes a lazy placeholder into the page,
         # which loads the runtime once and the loader scans for it.
-        if resolve_figure_embed_mode() is FigureEmbedMode.SHARED:
+        embed_mode = resolve_figure_embed_mode()
+        if embed_mode is FigureEmbedMode.SHARED:
             display(HTML(self._serialize_html_shared(fig)))
+            return
+
+        # Every Colab cell output lives in a separate iframe, so a
+        # runtime injected by an earlier cell is not visible here. Load
+        # the same version-pinned assets used by the documentation site
+        # into each frame by URL. The browser cache avoids embedding or
+        # transferring the 1.4 MB runtime in every notebook output.
+        if in_colab():
+            display(HTML(self._serialize_html_colab(fig)))
             return
 
         # Live notebooks render through one HTML output: a target div
@@ -1261,6 +1281,172 @@ class PlotlyPlotter(PlotterBase):
             '</script>'
         )
         display(HTML(self._wrap_html_figure(fig, target_html) + script))
+
+    @staticmethod
+    def _colab_asset_urls() -> tuple[tuple[str, ...], tuple[str, ...]]:
+        """Return version-matched Plotly and loader URL candidates."""
+        version = _get_version_for_url()
+        root = f'{_DOCS_ASSET_BASE_URL}/{version}'
+        plotly_urls = [f'{root}/{_COLAB_PLOTLY_ASSET_PATH}']
+        loader_urls = [f'{root}/{_COLAB_FIGURE_LOADER_ASSET_PATH}']
+
+        # A release wheel can reach PyPI before its documentation deploy
+        # finishes. The git tag already exists at that point, so use its
+        # immutable jsDelivr snapshot as an exact-version fallback. Dev
+        # builds deliberately have no branch fallback: loading main's
+        # loader into arbitrary development code could create version
+        # skew that is harder to diagnose than a visible loading error.
+        if version != 'dev':
+            tag_root = f'{_TAG_ASSET_CDN_BASE_URL}@v{version}'
+            plotly_urls.append(f'{tag_root}/{_SOURCE_PLOTLY_ASSET_PATH}')
+            loader_urls.append(f'{tag_root}/{_SOURCE_FIGURE_LOADER_ASSET_PATH}')
+
+        return tuple(plotly_urls), tuple(loader_urls)
+
+    @staticmethod
+    def _loading_skeleton_html(height: int, *, overlay: bool = False) -> str:
+        """
+        Return the shared loading placeholder for a figure.
+
+        The docs site styles ``.ed-figure-skeleton`` from its
+        stylesheet, so only the height is inlined there; inlining more
+        would silently shadow later stylesheet edits. ``overlay`` is for
+        hosts with no stylesheet (Colab), where the placeholder must
+        center its own text and sit above the plot target.
+        """
+        styles = [f'height: {height}px']
+        if overlay:
+            styles.extend((
+                'display: flex',
+                'align-items: center',
+                'justify-content: center',
+                'font-size: 0.75rem',
+                'position: absolute',
+                'inset: 0',
+                'z-index: 1',
+            ))
+        return f'<div class="ed-figure-skeleton" style="{"; ".join(styles)}">Loading plot…</div>'
+
+    @classmethod
+    def _serialize_html_colab(cls, fig: object) -> str:
+        """
+        Serialize one independently renderable Google Colab output.
+
+        Colab isolates every cell output in its own iframe. The output
+        therefore loads the version-matched runtime and shared figure
+        loader by URL, then renders only after both scripts are ready.
+        Runtime bytes are never embedded in the notebook output.
+
+        Parameters
+        ----------
+        fig : object
+            A :class:`plotly.graph_objects.Figure` to serialize.
+
+        Returns
+        -------
+        str
+            HTML containing the figure spec and frame-local bootstrap.
+        """
+        plot_id = f'ed-fig-{uuid.uuid4().hex}'
+        height = cls._figure_height(fig)
+        plotly_urls, loader_urls = cls._colab_asset_urls()
+        target_html = (
+            '<div class="ed-figure" data-ed-figure="plotly" '
+            'style="position: relative">'
+            f'{cls._loading_skeleton_html(height, overlay=True)}'
+            f'<div class="ed-figure-target" id="{plot_id}" '
+            f'style="min-height: {height}px"></div>'
+            '</div>'
+        )
+        script = f"""
+<script type="text/javascript">
+(function () {{
+  window.__edAssetPromises = window.__edAssetPromises || {{}};
+
+  function loadScript(urls, ready) {{
+    if (ready()) {{
+      return Promise.resolve();
+    }}
+    var cacheKey = urls.join('|');
+    if (window.__edAssetPromises[cacheKey]) {{
+      return window.__edAssetPromises[cacheKey];
+    }}
+
+    function tryUrl(index) {{
+      if (index >= urls.length) {{
+        return Promise.reject(
+          new Error('Unable to load EasyDiffraction plot asset: ' + urls.join(', '))
+        );
+      }}
+      return new Promise(function (resolve, reject) {{
+        var script = document.createElement('script');
+        script.src = urls[index];
+        script.async = false;
+        script.onload = function () {{
+          if (ready()) {{
+            resolve();
+            return;
+          }}
+          script.remove();
+          tryUrl(index + 1).then(resolve, reject);
+        }};
+        script.onerror = function () {{
+          script.remove();
+          tryUrl(index + 1).then(resolve, reject);
+        }};
+        document.head.appendChild(script);
+      }});
+    }}
+
+    var loading = tryUrl(0);
+    window.__edAssetPromises[cacheKey] = loading;
+    loading.catch(function () {{
+      delete window.__edAssetPromises[cacheKey];
+    }});
+    return loading;
+  }}
+
+  // The loader does not touch Plotly until it renders, so both assets
+  // can travel together: one round trip instead of two per frame.
+  var rendering = Promise.all([
+    loadScript({json.dumps(plotly_urls)}, function () {{
+      return Boolean(window.Plotly);
+    }}),
+    loadScript({json.dumps(loader_urls)}, function () {{
+      return Boolean(window.edFigures && window.edFigures.renderSpec);
+    }}),
+  ]).then(function () {{
+    return window.edFigures.renderSpec(
+      {json.dumps(plot_id)},
+      {cls._figure_spec_json(fig)}
+    );
+  }});
+
+  var settled = rendering.catch(function (error) {{
+    console.error(error);
+    var target = document.getElementById({json.dumps(plot_id)});
+    var figure = target && (target.closest('.ed-figure') || target);
+    var skeleton = figure && figure.querySelector('.ed-figure-skeleton');
+    if (skeleton) {{
+      skeleton.textContent = 'Unable to load interactive plot. Re-run the cell to retry.';
+    }}
+  }});
+
+  // Hand Colab the settled promise, so the output frame is released
+  // only once the plot (or its error message) is on screen, and Colab
+  // never receives a rejected promise of ours.
+  if (
+    window.google &&
+    window.google.colab &&
+    window.google.colab.output &&
+    typeof window.google.colab.output.pauseOutputUntil === 'function'
+  ) {{
+    window.google.colab.output.pauseOutputUntil(settled);
+  }}
+}})();
+</script>
+""".strip()
+        return cls._wrap_html_figure(fig, target_html) + script
 
     @classmethod
     def _live_runtime_bootstrap_js(cls) -> str:
@@ -1400,8 +1586,7 @@ class PlotlyPlotter(PlotterBase):
         height = cls._figure_height(fig)
         html_fig = (
             '<div class="ed-figure" data-ed-figure="plotly">'
-            f'<div class="ed-figure-skeleton" style="height: {height}px">'
-            'Loading plot…</div>'
+            f'{cls._loading_skeleton_html(height)}'
             f'<div class="ed-figure-target" id="{plot_id}" '
             f'style="min-height: {height}px"></div>'
             '<script type="application/json" class="ed-figure-spec">'

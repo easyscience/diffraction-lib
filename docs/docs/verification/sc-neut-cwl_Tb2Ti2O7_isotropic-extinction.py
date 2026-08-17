@@ -4,8 +4,7 @@
 # Verifies the cryspy isotropic extinction model against a FullProf
 # single-crystal reference with isotropic ADPs.
 #
-# **Refinement:** the overall scale and the extinction radius. Known
-# difference: cryspy and FullProf use different extinction conventions.
+# **Refinement:** the overall scale and the extinction radius.
 
 # %%
 import easydiffraction as edi
@@ -77,7 +76,7 @@ structure.show_as_text()
 # %%
 FULLPROF_PROJECT_DIR = 'sc-neut-cwl_tbti_isotropic-extinction'
 FULLPROF_OUT_FILE = 'tbti.out'
-FULLPROF_SCALE = 0.2609  # FullProf Scale
+FULLPROF_SCALE = 4.1744  # FullProf Scale
 FULLPROF_WAVELENGTH = 0.7930  # FullProf Lambda
 # cryspy uses Becker-Coppens isotropic extinction, not the one from
 # FullProf.
@@ -164,6 +163,4 @@ verify.assert_patterns_agree(
     [
         (f'{LABEL_ED_CRYSPY_REFINED} vs {FULLPROF_LABEL}', reference_refined, candidate_refined),
     ],
-    known_discrepancy=True,
-    reason='cryspy and FullProf use different extinction conventions.',
 )

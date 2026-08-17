@@ -10,6 +10,29 @@ def test_module_import():
     assert expected_module_name == actual_module_name
 
 
+def test_validate_datablock_name_rejects_uppercase_with_suggestion():
+    import pytest
+
+    from easydiffraction.core.validation import validate_datablock_name
+
+    assert validate_datablock_name('pdf-exp', kind='experiment') == 'pdf-exp'
+
+    with pytest.raises(
+        ValueError,
+        match=r"Invalid experiment name 'P021'.*Use 'p021' instead",
+    ):
+        validate_datablock_name('P021', kind='experiment')
+
+
+def test_validate_datablock_name_rejects_non_string():
+    import pytest
+
+    from easydiffraction.core.validation import validate_datablock_name
+
+    with pytest.raises(TypeError, match='Structure name must be a string'):
+        validate_datablock_name(21, kind='structure')
+
+
 def test_data_type_validator_accepts_and_rejects(monkeypatch):
     from easydiffraction.core.validation import AttributeSpec
     from easydiffraction.core.validation import DataTypes

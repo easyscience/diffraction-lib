@@ -305,6 +305,7 @@
 │   │   │   │   ├── 📄 factory.py
 │   │   │   │   │   └── 🏷️ class BackgroundFactory
 │   │   │   │   └── 📄 line_segment.py
+│   │   │   │       ├── 🏷️ class _EstimationArrays
 │   │   │   │       ├── 🏷️ class LineSegment
 │   │   │   │       └── 🏷️ class LineSegmentBackground
 │   │   │   ├── 📁 calculator

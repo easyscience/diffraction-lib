@@ -24,6 +24,48 @@ _MISSING_DEFAULT = object()
 # ======================================================================
 
 
+def validate_datablock_name(value: str, *, kind: str) -> str:
+    """Return a datablock name that survives backend normalization.
+
+    Calculator backends such as Cryspy normalize CIF datablock names to
+    lowercase. Reject uppercase names at the public model boundary so
+    their identity cannot change during serialization and calculation.
+
+    Parameters
+    ----------
+    value : str
+        Proposed datablock name.
+    kind : str
+        User-facing owner label, for example ``'structure'`` or
+        ``'experiment'``.
+
+    Returns
+    -------
+    str
+        The unchanged valid name.
+
+    Raises
+    ------
+    TypeError
+        If *value* is not a string.
+    ValueError
+        If *value* contains uppercase letters.
+    """
+    if not isinstance(value, str):
+        msg = f'{kind.capitalize()} name must be a string, got {type(value).__name__}.'
+        raise TypeError(msg)
+
+    lowercase_value = value.lower()
+    if value != lowercase_value:
+        msg = (
+            f'Invalid {kind} name {value!r}: datablock names cannot contain '
+            f'uppercase letters. Use {lowercase_value!r} instead.'
+        )
+        raise ValueError(msg)
+
+    return value
+
+
 # TODO: MkDocs doesn't unpack types
 class DataTypeHints:
     """Type hint aliases for numeric, string, and boolean types."""
