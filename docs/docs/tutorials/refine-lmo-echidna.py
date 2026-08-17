@@ -111,9 +111,9 @@ project.display.structure(struct_name='lmo')
 #
 # ### Download Data
 #
-# Download the LMO pattern from the versioned EasyScience diffraction
-# data repository. The columns contain 2-theta, intensity, and the
-# standard uncertainty of the measured intensity.
+# Download the LMO pattern from the EasyDiffraction online data
+# repository. The columns contain 2-theta, intensity, and the standard
+# uncertainty of the measured intensity.
 
 # %%
 data_path = edi.download_data('meas-lmo-echidna', destination='data')
