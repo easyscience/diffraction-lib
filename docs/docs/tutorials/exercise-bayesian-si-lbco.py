@@ -12,11 +12,21 @@
 # (MCMC) sampling to explore the joint posterior distribution of the
 # free parameters. This allows us to investigate questions such as:
 #
-# - Which parameter values are supported by the data?
+# - Where is each posterior distribution centered, and how does that
+#   compare with the deterministic best-fit value?
 # - How broad are their credible intervals?
-# - Which parameters are correlated?
+# - Do the local parameter correlations from the deterministic fit
+#   persist across the posterior, and are any relationships nonlinear or
+#   asymmetric?
 # - How does parameter uncertainty propagate into the calculated
 #   diffraction pattern?
+#
+# The deterministic fit already provides a correlation matrix derived
+# from the local covariance estimate near the best-fit point. Bayesian
+# sampling extends this view by exploring how parameters vary together
+# throughout the joint posterior. It can therefore reveal curved,
+# asymmetric, bounded, or multimodal relationships that one local
+# correlation coefficient cannot describe.
 #
 # This notebook follows the same teaching structure as the refinement
 # tutorial:
@@ -32,7 +42,7 @@
 # checks.
 
 # %% [markdown]
-# ## 🛠️ Import Libraries
+# ## 🛠️ Import Library
 
 # %%
 import easydiffraction as edi
@@ -188,12 +198,12 @@ project_1.display.fit.results()
 # effects independently within this model.
 
 # %%
-project_1.display.fit.correlations()
+project_1.display.fit.correlations(max_parameters=5)
 
 # %% [markdown]
 # The matrix shows only one triangular half because the other half would
-# contain the same values in reverse order. EasyDiffraction
-# automatically filters the chart to keep the strongest relationships
+# contain the same values in reverse order. With `max_parameters=5`,
+# EasyDiffraction filters the chart to keep the strongest relationships
 # readable. In an interactive Jupyter display, hover over a colored cell
 # to see the two full parameter names and the numerical correlation
 # coefficient.
@@ -302,7 +312,7 @@ project_1.display.fit.results()
 # together, and how strongly?*
 
 # %%
-project_1.display.fit.correlations()
+project_1.display.fit.correlations(max_parameters=5)
 
 # %% [markdown]
 # Compare this chart with the local chart above. Similar coefficients
@@ -332,7 +342,7 @@ project_1.display.fit.correlations()
 #   the lower triangle.
 
 # %%
-project_1.display.posterior.pairs()
+project_1.display.posterior.pairs(max_parameters=5)
 
 # %% [markdown]
 # In Jupyter, the default plotting engine resolves to interactive Plotly.
@@ -370,10 +380,10 @@ project_1.display.posterior.distribution()
 # %% [markdown]
 # ### 📊 Understand the Posterior-Predictive Plot
 #
-# Posterior prediction propagates every retained parameter combination
-# through the diffraction calculation. The best-posterior-sample curve
-# shows one calculated pattern, while the 95% band shows parameter
-# uncertainty propagated into the pattern.
+# Posterior prediction propagates an evenly spaced subset of retained
+# parameter combinations through the diffraction calculation. The
+# best-posterior-sample curve shows one calculated pattern, while the
+# 95% band shows parameter uncertainty propagated into the pattern.
 
 # %%
 project_1.display.posterior.predictive(expt_name='sim_lbco')
@@ -520,7 +530,7 @@ project_2.analysis.fit()
 project_2.display.fit.results()
 
 # %% tags=["solution", "hide-input"]
-project_2.display.fit.correlations()
+project_2.display.fit.correlations(max_parameters=5)
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # The `broad_gauss_sigma_1`–`broad_gauss_sigma_2` pair is absent because
@@ -532,7 +542,7 @@ project_2.display.fit.correlations()
 # ### 🎲 Exercise 4: Set New Sampling Bounds
 #
 # Derive finite bounds from the new local-fit uncertainties and verify
-# them. Why must the bounds be recalculated instead of copied from
+# them. Why is it better to recalculate the bounds than to copy them from
 # `project_1`?
 
 # %% [markdown]
@@ -620,18 +630,19 @@ project_2.display.fit.results()
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the same `display.fit.correlations()` and
-# `display.posterior.pairs()` calls as in the introduction. Hover over
-# cells and sample points to identify the parameter pairs and values.
+# Use the same `display.fit.correlations(max_parameters=5)` and
+# `display.posterior.pairs(max_parameters=5)` calls as in the
+# introduction. Hover over cells and sample points to identify the
+# parameter pairs and values.
 
 # %% [markdown]
 # **Solution:**
 
 # %% tags=["solution", "hide-input"]
-project_2.display.fit.correlations()
+project_2.display.fit.correlations(max_parameters=5)
 
 # %% tags=["solution", "hide-input"]
-project_2.display.posterior.pairs()
+project_2.display.posterior.pairs(max_parameters=5)
 
 # %% [markdown] tags=["dmsc-school-hint"]
 # The original pair is gone because only sampled parameters appear in
@@ -746,15 +757,15 @@ project_2.save()
 # - understand how fixing one member of a correlated pair changes the
 #   statistical question and the reported uncertainty.
 #
-# For scientific analysis, run longer chains, verify convergence,
+# For a scientific analysis, run longer chains, verify convergence,
 # examine sensitivity to bounds and fixed values, and reconsider the
 # diffraction model when systematic residuals remain.
 
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# Congratulations — you've now completed the diffraction data analysis
-# part of the DMSC Summer School!
+# Congratulations — you've now completed Part 2 of the diffraction data
+# analysis exercises for the DMSC Summer School!
 #
 # If you'd like to keep exploring, the EasyDiffraction library offers
 # many additional tutorials and examples on the official documentation

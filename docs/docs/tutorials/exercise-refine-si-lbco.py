@@ -1,9 +1,10 @@
 # %% [markdown]
-# # Fitting Powder Diffraction data
+# # Fitting Powder Diffraction Data
 #
 # This notebook guides you through the Rietveld refinement of crystal
 # structures using simulated powder diffraction data. It consists of two
 # parts:
+#
 # - Introduction: A simple reference fit using silicon (Si) crystal
 #   structure.
 # - Exercise: A more complex fit using La₀.₅Ba₀.₅CoO₃ (LBCO) crystal
@@ -14,7 +15,7 @@
 # We start by importing the necessary library for the analysis. In this
 # notebook, we use the EasyDiffraction library. As mentioned in the
 # introduction to EasyScience, EasyDiffraction is built on that
-# framework and offers a high-level interface focused specifically for
+# framework and offers a high-level interface focused specifically on
 # diffraction analysis.
 #
 # This notebook is self-contained and designed for hands-on learning.
@@ -75,7 +76,7 @@ project_1 = edi.Project(name='reference')
 
 # %%
 project_1.metadata.title = 'Reference Silicon Fit'
-project_1.metadata.description = 'Fitting simulated powder diffraction pattern of Si.'
+project_1.metadata.description = 'Fitting a simulated powder diffraction pattern of Si.'
 
 # %% [markdown]
 # ### 🔬 Create an Experiment
@@ -110,7 +111,7 @@ si_xye_path = edi.download_data('meas-si-mcstas-dmsc2025', destination=data_dir)
 # %% [markdown]
 # Now we can create the experiment and load the measured data. In this
 # case, the experiment is defined as a powder diffraction measurement
-# using time-of-flight neutrons. The measured data is loaded from a file
+# using time-of-flight neutrons. The measured data are loaded from a file
 # containing the reduced diffraction pattern of Si from the data
 # reduction notebook.
 
@@ -132,11 +133,11 @@ project_1.experiments.add_from_data_path(
 # #### Inspect Measured Data
 #
 # After creating the experiment, we can examine the measured data. The
-# measured data consists of a diffraction pattern having time-of-flight
+# measured data consist of a diffraction pattern containing time-of-flight
 # (TOF) values and corresponding intensities. The TOF values are given
 # in microseconds (μs), and the intensities are in arbitrary units.
 #
-# The data is stored in XYE format, a simple text format containing
+# The data are stored in XYE format, a simple text format containing
 # three columns: TOF, intensity, and intensity error (if available).
 
 # %% [markdown] tags=["doc-link"]
@@ -188,11 +189,11 @@ project_1.display.pattern(expt_name='sim_si')
 # %% [markdown]
 # #### Set Instrument
 #
-# After the experiment is created and measured data is loaded, we need
+# After the experiment is created and measured data are loaded, we need
 # to set the instrument parameters.
 #
 # In this type of experiment, the instrument parameters define how the
-# measured data is converted between d-spacing and time-of-flight (TOF)
+# measured data are converted between d-spacing and time-of-flight (TOF)
 # during the data reduction process as well as the angular position of
 # the detector. So, we put values based on those from the reduction.
 # These values can be found in the header of the corresponding .XYE
@@ -334,7 +335,7 @@ project_1.experiments['sim_si'].peak.rise_alpha_1 = 0.0147
 # other sources of incoherent scattering.
 #
 # The background can be modeled in various ways. In this example, we
-# will use a simple line segment background, which is a common approach
+# will use a simple line-segment background, which is a common approach
 # for powder diffraction data. The background intensity at any point is
 # defined by linear interpolation between neighboring points. The
 # background points are selected to span the range of the diffraction
@@ -345,12 +346,12 @@ project_1.experiments['sim_si'].peak.rise_alpha_1 = 0.0147
 # represent the background level in the diffraction pattern free from
 # any peaks.
 #
-# The background points are added using the `add` method of the
-# `background` object. The `x` parameter represents the TOF value, and
-# the `y` parameter represents the intensity value at that TOF.
+# The background points are added using the `create` method of the
+# `background` object. The `position` argument represents the TOF value,
+# and the `intensity` argument represents the intensity at that TOF.
 #
 # Let's set all the background points at a constant value of 0.01, which
-# can be roughly estimated by the eye, and we will refine them later
+# can be roughly estimated by eye, and we will refine them later
 # during the fitting process.
 
 # %% [markdown] tags=["doc-link"]
@@ -448,7 +449,7 @@ project_1.experiments['sim_si'].background.create(id='7', position=110000, inten
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/model/)
 # for more details about structures and their purpose in the data
 # analysis workflow.
 
@@ -463,7 +464,7 @@ project_1.structures.create(name='si')
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#space-group-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/model/#space-group-category)
 # for more details about the space group.
 
 # %%
@@ -475,7 +476,7 @@ project_1.structures['si'].space_group.coord_system_code = '1'
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#cell-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/model/#cell-category)
 # for more details about the unit cell parameters.
 
 # %%
@@ -486,7 +487,7 @@ project_1.structures['si'].cell.length_a = 5.43
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/structure/#atom-sites-category)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/analysis-workflow/model/#atom-sites-category)
 # for more details about the atom sites category.
 
 # %%
@@ -538,11 +539,12 @@ project_1.experiments['sim_si'].linked_structures.create(structure_id='si', scal
 # process.
 #
 # Unlike in the previous analysis notebooks, we will not create a
-# **math_model** object here. The mathematical model used to calculate
+# `math_model` object here. The mathematical model used to calculate
 # the expected diffraction pattern is already defined in the library and
 # will be applied automatically during the fitting process.
 
-# %% **Reminder:** [markdown]
+# %% [markdown]
+# **Reminder:**
 #
 # The fitting process involves comparing the measured diffraction
 # pattern with the calculated diffraction pattern based on the crystal
@@ -566,8 +568,8 @@ project_1.experiments['sim_si'].linked_structures.create(structure_id='si', scal
 # diffraction patterns. This is done by setting the `free` attribute of
 # the corresponding parameters to `True`.
 #
-# Note: setting `param.free = True` is equivalent to using `param.fixed
-# = False` in the EasyScience library.
+# Note: setting `param.free = True` is equivalent to using
+# `param.fixed = False` in the EasyScience library.
 #
 # We will refine the scale factor of the Si phase, the intensities of
 # the background points as well as the peak profile parameters. The
@@ -596,7 +598,7 @@ project_1.experiments['sim_si'].peak.rise_alpha_1.free = True
 
 # %% [markdown] tags=["doc-link"]
 # 📖 See
-# [documentation](https://easyscience.github.io/diffraction-lib/user-guide/first-steps/#available-parameters)
+# [documentation](https://docs.easydiffraction.org/lib/latest/user-guide/parameters/)
 # for more details on how to
 # - show all parameters of the project,
 # - show all fittable parameters, and
@@ -640,15 +642,15 @@ project_1.display.fit.results()
 # diffraction patterns is now much improved and that the intensities of
 # the calculated peaks align much better with the measured peaks. To
 # check the quality of the fit numerically, we can look at the
-# goodness-of-fit χ² value and the reliability R-factors. The χ² value
-# is a measure of how well the calculated diffraction pattern matches
-# the measured pattern, and it is calculated as the sum of the squared
-# differences between the measured and calculated intensities, divided
-# by the number of data points. Ideally, the χ² value should be close to
-# 1, indicating a good fit.
+# reduced goodness-of-fit χ² value and the reliability R-factors. The
+# reduced χ² is the uncertainty-weighted sum of squared residuals divided
+# by the number of degrees of freedom. A value near 1 indicates that the
+# model and estimated measurement uncertainties are statistically
+# consistent, although it does not by itself prove that the model is
+# correct.
 
 # %% [markdown]
-# #### Display Fit Results
+# #### Display the Fitted Pattern
 #
 # After the fit is completed, we can plot the comparison between the
 # measured and calculated diffraction patterns again to see how well the
@@ -741,7 +743,9 @@ project_1.save_as(dir_path='projects/fitting-exercise-si-lbco-reference')
 # %% tags=["solution", "hide-input"]
 project_2 = edi.Project(name='main')
 project_2.metadata.title = 'La0.5Ba0.5CoO3 Fit'
-project_2.metadata.description = 'Fitting simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
+project_2.metadata.description = (
+    'Fitting a simulated powder diffraction pattern of La0.5Ba0.5CoO3.'
+)
 
 # %% [markdown]
 # ### 🔬 Exercise 2: Define an Experiment
@@ -779,7 +783,7 @@ project_2.experiments.add_from_data_path(
 )
 
 # %% [markdown]
-# #### Exercise 2.1: Inspect Measured Data
+# #### Exercise 2.2: Inspect Measured Data
 #
 # Check the measured data of the LBCO experiment. Are there any peaks
 # with the shape similar to those excluded in the Si fit? If so, exclude
@@ -789,10 +793,10 @@ project_2.experiments.add_from_data_path(
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# You can use the `plot_meas` method of the project to visualize the
-# measured diffraction pattern. You can also use the `excluded_regions`
-# attribute of the experiment to exclude specific regions from the
-# analysis as we did in the previous part of the notebook.
+# Use the `pattern` method of the project's `display` facade to visualize
+# the measured diffraction pattern. Use the experiment's
+# `excluded_regions` collection to exclude specific regions from the
+# analysis, as in the previous part of the notebook.
 
 # %% [markdown]
 # **Solution:**
@@ -806,7 +810,7 @@ project_2.experiments['sim_lbco'].excluded_regions.create(id='2', start=105500, 
 project_2.display.pattern(expt_name='sim_lbco')
 
 # %% [markdown]
-# #### Exercise 2.2: Set Instrument
+# #### Exercise 2.3: Set Instrument
 #
 # Set the instrument parameters for the LBCO experiment.
 
@@ -829,7 +833,7 @@ project_2.experiments['sim_lbco'].instrument.calib_d_to_tof_linear = edi.extract
 )
 
 # %% [markdown]
-# #### Exercise 2.3: Set Peak Profile
+# #### Exercise 2.4: Set Peak Profile
 #
 # Set the peak profile parameters for the LBCO experiment.
 
@@ -860,7 +864,7 @@ project_2.experiments['sim_lbco'].peak.rise_alpha_0 = sim_si_peak.rise_alpha_0.v
 project_2.experiments['sim_lbco'].peak.rise_alpha_1 = sim_si_peak.rise_alpha_1.value
 
 # %% [markdown]
-# #### Exercise 2.4: Set Background
+# #### Exercise 2.5: Set Background
 #
 # Set the background points for the LBCO experiment. What would you
 # suggest as the initial intensity value for the background points?
@@ -1016,8 +1020,8 @@ project_2.structures['lbco'].cell.length_a = 3.88
 # **Hint:**
 
 # %% [markdown] tags=["dmsc-school-hint"]
-# Use the atom sites from the CIF data. You can use the `add` method of
-# the `atom_sites` attribute of the structure to add the atom sites.
+# Use the atom sites from the CIF data. Call the `create` method of the
+# structure's `atom_sites` collection for each site.
 
 # %% [markdown]
 # **Solution:**
@@ -1351,7 +1355,7 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1.53, x_max
 # the CIF data.
 
 # %% [markdown]
-# #### Exercise 5.9: Identify the impurity phase
+# #### Exercise 5.9: Identify the Impurity Phase
 #
 # Use the positions of the unexplained peaks to identify the most likely
 # secondary phase present in the sample.
@@ -1381,7 +1385,7 @@ project_1.display.pattern(expt_name='sim_si', x='d_spacing', x_min=1, x_max=1.7)
 project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.7)
 
 # %% [markdown]
-# #### Exercise 5.10: Create a Second Structure – Si as Impurity
+# #### Exercise 5.10: Create a Second Structure – Si as an Impurity
 #
 # Create a second structure for the Si phase, which is the impurity
 # phase identified in the previous step. Link this structure to the
@@ -1402,7 +1406,7 @@ project_2.display.pattern(expt_name='sim_lbco', x='d_spacing', x_min=1, x_max=1.
 # Set Space Group
 project_2.structures.create(name='si')
 project_2.structures['si'].space_group.name_h_m = 'F d -3 m'
-project_2.structures['si'].space_group.coord_system_code = '2'
+project_2.structures['si'].space_group.coord_system_code = '1'
 
 # Set Lattice Parameters
 project_2.structures['si'].cell.length_a = 5.43
@@ -1411,9 +1415,10 @@ project_2.structures['si'].cell.length_a = 5.43
 project_2.structures['si'].atom_sites.create(
     id='Si',
     type_symbol='Si',
-    fract_x=0.125,
-    fract_y=0.125,
-    fract_z=0.125,
+    fract_x=0.0,
+    fract_y=0.0,
+    fract_z=0.0,
+    adp_type='Biso',
     adp_iso=0.89,
 )
 
@@ -1505,8 +1510,8 @@ project_2.save_as(dir_path='projects/fitting-exercise-si-lbco-main')
 # %% [markdown]
 # ## 🎁 Bonus
 #
-# Congratulations — you've now completed the diffraction data analysis
-# part of the DMSC Summer School!
+# Congratulations — you've now completed Part 1 of the diffraction data
+# analysis exercises for the DMSC Summer School!
 #
 # If you'd like to keep exploring, the EasyDiffraction library offers
 # many additional tutorials and examples on the official documentation
