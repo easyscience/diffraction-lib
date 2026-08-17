@@ -1,10 +1,11 @@
 # %% [markdown]
-# # Structure Refinement: HEP7C, Synchrotron XRD
+# # Structure Refinement: LaM(7)O3, P02.1 Synchrotron XRD
 #
-# This example refines a high-entropy perovskite structure with La on
-# the A site and an equimolar mixture of Ti, Cr, Mn, Fe, Co, Ni, and Cu
-# on the B site against synchrotron X-ray powder diffraction data. The
-# workflow starts from approximate structural and profile parameters,
+# This example refines the compositionally complex LaM(7)O3 perovskite,
+# with La on the A site and an equimolar mixture of Ti, Cr, Mn, Fe, Co,
+# Ni, and Cu on the B site. The low-temperature synchrotron X-ray powder
+# diffraction pattern was collected at the P02.1 beamline at PETRA III.
+# The workflow starts from approximate structural and profile parameters,
 # estimates the background from the measured pattern, and improves the
 # model in two fitting stages.
 
@@ -24,8 +25,8 @@ import easydiffraction as edi
 
 # %%
 project = edi.Project(
-    name='hep7c_synchrotron',
-    description='HEP7C refinement using synchrotron X-ray data.',
+    name='lam7o3_p021',
+    description='LaM(7)O3 refinement using P02.1 synchrotron X-ray data.',
 )
 
 # %% [markdown]
@@ -35,7 +36,7 @@ project = edi.Project(
 # can be written as they are produced.
 
 # %%
-project.save_as(dir_path='projects/refine-hep7c-synchrotron')
+project.save_as(dir_path='projects/refine-lam7o3-p021')
 
 # %% [markdown]
 # ## 🧩 Define Structure
@@ -51,7 +52,7 @@ project.save_as(dir_path='projects/refine-hep7c-synchrotron')
 
 # %%
 structure_cif = """
-data_hep7c
+data_lam7o3
 
 _cell.length_a 5.5()
 _cell.length_b 7.7()
@@ -80,7 +81,7 @@ Fe Fe  0.      0.     0.        0.14286   0.1   Biso
 Co Co  0.      0.     0.        0.14286   0.1   Biso
 Ni Ni  0.      0.     0.        0.14286   0.1   Biso
 Cu Cu  0.      0.     0.        0.14286   0.1   Biso
-O1 O   0.50628 0.25   0.57()    1.        0.1() Biso
+O1 O   0.51()  0.25   0.57()    1.        0.1() Biso
 O2 O   0.22()  0.03() 0.27()    1.        0.1   Biso
 """
 
@@ -94,7 +95,7 @@ project.structures.show_names()
 # Use a short alias to access the structure parameters below.
 
 # %%
-structure = project.structures['hep7c']
+structure = project.structures['lam7o3']
 
 # %% [markdown]
 # ### Display Structure
@@ -105,7 +106,7 @@ structure = project.structures['hep7c']
 structure.show_as_text()
 
 # %%
-project.display.structure(struct_name='hep7c')
+project.display.structure(struct_name='lam7o3')
 
 # %% [markdown]
 # ## 🔬 Define Experiment
@@ -123,11 +124,11 @@ project.display.structure(struct_name='hep7c')
 data_path = edi.download_data('meas-hep7c-xray-synchrotron', destination='data')
 
 # %% [markdown]
-# ### Create Experiment
+# ### Create P02.1 Experiment
 
 # %%
 project.experiments.add_from_data_path(
-    name='synchrotron',
+    name='p021',
     data_path=data_path,
     sample_form='powder',
     beam_mode='constant wavelength',
@@ -135,10 +136,10 @@ project.experiments.add_from_data_path(
 )
 
 # %% [markdown]
-# Use a short alias to access the experiment parameters below.
+# Use a short alias to access the P02.1 experiment parameters below.
 
 # %%
-experiment = project.experiments['synchrotron']
+experiment = project.experiments['p021']
 
 # %% [markdown]
 # ### Set Linked Structures
@@ -148,15 +149,16 @@ experiment = project.experiments['synchrotron']
 
 # %%
 experiment.linked_structures.create(
-    structure_id='hep7c',
+    structure_id='lam7o3',
     scale=0.000005,
 )
 
 # %% [markdown]
-# ### Set Instrument
+# ### Set P02.1 Instrument Parameters
 #
-# Set the known monochromatic X-ray wavelength and initialize the
-# unknown 2-theta zero shift at zero.
+# Set the monochromatic X-ray wavelength reported for the P02.1
+# beamline measurement and initialize the unknown 2-theta zero shift at
+# zero.
 
 # %%
 experiment.instrument.setup_wavelength = 0.207109
@@ -227,7 +229,7 @@ experiment.show_as_text()
 # background-point intensities.
 
 # %%
-experiment.linked_structures['hep7c'].scale.free = True
+experiment.linked_structures['lam7o3'].scale.free = True
 
 experiment.instrument.calib_twotheta_offset.free = True
 
@@ -324,10 +326,10 @@ project.analysis.display.constraints()
 # model before optimization.
 
 # %%
-project.display.pattern(expt_name='synchrotron')
+project.display.pattern(expt_name='p021')
 
 # %%
-project.display.pattern(expt_name='synchrotron', x_min=2.2, x_max=4.0)
+project.display.pattern(expt_name='p021', x_min=2.2, x_max=4.0)
 
 # %% [markdown]
 # #### Run Fitting
@@ -352,10 +354,10 @@ project.display.fit.correlations(max_parameters=5)
 # background region.
 
 # %%
-project.display.pattern(expt_name='synchrotron')
+project.display.pattern(expt_name='p021')
 
 # %%
-project.display.pattern(expt_name='synchrotron', x_min=2.2, x_max=4.0)
+project.display.pattern(expt_name='p021', x_min=2.2, x_max=4.0)
 
 # %% [markdown]
 # ### Improve Background Estimate
@@ -391,10 +393,10 @@ project.display.fit.correlations(max_parameters=5)
 # #### Display Pattern (After Final Fit)
 
 # %%
-project.display.pattern(expt_name='synchrotron')
+project.display.pattern(expt_name='p021')
 
 # %%
-project.display.pattern(expt_name='synchrotron', x_min=2.2, x_max=4.0)
+project.display.pattern(expt_name='p021', x_min=2.2, x_max=4.0)
 
 # %% [markdown]
 # ## 📊 Report

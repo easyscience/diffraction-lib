@@ -147,17 +147,18 @@
       "d20.linked_structure.cosio.scale": 1.331
     }
   },
-  "refine-hep7c-synchrotron": {
+  "refine-lam7o3-p021": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 0.16212,
-    "r_factor_all": 0.010129,
-    "wr_factor_all": 0.015153,
+    "reduced_chi_square": 0.161439,
+    "r_factor_all": 0.010111,
+    "wr_factor_all": 0.015115,
     "parameters": {
-      "hep7c.cell.length_a": 5.46224,
-      "hep7c.cell.length_b": 7.73306,
-      "hep7c.cell.length_c": 5.49024,
-      "synchrotron.linked_structure.hep7c.scale": 3.654e-6
+      "lam7o3.cell.length_a": 5.46225,
+      "lam7o3.cell.length_b": 7.73307,
+      "lam7o3.cell.length_c": 5.49024,
+      "lam7o3.atom_site.O1.fract_x": 0.50828,
+      "p021.linked_structure.lam7o3.scale": 3.653e-6
     }
   },
   "refine-hs-hrpt": {

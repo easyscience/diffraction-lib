@@ -235,7 +235,7 @@ nav:
           - HS pd-neut-cwl: tutorials/refine-hs-hrpt.ipynb
           - Si pd-neut-tof: tutorials/refine-si-sepd.ipynb
           - PbSO4 pd-xray-cwl: tutorials/refine-pbso4-xray.ipynb
-          - HEP7C pd-xray-cwl: tutorials/refine-hep7c-synchrotron.ipynb
+          - LaM(7)O3 P02.1 pd-xray-cwl: tutorials/refine-lam7o3-p021.ipynb
           - LMO pd-neut-cwl: tutorials/refine-lmo-echidna.ipynb
       - Without Measured Data:
           - LBCO pd-neut-cwl: tutorials/simulate-lbco-cwl.ipynb

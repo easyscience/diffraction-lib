@@ -239,12 +239,12 @@
     "description": "Calculate and plot an X-ray powder diffraction pattern for NaCl without measured data",
     "level": "quick"
   },
-  "refine-hep7c-synchrotron": {
+  "refine-lam7o3-p021": {
     "order": 31,
-    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-hep7c-synchrotron/refine-hep7c-synchrotron.ipynb",
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-lam7o3-p021/refine-lam7o3-p021.ipynb",
     "original_name": "hep7c_I_cold",
-    "title": "Structure Refinement: HEP7C, Synchrotron XRD",
-    "description": "Rietveld refinement of a La-based high-entropy perovskite using synchrotron X-ray powder diffraction data, with two-stage automatic background estimation",
+    "title": "Structure Refinement: LaM(7)O3, P02.1 Synchrotron XRD",
+    "description": "Rietveld refinement of the LaM(7)O3 compositionally complex perovskite using synchrotron X-ray powder diffraction data from P02.1 at PETRA III, with two-stage automatic background estimation",
     "level": "intermediate"
   },
   "refine-lmo-echidna": {
