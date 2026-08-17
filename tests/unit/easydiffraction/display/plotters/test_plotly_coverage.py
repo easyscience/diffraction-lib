@@ -843,6 +843,7 @@ def test_show_figure_live_emits_single_output_with_render(monkeypatch):
     import easydiffraction.display.plotters.plotly as pp
 
     monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'in_colab', lambda: False)
     monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.INLINE)
     monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
     captured = []
@@ -870,3 +871,107 @@ def test_show_figure_live_emits_single_output_with_render(monkeypatch):
     assert 'renderSpec' in second
     assert 'Plotly' not in second
     assert len(second) < len(first)
+
+
+def test_colab_asset_urls_follow_installed_docs_version(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, '_get_version_for_url', lambda: '0.19.0')
+
+    plotly_urls, loader_urls = pp.PlotlyPlotter._colab_asset_urls()
+
+    expected_root = 'https://easyscience.github.io/diffraction-lib/0.19.0'
+    expected_cdn_root = 'https://cdn.jsdelivr.net/gh/easyscience/diffraction-lib@v0.19.0'
+    expected_cdn_plotly = (
+        f'{expected_cdn_root}/src/easydiffraction/display/plotters/'
+        'vendor/plotly/plotly-cartesian.min.js'
+    )
+    expected_cdn_loader = (
+        f'{expected_cdn_root}/src/easydiffraction/display/plotters/assets/ed-figures.js'
+    )
+    assert plotly_urls == (
+        f'{expected_root}/assets/javascripts/vendor/plotly/plotly-cartesian.min.js',
+        expected_cdn_plotly,
+    )
+    assert loader_urls == (
+        f'{expected_root}/assets/javascripts/ed-figures.js',
+        expected_cdn_loader,
+    )
+
+
+def test_colab_dev_asset_urls_do_not_mix_revisions(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, '_get_version_for_url', lambda: 'dev')
+
+    plotly_urls, loader_urls = pp.PlotlyPlotter._colab_asset_urls()
+
+    expected_root = 'https://easyscience.github.io/diffraction-lib/dev'
+    assert plotly_urls == (
+        f'{expected_root}/assets/javascripts/vendor/plotly/plotly-cartesian.min.js',
+    )
+    assert loader_urls == (f'{expected_root}/assets/javascripts/ed-figures.js',)
+
+
+def test_show_figure_colab_loads_assets_in_every_isolated_output(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'in_colab', lambda: True)
+    monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.INLINE)
+    monkeypatch.setattr(pp, '_get_version_for_url', lambda: '0.19.0')
+    monkeypatch.setattr(pp.PlotlyPlotter, '_live_runtime_injected', False)
+    captured = []
+    monkeypatch.setattr(pp, 'display', captured.append)
+    monkeypatch.setattr(pp, 'HTML', lambda value: value)
+
+    plotter = pp.PlotlyPlotter()
+    plotter._show_figure(go.Figure(go.Scatter(x=[1, 2], y=[3, 4])))
+    plotter._show_figure(go.Figure(go.Heatmap(z=[[1, 0], [0, 1]])))
+
+    assert len(captured) == 2
+    for html in captured:
+        assert '/0.19.0/assets/javascripts/vendor/plotly/plotly-cartesian.min.js' in html
+        assert '/0.19.0/assets/javascripts/ed-figures.js' in html
+        assert 'cdn.jsdelivr.net/gh/easyscience/diffraction-lib@v0.19.0' in html
+        # Outputs sharing one frame reuse in-flight loads, and a failed
+        # load is evicted so a later output can retry it.
+        assert 'window.__edAssetPromises' in html
+        assert 'delete window.__edAssetPromises[cacheKey]' in html
+        # Both assets travel together, and the frame is released only
+        # once the plot (or its error message) is on screen.
+        assert 'Promise.all(' in html
+        assert 'pauseOutputUntil(settled)' in html
+        assert 'window.edFigures.renderSpec' in html
+        # No stylesheet in Colab, so the placeholder styles itself.
+        assert 'Loading plot…' in html
+        assert 'position: absolute' in html
+        assert 'Unable to load interactive plot.' in html
+        # The outputs reference the assets; neither runtime is embedded.
+        assert 'plotly.js (cartesian - minified)' not in html
+        assert 'Shared lazy loader for EasyDiffraction' not in html
+
+    # Colab does not consume the once-per-window JupyterLab bootstrap.
+    assert pp.PlotlyPlotter._live_runtime_injected is False
+
+
+def test_show_figure_shared_docs_mode_takes_precedence_over_colab(monkeypatch):
+    import easydiffraction.display.plotters.plotly as pp
+
+    monkeypatch.setattr(pp, 'in_pycharm', lambda: False)
+    monkeypatch.setattr(pp, 'in_colab', lambda: True)
+    monkeypatch.setattr(pp, 'resolve_figure_embed_mode', lambda: pp.FigureEmbedMode.SHARED)
+    captured = []
+    monkeypatch.setattr(pp, 'display', captured.append)
+    monkeypatch.setattr(pp, 'HTML', lambda value: value)
+
+    pp.PlotlyPlotter()._show_figure(go.Figure(go.Scatter(x=[1], y=[2])))
+
+    assert len(captured) == 1
+    assert 'ed-figure-spec' in captured[0]
+    assert 'pauseOutputUntil' not in captured[0]
+    assert 'assets/javascripts/vendor/plotly' not in captured[0]
+    # The docs stylesheet owns the placeholder's look; inlining more
+    # than the height would shadow later stylesheet edits.
+    assert '<div class="ed-figure-skeleton" style="height: ' in captured[0]
+    assert 'position: absolute' not in captured[0]
