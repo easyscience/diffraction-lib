@@ -1,9 +1,10 @@
 /*
  * Shared lazy loader for EasyDiffraction interactive figures.
  *
- * Loaded once per docs page (mkdocs `extra_javascript`) and once per
- * kernel session in live notebooks (injected by `_show_figure`). Plotly
- * figures emitted as placeholders carry their spec as `application/json`;
+ * Loaded once per docs page (mkdocs `extra_javascript`), once per
+ * JupyterLab kernel session (injected by `_show_figure`), and by URL in
+ * each isolated Google Colab output frame. Plotly figures emitted as
+ * placeholders carry their spec as `application/json`;
  * this loader renders each one lazily when it scrolls near the viewport
  * (IntersectionObserver), behind a "Loading…" skeleton. It also
  * centralizes the theme-sync, resize, and legend-toggle behavior that
@@ -383,15 +384,15 @@
 
   function renderInto(figureEl, spec) {
     if (figureEl.getAttribute('data-ed-rendered') === 'true') {
-      return;
+      return Promise.resolve();
     }
     var target = figureEl.querySelector('.ed-figure-target') || figureEl;
     if (!spec || !target || !window.Plotly) {
-      return;
+      return Promise.resolve();
     }
     figureEl.setAttribute('data-ed-rendered', 'true');
     var config = spec.config || plotlyConfig();
-    window.Plotly.newPlot(target, spec.data || [], spec.layout || {}, config).then(
+    return window.Plotly.newPlot(target, spec.data || [], spec.layout || {}, config).then(
       function () {
         figureEl.classList.add('ed-figure--ready');
         // Hide the loading skeleton directly, so the figure does not
@@ -412,7 +413,7 @@
 
   // Docs path: read the spec embedded in the placeholder's JSON script.
   function render(figureEl) {
-    renderInto(figureEl, readSpec(figureEl));
+    return renderInto(figureEl, readSpec(figureEl));
   }
 
   // Live-notebook path: render a spec passed directly (via Javascript
@@ -421,10 +422,10 @@
   function renderSpec(targetId, spec) {
     var target = document.getElementById(targetId);
     if (!target) {
-      return;
+      return Promise.resolve();
     }
     var figureEl = target.closest('.ed-figure') || target;
-    renderInto(figureEl, spec);
+    return renderInto(figureEl, spec);
   }
 
   function activate() {
