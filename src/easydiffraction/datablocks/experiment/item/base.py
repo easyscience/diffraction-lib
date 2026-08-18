@@ -650,7 +650,7 @@ class PdExperimentBase(ExperimentBase):
             A list of valid linked structures.
         """
         if not self.linked_structures:
-            log.warning('No linked structures defined. Returning empty pattern.')
+            # log.warning('No linked structures defined. Returning empty pattern.')
             return []
 
         valid_linked_structures = []
