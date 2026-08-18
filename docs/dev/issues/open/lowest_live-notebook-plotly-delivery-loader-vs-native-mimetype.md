@@ -41,7 +41,16 @@ gap. Two ways to fix it:
   (the loader only needs Plotly once it renders), then calls the same
   `renderSpec` entry point. `google.colab.output.pauseOutputUntil` holds
   the output frame until the figure — or a visible error message — is on
-  screen. Concurrent outputs in one cell share frame-global loading
+  screen. Colab pauses outputframe auto-resizing (and the cell's later
+  outputs) while that promise is pending, so the bootstrap asks for a
+  remeasure just after it resolves; otherwise the height taken before
+  the plot replaced its placeholder stays as blank space below the
+  chart. That request is scheduled on the next paint with a timer
+  backstop, because a hidden browser tab never paints. Where that API is
+  absent, the fallback measures Colab's output area — every output of
+  the cell, so siblings are not clipped — rather than the root scroll
+  height, which is clamped to the frame viewport and so can only grow
+  it. Concurrent outputs in one cell share frame-global loading
   promises, so each asset is fetched and parsed only once. An immutable,
   exact-release-tag jsDelivr URL is the fallback while a new
   documentation version is deploying or if that deployment fails. Dev

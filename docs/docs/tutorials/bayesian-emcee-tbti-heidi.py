@@ -276,3 +276,11 @@ project.display.posterior.distribution()
 
 # %%
 project.display.posterior.predictive(expt_name='heidi')
+
+# %% [markdown]
+# ## 💾 Save Project
+#
+# Save the fitted parameters and analysis results.
+
+# %%
+project.save()

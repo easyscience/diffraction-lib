@@ -863,6 +863,7 @@ def test_show_figure_live_emits_single_output_with_render(monkeypatch):
     assert first.count('</script>') == 1  # exactly one render script element
     assert 'renderSpec' in first
     assert 'Plotly' in first
+    assert 'resizeIframeToContent' not in first
 
     captured.clear()
     plotter._show_figure(go.Figure())
@@ -941,8 +942,22 @@ def test_show_figure_colab_loads_assets_in_every_isolated_output(monkeypatch):
         # Both assets travel together, and the frame is released only
         # once the plot (or its error message) is on screen.
         assert 'Promise.all(' in html
-        assert 'pauseOutputUntil(settled)' in html
+        assert 'pauseOutputUntil(painted)' in html
         assert 'window.edFigures.renderSpec' in html
+        # Colab can retain the height measured before an asynchronous
+        # plot replaces its placeholder, so remeasure once the paused
+        # promise has resolved and auto-resizing has resumed.
+        assert 'painted.then(function () {\n    afterLayout(resizeColabOutput);' in html
+        assert 'resizeIframeToContent' in html
+        # The fallback measures Colab's output area (all outputs of the
+        # cell), never documentElement.scrollHeight, which is clamped to
+        # the current iframe viewport and so cannot report a shrink.
+        assert 'getDefaultOutputArea' in html
+        assert 'content.getBoundingClientRect()' in html
+        assert 'documentElement.scrollHeight' not in html
+        # A hidden browser tab never paints, so the remeasure cannot
+        # depend on requestAnimationFrame alone.
+        assert 'window.setTimeout(once, 100)' in html
         # No stylesheet in Colab, so the placeholder styles itself.
         assert 'Loading plot…' in html
         assert 'position: absolute' in html
@@ -970,8 +985,118 @@ def test_show_figure_shared_docs_mode_takes_precedence_over_colab(monkeypatch):
     assert len(captured) == 1
     assert 'ed-figure-spec' in captured[0]
     assert 'pauseOutputUntil' not in captured[0]
+    assert 'resizeIframeToContent' not in captured[0]
     assert 'assets/javascripts/vendor/plotly' not in captured[0]
     # The docs stylesheet owns the placeholder's look; inlining more
     # than the height would shadow later stylesheet edits.
     assert '<div class="ed-figure-skeleton" style="height: ' in captured[0]
     assert 'position: absolute' not in captured[0]
+
+
+# The bootstrap that Colab runs is JavaScript, so its measurement logic
+# is exercised in Node against a stubbed browser. The stub mimics the
+# failure this guards against: an output frame whose viewport is taller
+# than the content it now holds.
+_COLAB_RESIZE_HARNESS = """
+const fs = require('fs');
+const source = fs.readFileSync(process.argv[2], 'utf8');
+const withOutputArea = process.argv[3] === 'with-output-area';
+
+const requested = [];
+const skeleton = { textContent: '', style: {} };
+const figure = {
+  querySelector: () => skeleton,
+  getAttribute: () => null,
+  setAttribute: () => {},
+};
+const target = { closest: () => figure, querySelector: () => skeleton };
+// The cell's outputs end at 300px; the frame viewport is still 800px.
+const outputArea = { getBoundingClientRect: () => ({ bottom: 300 }) };
+const document = {
+  head: {
+    appendChild(script) {
+      setTimeout(() => {
+        if (script.src.includes('plotly')) {
+          window.Plotly = { newPlot: () => Promise.resolve() };
+        } else {
+          window.edFigures = { renderSpec: () => Promise.resolve() };
+        }
+        script.onload();
+      }, 0);
+    },
+  },
+  createElement: () => ({ remove() {} }),
+  getElementById: () => target,
+  body: { getBoundingClientRect: () => ({ bottom: 320 }) },
+  documentElement: { scrollHeight: 800, clientHeight: 800 },
+};
+const output = {
+  pauseOutputUntil: (promise) => {
+    promise.then(() => requested.push('paused-resolved'));
+  },
+  setIframeHeight: (height) => requested.push(height),
+};
+if (withOutputArea) {
+  output.getDefaultOutputArea = () => outputArea;
+}
+const window = {
+  document,
+  setTimeout,
+  requestAnimationFrame: (callback) => setTimeout(callback, 0),
+  innerHeight: 800,
+  scrollY: 0,
+  getComputedStyle: () => ({ marginBottom: '0px' }),
+  google: { colab: { output } },
+};
+
+new Function('window', 'document', 'console', source)(window, document, console);
+setTimeout(() => console.log(JSON.stringify(requested)), 250);
+"""
+
+
+@pytest.mark.parametrize(
+    ('mode', 'expected_height'),
+    [
+        # Colab's own output area spans every output of the cell.
+        ('with-output-area', 300),
+        # Without it, the frame's body is the next best content anchor.
+        ('without-output-area', 320),
+    ],
+)
+def test_colab_resize_fallback_shrinks_to_content(tmp_path, monkeypatch, mode, expected_height):
+    """The height requested is the content's, not the frame viewport's."""
+    import json
+    import re
+    import shutil
+    import subprocess  # noqa: S404
+
+    import easydiffraction.display.plotters.plotly as pp
+
+    node = shutil.which('node')
+    if node is None:  # pragma: no cover - Node is provided by the pixi env
+        pytest.skip('node is required to run the Colab bootstrap')
+
+    monkeypatch.setattr(pp, '_get_version_for_url', lambda: '0.19.0')
+    html = pp.PlotlyPlotter._serialize_html_colab(go.Figure(go.Scatter(x=[1], y=[2])))
+    script = re.search(r'<script type="text/javascript">(.*)</script>', html, re.DOTALL)
+    assert script is not None
+
+    bootstrap = tmp_path / 'bootstrap.js'
+    bootstrap.write_text(script.group(1))
+    harness = tmp_path / 'harness.js'
+    harness.write_text(_COLAB_RESIZE_HARNESS)
+
+    completed = subprocess.run(  # noqa: S603
+        [node, str(harness), str(bootstrap), mode],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=True,
+    )
+    requested = json.loads(completed.stdout.strip().splitlines()[-1])
+
+    assert 'paused-resolved' in requested
+    heights = [entry for entry in requested if isinstance(entry, int)]
+    # A viewport-clamped measurement (documentElement.scrollHeight) would
+    # request 800 here and leave the blank space in place.
+    assert heights == [expected_height]

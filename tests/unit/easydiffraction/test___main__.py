@@ -166,6 +166,10 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
         info = FakeInfo()
         experiments = [FakeExperiment()]
 
+        @staticmethod
+        def save():
+            calls.append('SAVE')
+
         class _analysis:
             @staticmethod
             def fit():
@@ -208,7 +212,7 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
+    assert calls == ['FIT', 'SAVE', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
 
 
 def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
@@ -226,6 +230,10 @@ def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
     class FakeProject:
         info = FakeInfo()
         experiments = [FakeExperiment()]
+
+        @staticmethod
+        def save():
+            calls.append('SAVE')
 
         class _analysis:
             class _fitting_mode:
@@ -268,12 +276,14 @@ def test_cli_fit_skips_fit_reports_for_sequential_mode(monkeypatch, tmp_path):
 
     result = runner.invoke(main_mod.app, ['fit', str(proj_dir)])
     assert result.exit_code == 0
-    assert calls == ['FIT', 'PLOT_exp1_False']
+    assert calls == ['FIT', 'SAVE', 'PLOT_exp1_False']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     import easydiffraction.__main__ as main_mod
     from easydiffraction.project.project import Project
+
+    calls = []
 
     class FakeInfo:
         _path = '/some/path'
@@ -284,6 +294,10 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     class FakeProject:
         metadata = FakeInfo()
         experiments = [FakeExperiment()]
+
+        @staticmethod
+        def save():
+            calls.append('SAVE')
 
         class _analysis:
             @staticmethod
@@ -326,6 +340,7 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     result = runner.invoke(main_mod.app, ['fit', '--dry', str(proj_dir)])
     assert result.exit_code == 0
     assert fake_project.metadata._path is None
+    assert calls == []
 
 
 def test_cli_undo_noop_exits_zero_and_does_not_save(monkeypatch, tmp_path):
