@@ -2860,9 +2860,6 @@ class Analysis(
         )
         self._stamp_software_provenance()
 
-        if self.project.metadata.path is not None:
-            self.project.save()
-
     def _run_joint(
         self,
         *,
@@ -2886,9 +2883,6 @@ class Analysis(
             fit_options=FitterFitOptions(resume=resume, extra_steps=extra_steps),
         )
         self._stamp_software_provenance()
-
-        if self.project.metadata.path is not None:
-            self.project.save()
 
     def _run_sequential(self) -> None:
         """
@@ -2925,9 +2919,6 @@ class Analysis(
             self._clear_persisted_fit_state()
 
         self._stamp_software_provenance()
-
-        if self.project.metadata.path is not None:
-            self.project.save()
 
     def _fit_joint(
         self,

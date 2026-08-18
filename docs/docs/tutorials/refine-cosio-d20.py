@@ -299,3 +299,11 @@ project.display.pattern(expt_name='d20', x_min=42, x_max=52)
 #
 # The HTML report is written automatically when the project is saved;
 # enable `project.report.pdf` as well for a PDF version.
+
+# %% [markdown]
+# ## 💾 Save Project
+#
+# Save the fitted parameters and analysis results.
+
+# %%
+project.save()

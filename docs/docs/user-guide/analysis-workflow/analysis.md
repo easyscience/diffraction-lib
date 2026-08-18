@@ -312,12 +312,14 @@ Select a Bayesian minimizer through the same category-owned selector:
 project.analysis.minimizer.type = 'emcee'
 project.save_as(dir_path='lbco_hrpt')  # required before an emcee fit
 project.analysis.fit()
+project.save()
 ```
 
 For a saved `emcee` project, resume the chain with extra steps:
 
 ```python
 project.analysis.fit(resume=True, extra_steps=500)
+project.save()
 ```
 
 After a Bayesian fit, inspect posterior summaries and plots:

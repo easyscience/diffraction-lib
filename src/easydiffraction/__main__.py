@@ -299,6 +299,8 @@ def fit(
     if dry:
         project.metadata._path = None
     project.analysis.fit()
+    if not dry:
+        project.save()
     _display_fit_outputs(project)
 
 

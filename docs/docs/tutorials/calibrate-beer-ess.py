@@ -350,3 +350,11 @@ project.display.pattern(
     x_min=2.08,
     x_max=2.13,
 )
+
+# %% [markdown]
+# ## 💾 Save Project
+#
+# Save the fitted parameters and analysis results.
+
+# %%
+project.save()

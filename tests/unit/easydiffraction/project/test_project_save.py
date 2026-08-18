@@ -64,6 +64,27 @@ def test_project_save_lists_existing_analysis_results_csv(tmp_path, monkeypatch,
     assert 'results.csv' in out
 
 
+def test_project_save_prints_file_tree_in_one_console_call(tmp_path, monkeypatch):
+    from easydiffraction.project import project as project_module
+    from easydiffraction.project.project import Project
+
+    printed = []
+    monkeypatch.setattr(project_module.console, 'print', printed.append)
+
+    project = Project(name='p1')
+    project.report.html = False
+    project.save_as(str(tmp_path / 'proj_dir'))
+
+    expected_tree = (
+        '├── 📄 project.edi\n'
+        '├── 📁 structures/\n'
+        '├── 📁 experiments/\n'
+        '├── 📁 analysis/\n'
+        '│   └── 📄 analysis.edi'
+    )
+    assert printed == [expected_tree]
+
+
 def test_project_save_as_overwrites_existing_directory_by_default(tmp_path, monkeypatch):
     from easydiffraction.analysis.analysis import Analysis
     from easydiffraction.project.project import Project

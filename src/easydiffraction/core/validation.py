@@ -25,7 +25,8 @@ _MISSING_DEFAULT = object()
 
 
 def validate_datablock_name(value: str, *, kind: str) -> str:
-    """Return a datablock name that survives backend normalization.
+    """
+    Return a datablock name that survives backend normalization.
 
     Calculator backends such as Cryspy normalize CIF datablock names to
     lowercase. Reject uppercase names at the public model boundary so

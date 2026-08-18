@@ -1406,6 +1406,64 @@ class PlotlyPlotter(PlotterBase):
     return loading;
   }}
 
+  function resizeColabOutput() {{
+    var output =
+      window.google && window.google.colab && window.google.colab.output;
+    if (!output) {{
+      return;
+    }}
+    try {{
+      if (typeof output.resizeIframeToContent === 'function') {{
+        output.resizeIframeToContent();
+      }} else if (typeof output.setIframeHeight === 'function') {{
+        // The root element's scroll height never drops below the
+        // current iframe viewport, so it can only ever grow the frame.
+        // Measure the intrinsic content instead, preferring Colab's own
+        // output area: it holds every output of this cell, so a sibling
+        // figure is never clipped.
+        var area =
+          typeof output.getDefaultOutputArea === 'function'
+            ? output.getDefaultOutputArea()
+            : null;
+        var content = area || document.body;
+        var bounds = content.getBoundingClientRect();
+        var style =
+          typeof window.getComputedStyle === 'function'
+            ? window.getComputedStyle(content)
+            : null;
+        var gap = style ? parseFloat(style.marginBottom) || 0 : 0;
+        output.setIframeHeight(
+          Math.ceil(bounds.bottom + (window.scrollY || 0) + gap),
+          true
+        );
+      }}
+    }} catch (error) {{
+      console.warn('Unable to resize the Colab plot output.', error);
+    }}
+  }}
+
+  function afterLayout(callback) {{
+    var done = false;
+    function once() {{
+      if (done) {{
+        return;
+      }}
+      done = true;
+      callback();
+    }}
+    try {{
+      if (typeof window.requestAnimationFrame === 'function') {{
+        window.requestAnimationFrame(once);
+      }}
+      // requestAnimationFrame never fires while the browser tab is
+      // hidden, so keep a timer as the backstop: first one through
+      // wins, and neither can leave the callback unrun.
+      window.setTimeout(once, 100);
+    }} catch (error) {{
+      once();
+    }}
+  }}
+
   // The loader does not touch Plotly until it renders, so both assets
   // can travel together: one round trip instead of two per frame.
   var rendering = Promise.all([
@@ -1422,7 +1480,7 @@ class PlotlyPlotter(PlotterBase):
     );
   }});
 
-  var settled = rendering.catch(function (error) {{
+  var painted = rendering.catch(function (error) {{
     console.error(error);
     var target = document.getElementById({json.dumps(plot_id)});
     var figure = target && (target.closest('.ed-figure') || target);
@@ -1432,7 +1490,7 @@ class PlotlyPlotter(PlotterBase):
     }}
   }});
 
-  // Hand Colab the settled promise, so the output frame is released
+  // Hand Colab the painted promise, so the output frame is released
   // only once the plot (or its error message) is on screen, and Colab
   // never receives a rejected promise of ours.
   if (
@@ -1441,8 +1499,16 @@ class PlotlyPlotter(PlotterBase):
     window.google.colab.output &&
     typeof window.google.colab.output.pauseOutputUntil === 'function'
   ) {{
-    window.google.colab.output.pauseOutputUntil(settled);
+    window.google.colab.output.pauseOutputUntil(painted);
   }}
+
+  // Colab holds outputframe auto-resizing (and the cell's later
+  // outputs) while that promise is pending, so remeasure once it has
+  // resolved: the frame otherwise keeps the height measured before the
+  // plot replaced its placeholder.
+  painted.then(function () {{
+    afterLayout(resizeColabOutput);
+  }});
 }})();
 </script>
 """.strip()
