@@ -5240,9 +5240,11 @@ intervals, parameter correlations, and posterior-predictive uncertainty.</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">minimizer</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="s1">&#39;emcee&#39;</span>
 <span class="n">project</span><span class="o">.</span><span class="n">save_as</span><span class="p">(</span><span class="n">dir_path</span><span class="o">=</span><span class="s1">&#39;lbco_hrpt&#39;</span><span class="p">)</span>  <span class="c1"># required before an emcee fit</span>
 <span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
 <p>For a saved <code>emcee</code> project, resume the chain with extra steps:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">resume</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">extra_steps</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
 </code></pre></div>
 <p>After a Bayesian fit, inspect posterior summaries and plots:</p>
 <div class="language-python highlight"><pre><span></span><code><span class="n">project</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">posterior</span><span class="o">.</span><span class="n">distribution</span><span class="p">()</span>
