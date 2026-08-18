@@ -576,40 +576,41 @@ class Project(GuardedBase):  # noqa: PLR0904
 
         # Ensure project directory exists
         self.metadata.path.mkdir(parents=True, exist_ok=True)
+        tree_lines: list[str] = []
 
         # Save project-level configuration
         with (self.metadata.path / 'project.edi').open('w') as f:
             f.write(section_to_edi(project_config_to_cif(self)))
-            console.print('├── 📄 project.edi')
+            tree_lines.append('├── 📄 project.edi')
 
         # Save structures
         sm_dir = self.metadata.path / 'structures'
         sm_dir.mkdir(parents=True, exist_ok=True)
-        console.print('├── 📁 structures/')
+        tree_lines.append('├── 📁 structures/')
         for structure in self.structures.values():
             file_name: str = f'{structure.name}.edi'
             file_path = sm_dir / file_name
             with file_path.open('w') as f:
                 f.write(section_to_edi(structure.as_cif))
-                console.print(f'│   └── 📄 {file_name}')
+                tree_lines.append(f'│   └── 📄 {file_name}')
 
         # Save experiments
         expt_dir = self.metadata.path / 'experiments'
         expt_dir.mkdir(parents=True, exist_ok=True)
-        console.print('├── 📁 experiments/')
+        tree_lines.append('├── 📁 experiments/')
         for experiment in self.experiments.values():
             file_name: str = f'{experiment.name}.edi'
             file_path = expt_dir / file_name
             with file_path.open('w') as f:
                 f.write(section_to_edi(experiment.as_cif))
-                console.print(f'│   └── 📄 {file_name}')
+                tree_lines.append(f'│   └── 📄 {file_name}')
 
         # Save analysis
         analysis_dir = self.metadata.path / 'analysis'
         analysis_dir.mkdir(parents=True, exist_ok=True)
         with (analysis_dir / 'analysis.edi').open('w') as f:
             f.write(section_to_edi(self.analysis.as_cif))
-            console.print('├── 📁 analysis/')
+            tree_lines.append('├── 📁 analysis/')
         write_analysis_results_sidecar(
             analysis=self.analysis,
             analysis_dir=analysis_dir,
@@ -622,16 +623,20 @@ class Project(GuardedBase):  # noqa: PLR0904
         )
         for index, file_name in enumerate(analysis_file_names):
             branch = '└──' if index == len(analysis_file_names) - 1 else '├──'
-            console.print(f'│   {branch} 📄 {file_name}')
+            tree_lines.append(f'│   {branch} 📄 {file_name}')
 
         report_paths = self.report._save_configured()
         if report_paths:
             reports_dir = self.metadata.path / 'reports'
-            console.print('└── 📁 reports/')
+            tree_lines.append('└── 📁 reports/')
             for index, report_path in enumerate(report_paths):
                 branch = '└──' if index == len(report_paths) - 1 else '├──'
                 relative_path = report_path.relative_to(reports_dir)
-                console.print(f'    {branch} 📄 {relative_path}')
+                tree_lines.append(f'    {branch} 📄 {relative_path}')
+
+        # A single console call keeps the tree in one notebook
+        # output block.
+        console.print('\n'.join(tree_lines))
 
         self.metadata.update_last_modified()
         self._saved = True
