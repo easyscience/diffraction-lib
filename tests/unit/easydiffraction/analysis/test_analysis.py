@@ -852,7 +852,7 @@ def test_fit_single_short_reuses_tracker_display_handle(monkeypatch):
     assert handle.closed is True
 
 
-def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
+def test_run_sequential_sets_mode_without_saving_project(monkeypatch, tmp_path):
     from easydiffraction.analysis.analysis import Analysis
 
     project = SimpleNamespace(
@@ -919,7 +919,7 @@ def test_run_sequential_sets_mode_and_saves_project(monkeypatch, tmp_path):
         ('reverse', True),
         ('update_categories', None),
     ]
-    assert project.save_calls == 1
+    assert project.save_calls == 0
     assert analysis.fit_results is None
     assert analysis.fitter.results is None
 

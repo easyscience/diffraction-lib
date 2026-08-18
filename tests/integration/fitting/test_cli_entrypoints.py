@@ -81,6 +81,10 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
         metadata = FakeMetadata()
         experiments = [FakeExperiment()]
 
+        @staticmethod
+        def save() -> None:
+            calls.append('SAVE')
+
         class _analysis:
             @staticmethod
             def fit() -> None:
@@ -123,12 +127,14 @@ def test_cli_fit_loads_and_fits(monkeypatch, tmp_path):
     result = runner.invoke(main_mod.app, ['fit', str(project_dir)])
 
     assert result.exit_code == 0
-    assert calls == ['FIT', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
+    assert calls == ['FIT', 'SAVE', 'DISPLAY', 'PLOT_CORR', 'PLOT_exp1_False']
 
 
 def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     import easydiffraction.__main__ as main_mod
     from easydiffraction.project.project import Project
+
+    calls: list[str] = []
 
     class FakeMetadata:
         _path = '/some/path'
@@ -139,6 +145,10 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
     class FakeProject:
         metadata = FakeMetadata()
         experiments = [FakeExperiment()]
+
+        @staticmethod
+        def save() -> None:
+            calls.append('SAVE')
 
         class _analysis:
             @staticmethod
@@ -182,3 +192,4 @@ def test_cli_fit_dry_clears_path(monkeypatch, tmp_path):
 
     assert result.exit_code == 0
     assert fake_project.metadata._path is None
+    assert calls == []

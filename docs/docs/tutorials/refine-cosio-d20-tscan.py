@@ -404,3 +404,11 @@ display.fit.series(struct.atom_sites['Co2'].fract_z, versus=temperature)
 display.fit.series(struct.atom_sites['O1'].fract_z, versus=temperature)
 display.fit.series(struct.atom_sites['O2'].fract_z, versus=temperature)
 display.fit.series(struct.atom_sites['O3'].fract_z, versus=temperature)
+
+# %% [markdown]
+# ## 💾 Save Project
+#
+# Save the fitted parameters and analysis results.
+
+# %%
+project.save()

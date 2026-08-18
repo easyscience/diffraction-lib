@@ -2543,7 +2543,9 @@ class TestRunSingleAndJoint:
         a._run_single()
         assert called == []
 
-    def test_run_single_invokes_fit_and_stamps_provenance(self, monkeypatch, tmp_path):
+    def test_run_single_invokes_fit_and_stamps_provenance_without_saving(
+        self, monkeypatch, tmp_path
+    ):
         from easydiffraction.analysis.analysis import Analysis
         from easydiffraction.utils.enums import VerbosityEnum
 
@@ -2570,7 +2572,7 @@ class TestRunSingleAndJoint:
         a._run_single(resume=True, extra_steps=5)
 
         assert captured == {'resume': True, 'extra_steps': 5, 'stamped': True}
-        assert project.save_calls == 1
+        assert project.save_calls == 0
 
     def test_run_joint_rejects_resume(self):
         import pytest
@@ -2591,6 +2593,37 @@ class TestRunSingleAndJoint:
 
         a._run_joint()
         assert called == []
+
+    def test_run_joint_invokes_fit_and_stamps_provenance_without_saving(
+        self, monkeypatch, tmp_path
+    ):
+        from easydiffraction.analysis.analysis import Analysis
+        from easydiffraction.utils.enums import VerbosityEnum
+
+        project = _fit_project(structures=['s'], experiments=['e'], path=tmp_path)
+        project.save_calls = 0
+        project.save = lambda: setattr(project, 'save_calls', project.save_calls + 1)
+        a = Analysis(project=project)
+
+        captured = {}
+        monkeypatch.setattr(
+            a,
+            '_prepare_fit_run',
+            lambda *, resume=False: (VerbosityEnum.SILENT, ['s'], ['e']),
+        )
+        monkeypatch.setattr(
+            a,
+            '_fit_joint',
+            lambda verb, structures, experiments, *, fit_options: captured.update(
+                resume=fit_options.resume, extra_steps=fit_options.extra_steps
+            ),
+        )
+        monkeypatch.setattr(a, '_stamp_software_provenance', lambda: captured.update(stamped=True))
+
+        a._run_joint()
+
+        assert captured == {'resume': False, 'extra_steps': None, 'stamped': True}
+        assert project.save_calls == 0
 
 
 # ------------------------------------------------------------------
