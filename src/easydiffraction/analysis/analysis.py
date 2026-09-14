@@ -44,6 +44,7 @@ from easydiffraction.analysis.fit_helpers.bayesian import PosteriorPredictiveSum
 from easydiffraction.analysis.fit_helpers.bayesian import PosteriorSamples
 from easydiffraction.analysis.fit_helpers.bayesian import posterior_predictive_cache_key
 from easydiffraction.analysis.fit_helpers.metrics import calculate_r_factor
+from easydiffraction.analysis.fit_helpers.metrics import calculate_weighted_r_factor
 from easydiffraction.analysis.fit_helpers.reporting import FitResults
 from easydiffraction.analysis.fitting import Fitter
 from easydiffraction.analysis.fitting import FitterFitOptions
@@ -2035,12 +2036,7 @@ class Analysis(
         """Return a weighted R factor when inputs are available."""
         if observed.size == 0:
             return None
-        weights = 1.0 / uncertainties**2
-        denominator = float(np.sum(weights * observed**2))
-        if denominator <= 0.0:
-            return None
-        numerator = float(np.sum(weights * (observed - calculated) ** 2))
-        value = np.sqrt(numerator / denominator)
+        value = calculate_weighted_r_factor(observed, calculated, uncertainties)
         return float(value) if np.isfinite(value) else None
 
     @staticmethod
