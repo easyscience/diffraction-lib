@@ -79,13 +79,23 @@ class TagSpec:
 
     @property
     def cif_read_names(self) -> list[str]:
-        """Accepted ``.cif`` import names, in lookup order."""
-        return list(dict.fromkeys(self.cif_names))
+        """
+        Accepted ``.cif`` import names, in lookup order.
+
+        CIF dictionaries use both ``_category.item`` and the older
+        ``_category_item`` spelling.  Gemmi preserves the spelling from
+        the input document, so add the underscore form of every dotted
+        name as an import-only alias.  Explicitly declared names retain
+        priority over inferred aliases.
+        """
+        names = list(dict.fromkeys(self.cif_names))
+        aliases = [name.replace('.', '_', 1) for name in names if '.' in name]
+        return list(dict.fromkeys([*names, *aliases]))
 
     @property
     def read_names(self) -> list[str]:
         """Names accepted on read across both formats (union)."""
-        return list(dict.fromkeys([self.edi_name, *self._edi_names, *self.cif_names]))
+        return list(dict.fromkeys([*self.edi_read_names, *self.cif_read_names]))
 
     @property
     def category_name(self) -> str:
