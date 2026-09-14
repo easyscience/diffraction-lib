@@ -160,7 +160,10 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(default=None, allow_none=True),
             tags=TagSpec(
                 edi_names=['_atom_site.multiplicity'],
-                cif_names=['_atom_site.site_symmetry_multiplicity'],
+                cif_names=[
+                    '_atom_site.site_symmetry_multiplicity',
+                    '_atom_site_symmetry_multiplicity',
+                ],
             ),
         )
         self._occupancy = Parameter(
@@ -215,14 +218,22 @@ class AtomSite(CategoryItem):
     @property
     def _type_symbol_allowed_values(self) -> list[str]:
         """
-        Chemical symbols accepted by *cryspy*.
+        Chemical and ionic symbols accepted by *cryspy*.
 
         Returns
         -------
         list[str]
-            Unique element/isotope symbols from the database.
+            Unique element/isotope symbols from the database, with
+            common signed oxidation-state suffixes.
         """
-        return list({key[1] for key in DATABASE['Isotopes']})
+        symbols = {key[1] for key in DATABASE['Isotopes']}
+        ions = {
+            f'{symbol}{charge}{sign}'
+            for symbol in symbols
+            for charge in range(1, 9)
+            for sign in ('+', '-')
+        }
+        return list(symbols | ions)
 
     def _resolve_structure_space_group(self) -> object | None:
         """

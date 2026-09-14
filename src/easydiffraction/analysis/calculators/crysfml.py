@@ -24,7 +24,7 @@ branch.
 
 from __future__ import annotations
 
-import string
+import re
 from typing import TYPE_CHECKING
 
 import numpy as np
@@ -60,23 +60,26 @@ except ImportError:
 
 def _element_symbol(type_symbol: str) -> str:
     """
-    Strip a leading isotope number from an atom type symbol.
+    Extract the element from an isotope or ionic atom type symbol.
 
     CrysFML resolves scattering by element and does not understand
-    isotope prefixes such as ``11B`` or ``2H`` (cryspy does). Returning
-    the bare element symbol lets one model drive both engines.
+    isotope prefixes such as ``11B`` or ionic suffixes such as ``Fe3+``
+    (cryspy does). Returning the bare element symbol lets one model
+    drive both engines.
 
     Parameters
     ----------
     type_symbol : str
-        Atom type symbol, optionally isotope-prefixed (e.g. ``11B``).
+        Atom type symbol, optionally isotope-prefixed or charged (e.g.
+        ``11B`` or ``Fe3+``).
 
     Returns
     -------
     str
-        The symbol with any leading digits removed (e.g. ``B``).
+        The bare element symbol (e.g. ``B`` or ``Fe``).
     """
-    return type_symbol.lstrip(string.digits)
+    match = re.fullmatch(r'\d*([A-Z][a-z]?)(?:[1-8][+-])?', type_symbol.strip())
+    return match.group(1) if match else type_symbol
 
 
 def _cfl_label(name: str) -> str:

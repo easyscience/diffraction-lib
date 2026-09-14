@@ -20,6 +20,7 @@ from urllib.parse import urlparse
 import numpy as np
 import pandas as pd
 import pooch
+from filelock import FileLock
 from packaging.version import Version
 from rich.markup import escape
 from uncertainties import UFloat
@@ -440,21 +441,28 @@ def _fetch_data_index() -> dict:
     index_url = _build_data_url('index.json')
     _validate_url(index_url)
 
-    cache_dir = pooch.os_cache('easydiffraction')
+    cache_dir = pathlib.Path(pooch.os_cache('easydiffraction'))
+    cache_dir.mkdir(parents=True, exist_ok=True)
     # Cache under a commit-named file so a ref bump downloads a fresh
     # index instead of reusing a stale one (data-source-pinning ADR).
     destination_fname = f'data-index-{_data_index_ref()}.json'
+    lock_path = cache_dir / f'{destination_fname}.lock'
 
-    index_path = pooch.retrieve(
-        url=index_url,
-        known_hash=None,
-        fname=destination_fname,
-        path=cache_dir,
-        progressbar=False,
-    )
+    # Pooch does not lock ``retrieve`` calls. Parallel processes can
+    # therefore replace the same cache file while another process opens
+    # it, which raises PermissionError on Windows. Keep retrieval and
+    # parsing in one lock.
+    with FileLock(lock_path):
+        index_path = pooch.retrieve(
+            url=index_url,
+            known_hash=None,
+            fname=destination_fname,
+            path=cache_dir,
+            progressbar=False,
+        )
 
-    with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
-        return json.load(f)
+        with pathlib.Path(index_path).open('r', encoding='utf-8') as f:
+            return json.load(f)
 
 
 def _existing_project_dir(extraction_dir: pathlib.Path) -> pathlib.Path | None:

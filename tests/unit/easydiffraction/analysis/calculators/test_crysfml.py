@@ -90,6 +90,16 @@ def test_module_import():
     assert MUT.__name__ == 'easydiffraction.analysis.calculators.crysfml'
 
 
+@pytest.mark.parametrize(
+    ('type_symbol', 'expected'),
+    [('Fe', 'Fe'), ('57Fe', 'Fe'), ('Fe3+', 'Fe'), ('O2-', 'O')],
+)
+def test_element_symbol_strips_isotope_and_ionic_notation(type_symbol, expected):
+    from easydiffraction.analysis.calculators.crysfml import _element_symbol
+
+    assert _element_symbol(type_symbol) == expected
+
+
 def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
     from easydiffraction.analysis.corrections import absorption
