@@ -31,6 +31,17 @@ class TestDocumentFromString:
         name = name_from_block(block)
         assert name == 'silicon'
 
+    def test_name_from_block_normalizes_unsupported_name(self):
+        from easydiffraction.io.cif.parse import document_from_string
+        from easydiffraction.io.cif.parse import name_from_block
+        from easydiffraction.io.cif.parse import pick_sole_block
+
+        cif = 'data_My+83267-ICSD.example\n_cell.length_a 5.43\n'
+        doc = document_from_string(cif)
+        block = pick_sole_block(doc)
+        name = name_from_block(block)
+        assert name == 'my83267-icsdexample'
+
 
 class TestDocumentFromPath:
     def test_valid_file(self, tmp_path):

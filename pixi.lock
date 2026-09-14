@@ -9665,6 +9665,7 @@ packages:
   - diffpy-pdffit2
   - diffpy-utils
   - emcee
+  - filelock
   - gemmi
   - h5py
   - lmfit

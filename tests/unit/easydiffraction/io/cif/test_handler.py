@@ -58,7 +58,15 @@ def test_cif_read_names_dedup_and_canonical_first():
     handler = TagSpec(edi_names=['_a.x'], cif_names=['_b.y', '_b.z', '_b.y'])
 
     assert handler.cif_name == '_b.y'
-    assert handler.cif_read_names == ['_b.y', '_b.z']
+    assert handler.cif_read_names == ['_b.y', '_b.z', '_b_y', '_b_z']
+
+
+def test_cif_read_names_add_underscore_alias_for_dotted_name():
+    from easydiffraction.io.cif.handler import TagSpec
+
+    handler = TagSpec(edi_names=['_cell.length_a'])
+
+    assert handler.cif_read_names == ['_cell.length_a', '_cell_length_a']
 
 
 def test_cif_names_default_to_edi_names():
@@ -76,4 +84,4 @@ def test_read_names_union_orders_edi_before_cif_and_dedupes():
     handler = TagSpec(edi_names=['_a.x'], cif_names=['_a.x', '_b.y'])
 
     # Edi name first, then CIF-only aliases, with duplicates removed.
-    assert handler.read_names == ['_a.x', '_b.y']
+    assert handler.read_names == ['_a.x', '_b.y', '_a_x', '_b_y']
