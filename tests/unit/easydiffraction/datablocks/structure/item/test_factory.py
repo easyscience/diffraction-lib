@@ -9,6 +9,13 @@ def test_from_scratch():
     assert m.name == 'abc'
 
 
+def test_from_cif_str_normalizes_datablock_name():
+    structure = StructureFactory.from_cif_str('data_83267-ICSD\n')
+
+    assert structure.name == '83267-icsd'
+    assert structure.as_cif.startswith('data_83267-icsd\n')
+
+
 def test_from_cif_str_accepts_underscore_style_structure_tags():
     cif = """\
 data_legacy
