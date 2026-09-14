@@ -23,3 +23,6 @@ Here is a brief overview of the User Guide sections:
   EasyDiffraction in Python or Jupyter notebooks.
 - [Analysis Workflow](analysis-workflow/index.md) – Breaks down the data
   analysis pipeline into practical, sequential steps.
+- [Reliability Factors](analysis-workflow/reliability-factors.md) –
+  Defines the equations and interpretation of the reported fit-quality
+  metrics.

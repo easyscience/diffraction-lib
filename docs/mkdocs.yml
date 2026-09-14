@@ -222,8 +222,8 @@ nav:
           - Structure: user-guide/analysis-workflow/model.md
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
-          - Reliability Factors: user-guide/analysis-workflow/reliability-factors.md
           - Report: user-guide/analysis-workflow/report.md
+      - Reliability Factors: user-guide/analysis-workflow/reliability-factors.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:

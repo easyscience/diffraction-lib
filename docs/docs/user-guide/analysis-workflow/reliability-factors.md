@@ -1,9 +1,8 @@
 ---
 title: Reliability Factors
-icon: material/chart-bell-curve-cumulative
 ---
 
-# :material-chart-bell-curve-cumulative: Reliability Factors
+# Reliability Factors
 
 EasyDiffraction reports several complementary measures of agreement
 between observed and calculated diffraction data. They are ratios
