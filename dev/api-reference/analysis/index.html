@@ -731,6 +731,8 @@
       
         
       
+        
+      
     
     
     
@@ -887,6 +889,36 @@
     
   
     Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../user-guide/analysis-workflow/reliability-factors/" class="md-nav__link">
+        
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 19v1h18v2H2V2h2v15c3 0 6-2 8.1-5.6 3-5 6.3-7.4 9.9-7.4v2c-2.8 0-5.5 2.1-8.1 6.5C11.3 16.6 7.7 19 4 19"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Reliability Factors
   
 
     
@@ -1391,7 +1423,7 @@
   <span class="md-ellipsis">
     
   
-    LaM(7)O3 P02.1 pd-xray-cwl
+    LaM(7)O3 pd-xray-cwl
   
 
     
@@ -50832,7 +50864,7 @@ name list.</p>
               </td>
             </tr>
             <tr class="doc-section-item">
-              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calculate_weighted_r_factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_obs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_calc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;weights&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.fit_helpers.metrics.calculate_weighted_r_factor&lt;/code&gt;)" href="#easydiffraction.analysis.fit_helpers.metrics.calculate_weighted_r_factor">calculate_weighted_r_factor</a></code></td>
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;calculate_weighted_r_factor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y_obs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y_calc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;standard_uncertainties&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.analysis.fit_helpers.metrics.calculate_weighted_r_factor&lt;/code&gt;)" href="#easydiffraction.analysis.fit_helpers.metrics.calculate_weighted_r_factor">calculate_weighted_r_factor</a></code></td>
               <td>
                 <div class="doc-md-description">
                   <p>Calculate weighted R-factor between observed and calculated data.</p>
@@ -51008,7 +51040,7 @@ name list.</p>
 
 
 <h7 id="easydiffraction.analysis.fit_helpers.metrics.calculate_weighted_r_factor" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">calculate_weighted_r_factor</span><span class="p">(</span><span class="n">y_obs</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">calculate_weighted_r_factor</span><span class="p">(</span><span class="n">y_obs</span><span class="p">,</span> <span class="n">y_calc</span><span class="p">,</span> <span class="n">standard_uncertainties</span><span class="p">)</span></code>
 
 </h7>
 
@@ -51072,14 +51104,15 @@ name list.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>weights</code>
+                <code>standard_uncertainties</code>
             </td>
             <td>
                   <code><a class="autorefs autorefs-external" title="&lt;code&gt;numpy&lt;/code&gt;" href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a class="autorefs autorefs-external" title="&lt;code&gt;numpy.ndarray&lt;/code&gt;" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Weights for each data point.</p>
+                <p>Standard uncertainties for the observed data points. The
+inverse-variance weights are calculated as <code>1 / sigma**2</code>.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->

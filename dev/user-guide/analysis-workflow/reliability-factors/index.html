@@ -8,27 +8,31 @@
       
       
       
-        <link rel="canonical" href="https://easyscience.github.io/diffraction-lib/dev/user-guide/parameters/analysis/constraint/">
+        <link rel="canonical" href="https://easyscience.github.io/diffraction-lib/dev/user-guide/analysis-workflow/reliability-factors/">
       
       
+        <link rel="prev" href="../analysis/">
+      
+      
+        <link rel="next" href="../report/">
       
       
         
       
       
-      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>constraint - EasyDiffraction Library</title>
+        <title>Reliability Factors - EasyDiffraction Library</title>
       
     
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
-        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -47,11 +51,11 @@
       
     
     
-      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
     
-      <link rel="stylesheet" href="../../../../assets/stylesheets/extra.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/extra.css">
     
-    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -62,9 +66,9 @@
   <script type="importmap">
     {
       "imports": {
-        "three": "../../../../assets/javascripts/vendor/threejs/three.module.js",
-        "three/addons/controls/OrbitControls.js": "../../../../assets/javascripts/vendor/threejs/OrbitControls.js",
-        "three/addons/renderers/CSS2DRenderer.js": "../../../../assets/javascripts/vendor/threejs/CSS2DRenderer.js"
+        "three": "../../../assets/javascripts/vendor/threejs/three.module.js",
+        "three/addons/controls/OrbitControls.js": "../../../assets/javascripts/vendor/threejs/OrbitControls.js",
+        "three/addons/renderers/CSS2DRenderer.js": "../../../assets/javascripts/vendor/threejs/CSS2DRenderer.js"
       }
     }
   </script>
@@ -88,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#constraint" class="md-skip">
+        <a href="#reliability-factors" class="md-skip">
           Skip to content
         </a>
       
@@ -108,16 +112,16 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../../../.." title="EasyDiffraction Library" class="md-header__button md-logo" aria-label="EasyDiffraction Library" data-md-component="logo">
+    <a href="../../.." title="EasyDiffraction Library" class="md-header__button md-logo" aria-label="EasyDiffraction Library" data-md-component="logo">
       
 <img
   id="logo_light_mode"
-  src="../../../../assets/images/logo_light.svg"
+  src="../../../assets/images/logo_light.svg"
   alt="logo"
 />
 <img
   id="logo_dark_mode"
-  src="../../../../assets/images/logo_dark.svg"
+  src="../../../assets/images/logo_dark.svg"
   alt="logo"
 />
 
@@ -136,7 +140,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              constraint
+              Reliability Factors
             
           </span>
         </div>
@@ -259,16 +263,16 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../../../.." title="EasyDiffraction Library" class="md-nav__button md-logo" aria-label="EasyDiffraction Library" data-md-component="logo">
+    <a href="../../.." title="EasyDiffraction Library" class="md-nav__button md-logo" aria-label="EasyDiffraction Library" data-md-component="logo">
       
 <img
   id="logo_light_mode"
-  src="../../../../assets/images/logo_light.svg"
+  src="../../../assets/images/logo_light.svg"
   alt="logo"
 />
 <img
   id="logo_dark_mode"
-  src="../../../../assets/images/logo_dark.svg"
+  src="../../../assets/images/logo_dark.svg"
   alt="logo"
 />
 
@@ -315,7 +319,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../introduction/" class="md-nav__link ">
+            <a href="../../../introduction/" class="md-nav__link ">
               
   
   
@@ -381,7 +385,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../features/" class="md-nav__link ">
+            <a href="../../../features/" class="md-nav__link ">
               
   
   
@@ -447,7 +451,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../installation-and-setup/" class="md-nav__link ">
+            <a href="../../../installation-and-setup/" class="md-nav__link ">
               
   
   
@@ -492,6 +496,8 @@
       
   
   
+    
+  
   
   
     
@@ -517,15 +523,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../" class="md-nav__link ">
+            <a href="../../" class="md-nav__link ">
               
   
   
@@ -551,7 +557,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
@@ -571,7 +577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../glossary/" class="md-nav__link">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -599,7 +605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../concept/" class="md-nav__link">
+      <a href="../../concept/" class="md-nav__link">
         
   
   
@@ -627,7 +633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../data-format/" class="md-nav__link">
+      <a href="../../data-format/" class="md-nav__link">
         
   
   
@@ -655,7 +661,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../" class="md-nav__link">
+      <a href="../../parameters/" class="md-nav__link">
         
   
   
@@ -683,7 +689,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../first-steps/" class="md-nav__link">
+      <a href="../../first-steps/" class="md-nav__link">
         
   
   
@@ -708,6 +714,8 @@
                 
   
   
+    
+  
   
   
     
@@ -733,15 +741,15 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_7" checked>
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../analysis-workflow/" class="md-nav__link ">
+            <a href="../" class="md-nav__link ">
               
   
   
@@ -765,7 +773,7 @@
             
           </div>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_7_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_7">
             <span class="md-nav__icon md-icon"></span>
             
@@ -785,7 +793,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../analysis-workflow/project/" class="md-nav__link">
+      <a href="../project/" class="md-nav__link">
         
   
   
@@ -815,7 +823,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../analysis-workflow/model/" class="md-nav__link">
+      <a href="../model/" class="md-nav__link">
         
   
   
@@ -845,7 +853,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../analysis-workflow/experiment/" class="md-nav__link">
+      <a href="../experiment/" class="md-nav__link">
         
   
   
@@ -875,7 +883,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../analysis-workflow/analysis/" class="md-nav__link">
+      <a href="../analysis/" class="md-nav__link">
         
   
   
@@ -902,10 +910,39 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../../analysis-workflow/reliability-factors/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 19v1h18v2H2V2h2v15c3 0 6-2 8.1-5.6 3-5 6.3-7.4 9.9-7.4v2c-2.8 0-5.5 2.1-8.1 6.5C11.3 16.6 7.7 19 4 19"/></svg>
+  
+  <span class="md-ellipsis">
+    
+  
+    Reliability Factors
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -923,6 +960,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#r-factor-rf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        R-factor (Rf)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#squared-residual-r-factor-rf2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Squared-residual R-factor (Rf²)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#weighted-r-factor-wr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weighted R-factor (wR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chi-square-and-reduced-chi-square" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chi-square and reduced chi-square
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-weighted-profile-r-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected weighted profile R-factor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bragg-r-factor-br" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bragg R-factor (BR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#names-and-data-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Names and data subsets
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -935,7 +1069,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../analysis-workflow/report/" class="md-nav__link">
+      <a href="../report/" class="md-nav__link">
         
   
   
@@ -1016,7 +1150,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../tutorials/" class="md-nav__link ">
+            <a href="../../../tutorials/" class="md-nav__link ">
               
   
   
@@ -1119,7 +1253,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lbco-hrpt-from-data/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lbco-hrpt-from-data/" class="md-nav__link">
         
   
   
@@ -1147,7 +1281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lbco-hrpt-from-cif/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lbco-hrpt-from-cif/" class="md-nav__link">
         
   
   
@@ -1175,7 +1309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/load-and-fit-lbco-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/load-and-fit-lbco-hrpt/" class="md-nav__link">
         
   
   
@@ -1203,7 +1337,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lbco-hrpt-report/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lbco-hrpt-report/" class="md-nav__link">
         
   
   
@@ -1300,7 +1434,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-cosio-d20/" class="md-nav__link">
+      <a href="../../../tutorials/refine-cosio-d20/" class="md-nav__link">
         
   
   
@@ -1328,7 +1462,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-hs-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/refine-hs-hrpt/" class="md-nav__link">
         
   
   
@@ -1356,7 +1490,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-si-sepd/" class="md-nav__link">
+      <a href="../../../tutorials/refine-si-sepd/" class="md-nav__link">
         
   
   
@@ -1384,7 +1518,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-pbso4-xray/" class="md-nav__link">
+      <a href="../../../tutorials/refine-pbso4-xray/" class="md-nav__link">
         
   
   
@@ -1412,7 +1546,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lam7o3-p021/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lam7o3-p021/" class="md-nav__link">
         
   
   
@@ -1440,7 +1574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lmo-echidna/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lmo-echidna/" class="md-nav__link">
         
   
   
@@ -1531,7 +1665,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/simulate-lbco-cwl/" class="md-nav__link">
+      <a href="../../../tutorials/simulate-lbco-cwl/" class="md-nav__link">
         
   
   
@@ -1559,7 +1693,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/simulate-si-tof/" class="md-nav__link">
+      <a href="../../../tutorials/simulate-si-tof/" class="md-nav__link">
         
   
   
@@ -1587,7 +1721,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/simulate-nacl-xray/" class="md-nav__link">
+      <a href="../../../tutorials/simulate-nacl-xray/" class="md-nav__link">
         
   
   
@@ -1676,7 +1810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-tbti-heidi/" class="md-nav__link">
+      <a href="../../../tutorials/refine-tbti-heidi/" class="md-nav__link">
         
   
   
@@ -1704,7 +1838,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-taurine-senju/" class="md-nav__link">
+      <a href="../../../tutorials/refine-taurine-senju/" class="md-nav__link">
         
   
   
@@ -1795,7 +1929,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/pdf-ni-npd/" class="md-nav__link">
+      <a href="../../../tutorials/pdf-ni-npd/" class="md-nav__link">
         
   
   
@@ -1823,7 +1957,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/pdf-si-nomad/" class="md-nav__link">
+      <a href="../../../tutorials/pdf-si-nomad/" class="md-nav__link">
         
   
   
@@ -1851,7 +1985,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/pdf-nacl-xrd/" class="md-nav__link">
+      <a href="../../../tutorials/pdf-nacl-xrd/" class="md-nav__link">
         
   
   
@@ -1946,7 +2080,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-pbso4-joint/" class="md-nav__link">
+      <a href="../../../tutorials/refine-pbso4-joint/" class="md-nav__link">
         
   
   
@@ -1974,7 +2108,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-ncaf-wish/" class="md-nav__link">
+      <a href="../../../tutorials/refine-ncaf-wish/" class="md-nav__link">
         
   
   
@@ -2002,7 +2136,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/joint-si-bragg-pdf/" class="md-nav__link">
+      <a href="../../../tutorials/joint-si-bragg-pdf/" class="md-nav__link">
         
   
   
@@ -2030,7 +2164,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-cosio-d20-tscan/" class="md-nav__link">
+      <a href="../../../tutorials/refine-cosio-d20-tscan/" class="md-nav__link">
         
   
   
@@ -2058,7 +2192,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-cosio-d20-tscan-resumed/" class="md-nav__link">
+      <a href="../../../tutorials/refine-cosio-d20-tscan-resumed/" class="md-nav__link">
         
   
   
@@ -2147,7 +2281,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/refine-lbco-si-mcstas/" class="md-nav__link">
+      <a href="../../../tutorials/refine-lbco-si-mcstas/" class="md-nav__link">
         
   
   
@@ -2175,7 +2309,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/calibrate-beer-ess/" class="md-nav__link">
+      <a href="../../../tutorials/calibrate-beer-ess/" class="md-nav__link">
         
   
   
@@ -2270,7 +2404,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/bayesian-dream-lbco-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/bayesian-dream-lbco-hrpt/" class="md-nav__link">
         
   
   
@@ -2298,7 +2432,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/bayesian-dream-resume-lbco-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/bayesian-dream-resume-lbco-hrpt/" class="md-nav__link">
         
   
   
@@ -2326,7 +2460,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/bayesian-emcee-lbco-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/bayesian-emcee-lbco-hrpt/" class="md-nav__link">
         
   
   
@@ -2354,7 +2488,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/bayesian-emcee-resume-lbco-hrpt/" class="md-nav__link">
+      <a href="../../../tutorials/bayesian-emcee-resume-lbco-hrpt/" class="md-nav__link">
         
   
   
@@ -2382,7 +2516,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/bayesian-emcee-tbti-heidi/" class="md-nav__link">
+      <a href="../../../tutorials/bayesian-emcee-tbti-heidi/" class="md-nav__link">
         
   
   
@@ -2471,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/exercise-refine-si-lbco/" class="md-nav__link">
+      <a href="../../../tutorials/exercise-refine-si-lbco/" class="md-nav__link">
         
   
   
@@ -2499,7 +2633,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../tutorials/exercise-bayesian-si-lbco/" class="md-nav__link">
+      <a href="../../../tutorials/exercise-bayesian-si-lbco/" class="md-nav__link">
         
   
   
@@ -2570,7 +2704,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../verification/" class="md-nav__link ">
+            <a href="../../../verification/" class="md-nav__link ">
               
   
   
@@ -2687,7 +2821,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LaB6_basic/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LaB6_basic/" class="md-nav__link">
         
   
   
@@ -2715,7 +2849,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LaB6_11B/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LaB6_11B/" class="md-nav__link">
         
   
   
@@ -2743,7 +2877,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LaB6_sycos-sysin/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LaB6_sycos-sysin/" class="md-nav__link">
         
   
   
@@ -2771,7 +2905,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LaB6_fcj-asymmetry/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LaB6_fcj-asymmetry/" class="md-nav__link">
         
   
   
@@ -2799,7 +2933,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LaB6_absorption/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LaB6_absorption/" class="md-nav__link">
         
   
   
@@ -2827,7 +2961,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LBCO_basic/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LBCO_basic/" class="md-nav__link">
         
   
   
@@ -2855,7 +2989,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_LBCO_preferred-orientation/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_LBCO_preferred-orientation/" class="md-nav__link">
         
   
   
@@ -2883,7 +3017,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_PbSO4_basic/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_PbSO4_basic/" class="md-nav__link">
         
   
   
@@ -2911,7 +3045,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_PbSO4_beba-asymmetry/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_PbSO4_beba-asymmetry/" class="md-nav__link">
         
   
   
@@ -2939,7 +3073,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_Y2O3_isotropic-adp/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_Y2O3_isotropic-adp/" class="md-nav__link">
         
   
   
@@ -2967,7 +3101,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-cwl_Y2O3_beta-adp/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-cwl_Y2O3_beta-adp/" class="md-nav__link">
         
   
   
@@ -3064,7 +3198,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_Fe_pseudo-voigt/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_Fe_pseudo-voigt/" class="md-nav__link">
         
   
   
@@ -3092,7 +3226,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_NCAF_jorgensen-von-dreele/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_NCAF_jorgensen-von-dreele/" class="md-nav__link">
         
   
   
@@ -3120,7 +3254,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_Si_jorgensen/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_Si_jorgensen/" class="md-nav__link">
         
   
   
@@ -3148,7 +3282,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_Si_jorgensen-von-dreele/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_Si_jorgensen-von-dreele/" class="md-nav__link">
         
   
   
@@ -3176,7 +3310,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_Si_jorgensen-von-dreele-size-strain/" class="md-nav__link">
         
   
   
@@ -3204,7 +3338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-neut-tof_diamond_dream/" class="md-nav__link">
+      <a href="../../../verification/pd-neut-tof_diamond_dream/" class="md-nav__link">
         
   
   
@@ -3299,7 +3433,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-xray-cwl_LiF_single/" class="md-nav__link">
+      <a href="../../../verification/pd-xray-cwl_LiF_single/" class="md-nav__link">
         
   
   
@@ -3327,7 +3461,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-xray-cwl_LiF_single_polarization/" class="md-nav__link">
+      <a href="../../../verification/pd-xray-cwl_LiF_single_polarization/" class="md-nav__link">
         
   
   
@@ -3355,7 +3489,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-xray-cwl_LiF_single_absorption/" class="md-nav__link">
+      <a href="../../../verification/pd-xray-cwl_LiF_single_absorption/" class="md-nav__link">
         
   
   
@@ -3383,7 +3517,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-xray-cwl_LiF_doublet/" class="md-nav__link">
+      <a href="../../../verification/pd-xray-cwl_LiF_doublet/" class="md-nav__link">
         
   
   
@@ -3411,7 +3545,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/pd-xray-cwl_PbSO4_round-robin/" class="md-nav__link">
+      <a href="../../../verification/pd-xray-cwl_PbSO4_round-robin/" class="md-nav__link">
         
   
   
@@ -3506,7 +3640,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/sc-neut-cwl_Pr2NiO4_basic/" class="md-nav__link">
+      <a href="../../../verification/sc-neut-cwl_Pr2NiO4_basic/" class="md-nav__link">
         
   
   
@@ -3534,7 +3668,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/sc-neut-cwl_Tb2Ti2O7_basic/" class="md-nav__link">
+      <a href="../../../verification/sc-neut-cwl_Tb2Ti2O7_basic/" class="md-nav__link">
         
   
   
@@ -3562,7 +3696,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction/" class="md-nav__link">
+      <a href="../../../verification/sc-neut-cwl_Tb2Ti2O7_isotropic-extinction/" class="md-nav__link">
         
   
   
@@ -3590,7 +3724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/sc-neut-cwl_Tb2Ti2O7_anisotropic-adp/" class="md-nav__link">
+      <a href="../../../verification/sc-neut-cwl_Tb2Ti2O7_anisotropic-adp/" class="md-nav__link">
         
   
   
@@ -3618,7 +3752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/sc-neut-tof_taurine_basic/" class="md-nav__link">
+      <a href="../../../verification/sc-neut-tof_taurine_basic/" class="md-nav__link">
         
   
   
@@ -3709,7 +3843,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/total-neut-cwl_Ni_gaussian-damped-sinc/" class="md-nav__link">
+      <a href="../../../verification/total-neut-cwl_Ni_gaussian-damped-sinc/" class="md-nav__link">
         
   
   
@@ -3737,7 +3871,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/total-neut-tof_Si_gaussian-damped-sinc/" class="md-nav__link">
+      <a href="../../../verification/total-neut-tof_Si_gaussian-damped-sinc/" class="md-nav__link">
         
   
   
@@ -3765,7 +3899,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../verification/total-xray_NaCl_gaussian-damped-sinc/" class="md-nav__link">
+      <a href="../../../verification/total-xray_NaCl_gaussian-damped-sinc/" class="md-nav__link">
         
   
   
@@ -3826,7 +3960,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../cli/" class="md-nav__link ">
+            <a href="../../../cli/" class="md-nav__link ">
               
   
   
@@ -3910,7 +4044,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../api-reference/" class="md-nav__link ">
+            <a href="../../../api-reference/" class="md-nav__link ">
               
   
   
@@ -3956,7 +4090,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/analysis/" class="md-nav__link">
+      <a href="../../../api-reference/analysis/" class="md-nav__link">
         
   
   
@@ -3984,7 +4118,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/core/" class="md-nav__link">
+      <a href="../../../api-reference/core/" class="md-nav__link">
         
   
   
@@ -4012,7 +4146,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/crystallography/" class="md-nav__link">
+      <a href="../../../api-reference/crystallography/" class="md-nav__link">
         
   
   
@@ -4093,7 +4227,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/datablocks/experiment/" class="md-nav__link">
+      <a href="../../../api-reference/datablocks/experiment/" class="md-nav__link">
         
   
   
@@ -4121,7 +4255,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/datablocks/structure/" class="md-nav__link">
+      <a href="../../../api-reference/datablocks/structure/" class="md-nav__link">
         
   
   
@@ -4157,7 +4291,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/display/" class="md-nav__link">
+      <a href="../../../api-reference/display/" class="md-nav__link">
         
   
   
@@ -4185,7 +4319,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/io/" class="md-nav__link">
+      <a href="../../../api-reference/io/" class="md-nav__link">
         
   
   
@@ -4213,7 +4347,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/project/" class="md-nav__link">
+      <a href="../../../api-reference/project/" class="md-nav__link">
         
   
   
@@ -4241,7 +4375,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/report/" class="md-nav__link">
+      <a href="../../../api-reference/report/" class="md-nav__link">
         
   
   
@@ -4269,7 +4403,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../../../api-reference/utils/" class="md-nav__link">
+      <a href="../../../api-reference/utils/" class="md-nav__link">
         
   
   
@@ -4322,7 +4456,7 @@
         
           
           <div class="md-nav__link md-nav__container">
-            <a href="../../../../quick-reference/" class="md-nav__link ">
+            <a href="../../../quick-reference/" class="md-nav__link ">
               
   
   
@@ -4390,10 +4524,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#constraint-expression" class="md-nav__link">
+  <a href="#r-factor-rf" class="md-nav__link">
     <span class="md-ellipsis">
       
-        expression
+        R-factor (Rf)
       
     </span>
   </a>
@@ -4401,10 +4535,65 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#constraint-id" class="md-nav__link">
+  <a href="#squared-residual-r-factor-rf2" class="md-nav__link">
     <span class="md-ellipsis">
       
-        id
+        Squared-residual R-factor (Rf²)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#weighted-r-factor-wr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Weighted R-factor (wR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#chi-square-and-reduced-chi-square" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chi-square and reduced chi-square
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#expected-weighted-profile-r-factor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expected weighted profile R-factor
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bragg-r-factor-br" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bragg R-factor (BR)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#names-and-data-subsets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Names and data subsets
       
     </span>
   </a>
@@ -4435,58 +4624,154 @@
   
 
 
-<h1 id="constraint"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.42 5.29c-1.1-.1-2.07.71-2.17 1.82L10 10h2.82v2h-3l-.44 5.07A4.001 4.001 0 0 1 2 18.83l1.5-1.5c.33 1.05 1.46 1.64 2.5 1.3.78-.24 1.33-.93 1.4-1.74L7.82 12h-3v-2H8l.27-3.07a4.01 4.01 0 0 1 4.33-3.65c1.26.11 2.4.81 3.06 1.89l-1.5 1.5c-.25-.77-.93-1.31-1.74-1.38M22 13.65l-1.41-1.41-2.83 2.83-2.83-2.83-1.43 1.41 2.85 2.85-2.85 2.81 1.43 1.41 2.83-2.83 2.83 2.83L22 19.31l-2.83-2.81z"/></svg></span> constraint</h1>
-<h2 id="constraint-expression"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 7A1.5 1.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4 1.5 1.5 0 0 1 7 5.5 1.5 1.5 0 0 1 5.5 7m15.91 4.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.56-.23-1.06-.59-1.42"/></svg></span> expression</h2>
+<h1 id="reliability-factors"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 19v1h18v2H2V2h2v15c3 0 6-2 8.1-5.6 3-5 6.3-7.4 9.9-7.4v2c-2.8 0-5.5 2.1-8.1 6.5C11.3 16.6 7.7 19 4 19"/></svg></span> Reliability Factors</h1>
+<p>EasyDiffraction reports several complementary measures of agreement
+between observed and calculated diffraction data. They are ratios
+internally; values shown with a percent sign are multiplied by 100.</p>
+<p>For the equations below, <span class="arithmatex">\(y_i^{\mathrm{obs}}\)</span> and <span class="arithmatex">\(y_i^{\mathrm{calc}}\)</span>
+are the observed and calculated intensities, <span class="arithmatex">\(\sigma_i\)</span> is the standard
+uncertainty of the observed intensity, and</p>
+<div class="arithmatex">\[
+w_i = \frac{1}{\sigma_i^2}
+\]</div>
+<p>is its inverse-variance weight. The sum runs over the <span class="arithmatex">\(N\)</span> data points
+included in the reported value.</p>
+<h2 id="r-factor-rf">R-factor (Rf)</h2>
+<p>The unweighted profile R-factor is the absolute difference between
+observed and calculated intensities, normalized by the total absolute
+observed intensity:</p>
+<div class="arithmatex">\[
+R_f =
+\frac{\sum_i \left|y_i^{\mathrm{obs}}-y_i^{\mathrm{calc}}\right|}
+     {\sum_i \left|y_i^{\mathrm{obs}}\right|}.
+\]</div>
+<p>Lower values indicate closer agreement. This factor does not use the
+measurement uncertainties, so every data point contributes according to
+the magnitude of its absolute residual.</p>
+<h2 id="squared-residual-r-factor-rf2">Squared-residual R-factor (Rf²)</h2>
+<p>The value labelled <code>Rf²</code> in the fit summary is the unweighted
+root-squared-residual ratio:</p>
+<div class="arithmatex">\[
+R_{f^2} =
+\left[
+\frac{\sum_i \left(y_i^{\mathrm{obs}}-y_i^{\mathrm{calc}}\right)^2}
+     {\sum_i \left(y_i^{\mathrm{obs}}\right)^2}
+\right]^{1/2}.
+\]</div>
+<p>Despite the compact <code>Rf²</code> label, this is not the algebraic square of
+<span class="arithmatex">\(R_f\)</span>. The label indicates that squared intensities and residuals are
+used before taking the square root.</p>
+<h2 id="weighted-r-factor-wr">Weighted R-factor (wR)</h2>
+<p>The weighted R-factor is the root ratio of weighted squared residuals:</p>
+<div class="arithmatex">\[
+wR =
+\left[
+\frac{\sum_i w_i
+    \left(y_i^{\mathrm{obs}}-y_i^{\mathrm{calc}}\right)^2}
+     {\sum_i w_i \left(y_i^{\mathrm{obs}}\right)^2}
+\right]^{1/2},
+\qquad
+w_i = \frac{1}{\sigma_i^2}.
+\]</div>
+<p>Consequently, a point with a smaller standard uncertainty has more
+influence than a less precise point. EasyDiffraction expects standard
+uncertainties as input and converts them to inverse-variance weights; it
+does not use <span class="arithmatex">\(\sigma_i\)</span> itself as the weight.</p>
+<h2 id="chi-square-and-reduced-chi-square">Chi-square and reduced chi-square</h2>
+<p>The uncertainty-weighted sum of squared residuals is</p>
+<div class="arithmatex">\[
+\chi^2 =
+\sum_i \left(
+\frac{y_i^{\mathrm{obs}}-y_i^{\mathrm{calc}}}{\sigma_i}
+\right)^2
+= \sum_i w_i
+\left(y_i^{\mathrm{obs}}-y_i^{\mathrm{calc}}\right)^2.
+\]</div>
+<p>If <span class="arithmatex">\(p\)</span> free parameters were fitted, the number of degrees of freedom is
+<span class="arithmatex">\(\nu=N-p\)</span>, and the reported goodness-of-fit is the reduced chi-square:</p>
+<div class="arithmatex">\[
+\chi_\nu^2 = \frac{\chi^2}{\nu}.
+\]</div>
+<p>A value near 1 means that the size of the residuals is consistent with
+the stated standard uncertainties. A much larger value can indicate a
+poor model or underestimated uncertainties; a much smaller value can
+indicate overestimated uncertainties or an over-flexible model.</p>
+<p>For a joint fit, EasyDiffraction also multiplies each experiment's
+squared normalized residuals by its normalized joint-fit weight. Those
+experiment weights are normalized so that their sum equals the number of
+experiments.</p>
+<h2 id="expected-weighted-profile-r-factor">Expected weighted profile R-factor</h2>
+<p>For powder fits, the expected weighted profile R-factor is</p>
+<div class="arithmatex">\[
+wR_{\mathrm{expected}} =
+\left[
+\frac{\nu}
+     {\sum_i w_i \left(y_i^{\mathrm{obs}}\right)^2}
+\right]^{1/2}.
+\]</div>
+<p>It is the weighted profile R-factor expected when <span class="arithmatex">\(\chi_\nu^2=1\)</span>.
+Therefore, <span class="arithmatex">\(wR / wR_{\mathrm{expected}} = \sqrt{\chi_\nu^2}\)</span> when the
+same data points and weights are used for both values.</p>
+<h2 id="bragg-r-factor-br">Bragg R-factor (BR)</h2>
+<p>When observed and calculated structure-factor magnitudes are available,
+EasyDiffraction can report the Bragg R-factor:</p>
+<div class="arithmatex">\[
+BR =
+\frac{\sum_h \left|F_h^{\mathrm{obs}}-F_h^{\mathrm{calc}}\right|}
+     {\sum_h F_h^{\mathrm{obs}}}.
+\]</div>
+<p>Here <span class="arithmatex">\(h\)</span> indexes reflections and <span class="arithmatex">\(F_h\)</span> is a structure-factor magnitude.
+Lower values indicate closer agreement between observed and calculated
+reflection amplitudes.</p>
+<h2 id="names-and-data-subsets">Names and data subsets</h2>
+<p>The fit summary uses the short labels <code>Rf</code>, <code>Rf²</code>, <code>wR</code>, and <code>BR</code>. Saved
+deterministic fit results also expose <abbr title="International Union of Crystallography.">IUCr</abbr>-style names:</p>
 <table>
 <thead>
 <tr>
-<th>Access</th>
-<th>Source</th>
+<th>Saved result</th>
+<th>Definition and scope</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>constraints['ID'].expression</td>
-<td><a class="label-cif" href="#">code</a></td>
+<td><code>R_factor_all</code></td>
+<td><span class="arithmatex">\(R_f\)</span> for all included observations</td>
 </tr>
 <tr>
-<td>_constraint.expression</td>
-<td><a class="label-cif" href="#">Edi</a></td>
+<td><code>wR_factor_all</code></td>
+<td><span class="arithmatex">\(wR\)</span> for all included observations</td>
 </tr>
 <tr>
-<td>_easydiffraction_constraint.expression</td>
-<td><a class="label-cif" href="#">coreCIF</a></td>
+<td><code>R_factor_gt</code></td>
+<td><span class="arithmatex">\(R_f\)</span> for observations satisfying <span class="arithmatex">\(y_i^{\mathrm{obs}}&gt;3\sigma_i\)</span></td>
+</tr>
+<tr>
+<td><code>wR_factor_gt</code></td>
+<td><span class="arithmatex">\(wR\)</span> for observations satisfying <span class="arithmatex">\(y_i^{\mathrm{obs}}&gt;3\sigma_i\)</span></td>
+</tr>
+<tr>
+<td><code>prof_R_factor</code></td>
+<td><span class="arithmatex">\(R_f\)</span> for all included powder-profile points</td>
+</tr>
+<tr>
+<td><code>prof_wR_factor</code></td>
+<td><span class="arithmatex">\(wR\)</span> for all included powder-profile points</td>
+</tr>
+<tr>
+<td><code>prof_wR_expected</code></td>
+<td><span class="arithmatex">\(wR_{\mathrm{expected}}\)</span> for all included powder-profile points</td>
+</tr>
+<tr>
+<td><code>reduced_chi_square</code></td>
+<td><span class="arithmatex">\(\chi_\nu^2\)</span> for the fitted residual vector</td>
 </tr>
 </tbody>
 </table>
-<p>Constraint equation, e.g. "occ_Ba = 1 - occ_La".</p>
-<h2 id="constraint-id"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.5 7A1.5 1.5 0 0 1 4 5.5 1.5 1.5 0 0 1 5.5 4 1.5 1.5 0 0 1 7 5.5 1.5 1.5 0 0 1 5.5 7m15.91 4.58-9-9C12.05 2.22 11.55 2 11 2H4c-1.11 0-2 .89-2 2v7c0 .55.22 1.05.59 1.41l8.99 9c.37.36.87.59 1.42.59s1.05-.23 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.56-.23-1.06-.59-1.42"/></svg></span> id</h2>
-<table>
-<thead>
-<tr>
-<th>Access</th>
-<th>Source</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>constraints['ID'].id</td>
-<td><a class="label-cif" href="#">code</a></td>
-</tr>
-<tr>
-<td>_constraint.id</td>
-<td><a class="label-cif" href="#">Edi</a></td>
-</tr>
-<tr>
-<td>_easydiffraction_constraint.id</td>
-<td><a class="label-cif" href="#">coreCIF</a></td>
-</tr>
-</tbody>
-</table>
-<p>Explicit identifier for this constraint row.</p>
-<!-- prettier-ignore-start -->
-<!-- prettier-ignore-end -->
-
+<p>Only finite observations with finite calculated values and positive,
+finite standard uncertainties are included in saved deterministic
+statistics. A metric is unavailable when its denominator is zero or when
+it does not apply to the fitted data.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -4524,6 +4809,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../analysis/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Analysis">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Analysis
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../report/" class="md-footer__link md-footer__link--next" aria-label="Next: Report">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Report
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -4611,18 +4934,18 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.code.annotate", "content.code.copy", "content.tooltips", "navigation.footer", "navigation.indexes", "navigation.top", "navigation.tracking", "search.highlight", "search.share", "search.suggest", "toc.follow"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script>
     
     
-      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
-        <script src="../../../../assets/javascripts/extra.js"></script>
+        <script src="../../../assets/javascripts/extra.js"></script>
       
-        <script src="../../../../assets/javascripts/vendor/plotly/plotly-cartesian.min.js"></script>
+        <script src="../../../assets/javascripts/vendor/plotly/plotly-cartesian.min.js"></script>
       
-        <script src="../../../../assets/javascripts/ed-figures.js"></script>
+        <script src="../../../assets/javascripts/ed-figures.js"></script>
       
-        <script src="../../../../assets/javascripts/mathjax.js"></script>
+        <script src="../../../assets/javascripts/mathjax.js"></script>
       
         <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
       
