@@ -265,6 +265,9 @@ Now, you can inspect the fitted parameters to see how they have changed
 during the refinement process, select more parameters to be refined, and
 perform additional fits as needed.
 
+The equations and interpretation of the reported fit-quality values are
+listed on the [Reliability Factors](reliability-factors.md) page.
+
 To plot the measured and calculated data after the fit, you can use the
 `pattern` method of the `display` object:
 
