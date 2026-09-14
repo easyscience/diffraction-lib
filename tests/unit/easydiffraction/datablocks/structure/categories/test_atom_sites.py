@@ -77,6 +77,14 @@ class TestAtomSite:
         site.type_symbol = 'Fe'
         assert site.type_symbol.value == 'Fe'
 
+    def test_ionic_type_symbol_setter(self):
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        site = AtomSite()
+        site.type_symbol = 'Fe3+'
+
+        assert site.type_symbol.value == 'Fe3+'
+
     def test_coordinate_setters(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 

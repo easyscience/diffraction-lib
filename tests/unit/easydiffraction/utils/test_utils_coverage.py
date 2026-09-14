@@ -3,6 +3,8 @@
 
 """Supplementary unit tests for easydiffraction.utils.utils — coverage gaps."""
 
+import concurrent.futures
+import threading
 import urllib.request
 
 import numpy as np
@@ -640,6 +642,43 @@ def test_fetch_data_index_reads_cached_json(monkeypatch, tmp_path):
 
     result = MUT._fetch_data_index()
     assert result == {'1': {'path': 'a.xye'}}
+
+
+def test_fetch_data_index_serializes_shared_cache_access(monkeypatch, tmp_path):
+    import json
+
+    import easydiffraction.utils.utils as MUT
+
+    index_file = tmp_path / 'data-index.json'
+    index_file.write_text(json.dumps({'1': {'path': 'a.xye'}}), encoding='utf-8')
+    first_retrieve_entered = threading.Event()
+    release_first_retrieve = threading.Event()
+    state_lock = threading.Lock()
+    active_retrieves = 0
+    max_active_retrieves = 0
+
+    def fake_retrieve(url, known_hash, fname, path, progressbar):
+        nonlocal active_retrieves, max_active_retrieves
+        with state_lock:
+            active_retrieves += 1
+            max_active_retrieves = max(max_active_retrieves, active_retrieves)
+        first_retrieve_entered.set()
+        release_first_retrieve.wait(timeout=1)
+        with state_lock:
+            active_retrieves -= 1
+        return str(index_file)
+
+    monkeypatch.setattr(MUT.pooch, 'os_cache', lambda name: tmp_path)
+    monkeypatch.setattr(MUT.pooch, 'retrieve', fake_retrieve)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(MUT._fetch_data_index) for _ in range(4)]
+        assert first_retrieve_entered.wait(timeout=1)
+        release_first_retrieve.set()
+        results = [future.result(timeout=1) for future in futures]
+
+    assert results == [{'1': {'path': 'a.xye'}}] * 4
+    assert max_active_retrieves == 1
 
 
 # --- _existing_project_dir ----------------------------------------------------
