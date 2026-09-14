@@ -576,10 +576,12 @@ class TestMetricHelpers:
     def test_weighted_r_factor_or_none_computes_value(self):
         from easydiffraction.analysis.analysis import Analysis
 
-        observed = np.asarray([10.0, 10.0], dtype=float)
-        calculated = np.asarray([10.0, 10.0], dtype=float)
-        uncertainties = np.asarray([1.0, 1.0], dtype=float)
-        assert Analysis._weighted_r_factor_or_none(observed, calculated, uncertainties) == 0.0
+        observed = np.asarray([10.0, 20.0], dtype=float)
+        calculated = np.asarray([9.0, 16.0], dtype=float)
+        uncertainties = np.asarray([1.0, 2.0], dtype=float)
+        value = Analysis._weighted_r_factor_or_none(observed, calculated, uncertainties)
+        assert value is not None
+        assert np.isclose(value, np.sqrt(5.0 / 200.0))
 
     def test_expected_weighted_r_factor_guards(self):
         from easydiffraction.analysis.analysis import Analysis
