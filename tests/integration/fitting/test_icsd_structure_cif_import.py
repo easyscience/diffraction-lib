@@ -84,13 +84,6 @@ O4 O2- 4 a 0.2336(3) 0.2336(3) 0.2336(3) 0.037(1) 1.
 """
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        'requires normalize-cif-datablock-names and '
-        'cif-underscore-tag-import to be merged into develop'
-    ),
-)
 def test_icsd_cif_import_preserves_structure_and_ionic_symbols_for_cryspy():
     """Import the ICSD structure and preserve ionic atom types through Cryspy."""
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
