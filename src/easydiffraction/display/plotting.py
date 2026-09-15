@@ -1830,7 +1830,9 @@ class Plotter(RendererBase):
 
         log.warning(
             'Correlation matrix is unavailable for this fit. '
-            'Use a minimizer that returns covariance information or posterior samples.'
+            'This can happen if the minimization failed, if some parameters are too '
+            'strongly correlated or poorly determined, or if the selected minimizer '
+            'does not return covariance information.'
         )
         return None
 
