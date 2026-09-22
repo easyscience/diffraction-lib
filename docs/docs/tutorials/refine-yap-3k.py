@@ -2,10 +2,9 @@
 # # Structure Refinement: YAlO3+Al2O3, SPODI
 #
 # This example demonstrates a staged two-phase Rietveld refinement of
-# yttrium aluminium perovskite (YAlO3, or YAP) with a small Al2O3
+# yttrium aluminium perovskite YAlO3 (or YAP) with a small Al2O3
 # impurity using constant wavelength neutron powder diffraction data
-# measured at 3 K on SPODI at MLZ. The starting model is adapted from
-# the FullProf example.
+# measured at 3 K on SPODI at MLZ.
 #
 # The workflow defines both structures, configures the experiment, and
 # refines the cell, scale, profile, background, and atom parameters of
@@ -25,10 +24,7 @@ import easydiffraction as edi
 # %%
 project = edi.Project(
     name='yap_3k',
-    description=(
-        'Two-phase YAlO3 and Al2O3 neutron powder refinement '
-        'using 3 K data from SPODI at MLZ.'
-    ),
+    description='Two-phase YAlO3 and Al2O3 refinement using 3 K data from SPODI at MLZ.',
 )
 
 # %% [markdown]
@@ -212,6 +208,7 @@ expt.peak.type = 'pseudo-voigt + berar-baldinozzi asymmetry'
 expt.peak.broad_gauss_u = 0.04
 expt.peak.broad_gauss_v = -0.05
 expt.peak.broad_gauss_w = 0.10
+expt.peak.broad_lorentz_x = 0.0
 expt.peak.broad_lorentz_y = 0.01
 
 # %%
@@ -294,7 +291,10 @@ project.analysis.minimizer.show_supported()
 
 # %%
 project.analysis.minimizer.type = 'bumps (lm)'
-project.analysis.minimizer.max_iterations = 1000
+
+# %%
+project.analysis.minimizer.max_iterations = 500
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %% [markdown]
 # ### Perform Fit 1/3: Cell, Scale, and Background
