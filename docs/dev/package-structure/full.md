@@ -103,7 +103,11 @@
 │   │   │   ├── 📄 lmfit_leastsq.py
 │   │   │   │   └── 🏷️ class LmfitLeastsqMinimizer
 │   │   │   └── 📄 lsq_base.py
-│   │   │       └── 🏷️ class LeastSquaresMinimizerBase
+│   │   │       ├── 🏷️ class LeastSquaresMinimizerBase
+│   │   │       ├── 🏷️ class ObjectiveParameterToleranceMinimizerBase
+│   │   │       ├── 🏷️ class GradientToleranceMinimizerBase
+│   │   │       ├── 🏷️ class PopulationToleranceMinimizerBase
+│   │   │       └── 🏷️ class TrustRegionToleranceMinimizerBase
 │   │   ├── 📁 sequential_fit
 │   │   │   ├── 📄 __init__.py
 │   │   │   ├── 📄 default.py

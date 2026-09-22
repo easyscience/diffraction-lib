@@ -164,7 +164,11 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
     removed_warning = next(w for w in warnings if 'removes these settings' in w)
     added_warning = next(w for w in warnings if 'adds these settings' in w)
     assert removed_warning == (
-        'Switching minimizer type removes these settings:\n• max_iterations'
+        'Switching minimizer type removes these settings:\n'
+        '• chi_square_change_tolerance\n'
+        '• gradient_tolerance\n'
+        '• max_iterations\n'
+        '• parameter_change_tolerance'
     )
     assert added_warning.splitlines() == [
         'Switching minimizer type adds these settings with defaults:',
@@ -177,6 +181,54 @@ def test_minimizer_selector_swap_warns_for_different_defaults(monkeypatch):
         '• thinning_interval=1',
     ]
     assert not any('<not available>' in w for w in warnings)
+
+
+def test_minimizer_switch_changes_available_tolerances():
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+
+    assert analysis.minimizer._setting_descriptor_names == (
+        'max_iterations',
+        'chi_square_change_tolerance',
+        'parameter_change_tolerance',
+        'gradient_tolerance',
+    )
+
+    analysis.minimizer.type = 'bumps (amoeba)'
+    assert analysis.minimizer._setting_descriptor_names == (
+        'max_iterations',
+        'chi_square_change_tolerance',
+        'parameter_change_tolerance',
+    )
+
+    analysis.minimizer.type = 'bumps (de)'
+    assert analysis.minimizer._setting_descriptor_names == (
+        'max_iterations',
+        'population_convergence_tolerance',
+    )
+
+    analysis.minimizer.type = 'dfols'
+    assert analysis.minimizer._setting_descriptor_names == (
+        'max_iterations',
+        'final_trust_region_radius',
+    )
+
+
+def test_minimizer_tolerances_are_applied_to_engine():
+    from easydiffraction.analysis.analysis import Analysis
+
+    analysis = Analysis(project=_make_project_with_names([]))
+    analysis.minimizer.chi_square_change_tolerance = 2e-9
+    analysis.minimizer.parameter_change_tolerance = 3e-9
+    analysis.minimizer.gradient_tolerance = 0.0
+
+    analysis._sync_engine_from_minimizer_category()
+
+    engine = analysis.fitter.minimizer
+    assert engine.chi_square_change_tolerance == 2e-9
+    assert engine.parameter_change_tolerance == 3e-9
+    assert engine.gradient_tolerance == 0.0
 
 
 def test_undo_fit_restores_scalars_and_clears_fit_outputs():

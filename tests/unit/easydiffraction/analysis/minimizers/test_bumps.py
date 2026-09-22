@@ -306,7 +306,10 @@ def test_run_solver_returns_optimize_result():
             bumps_params=[bp1, bp2],
         )
 
-    assert len(mock_driver_cls.call_args.kwargs['monitors']) == 1
+    driver_kwargs = mock_driver_cls.call_args.kwargs
+    assert len(driver_kwargs['monitors']) == 1
+    assert driver_kwargs['ftol'] == 1e-8
+    assert driver_kwargs['xtol'] == 1e-8
 
     assert isinstance(res, OptimizeResult)
     assert res.success is True

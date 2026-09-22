@@ -92,9 +92,13 @@ def test_lmfit_max_iterations_is_user_facing_iteration_setting(monkeypatch):
         method,
         nan_policy,
         max_nfev,
+        ftol,
+        xtol,
+        gtol,
     ):
         del objective_function, params, method, nan_policy
         observed_max_nfev['value'] = max_nfev
+        observed_max_nfev['tolerances'] = (ftol, xtol, gtol)
         return types.SimpleNamespace(success=True, params={})
 
     monkeypatch.setattr(
@@ -110,4 +114,5 @@ def test_lmfit_max_iterations_is_user_facing_iteration_setting(monkeypatch):
 
     assert minimizer.max_iterations == 300
     assert observed_max_nfev['value'] == 300
+    assert observed_max_nfev['tolerances'] == (1e-8, 1e-8, 0.0)
     assert not hasattr(minimizer, 'steps')
