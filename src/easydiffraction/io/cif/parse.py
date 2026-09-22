@@ -4,10 +4,17 @@
 
 from __future__ import annotations
 
+import re
+
 import gemmi
 
 # Minimum raw-string length for CIF surrounding-quote detection
 _MIN_QUOTED_LEN = 2
+
+# Model datablock names use a backend-safe subset of CIF block-name
+# characters. Hyphens and underscores are retained because they are used
+# throughout EasyDiffraction's public naming conventions.
+_UNSUPPORTED_DATABLOCK_NAME_CHARS = re.compile(r'[^a-z0-9_-]')
 
 
 def document_from_path(path: str) -> gemmi.cif.Document:
@@ -26,9 +33,9 @@ def pick_sole_block(doc: gemmi.cif.Document) -> gemmi.cif.Block:
 
 
 def name_from_block(block: gemmi.cif.Block) -> str:
-    """Extract a model name from the CIF block name."""
-    # TODO: Need validator or normalization?
-    return block.name
+    """Extract and normalize a model name from the CIF block name."""
+    lowercase_name = block.name.lower()
+    return _UNSUPPORTED_DATABLOCK_NAME_CHARS.sub('', lowercase_name)
 
 
 def read_cif_str(block: gemmi.cif.Block, tag: str) -> str | None:

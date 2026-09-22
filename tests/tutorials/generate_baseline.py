@@ -94,6 +94,9 @@ def build_entry(name: str, cif: AnalysisEdi) -> dict | None:
         'rtol': BAYESIAN_RTOL if kind == 'bayesian' else DETERMINISTIC_RTOL,
         'reduced_chi_square': round(reduced_chi_square, ROUND_DIGITS),
     }
+    n_free_parameters = cif.scalar('n_free_parameters')
+    if n_free_parameters is not None:
+        entry['n_free_parameters'] = int(n_free_parameters)
     if name in PLATFORM_SENSITIVE:
         entry['platform_sensitive'] = True
     for scalar_name in OPTIONAL_SCALARS:

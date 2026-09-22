@@ -632,6 +632,9 @@ project_1.display.pattern(expt_name='sim_si')
 # for more details about the fitting process.
 
 # %%
+project_1.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project_1.analysis.fit()
 project_1.display.fit.results()
 
@@ -1134,6 +1137,9 @@ for line_segment in project_2.experiments['sim_lbco'].background:
 
 # %% [markdown]
 # **Solution:**
+
+# %% tags=["solution", "hide-input"]
+project_2.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %% tags=["solution", "hide-input"]
 project_2.display.pattern(expt_name='sim_lbco')

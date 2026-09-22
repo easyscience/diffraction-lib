@@ -78,6 +78,11 @@ def test_tutorial_output(name: str) -> None:
         f"{name}: result_kind '{cif.result_kind}' != expected '{expected['result_kind']}'"
     )
 
+    if 'n_free_parameters' in expected:
+        assert cif.scalar('n_free_parameters') == expected['n_free_parameters'], (
+            f'{name}: number of free parameters differs from {expected["n_free_parameters"]}'
+        )
+
     # Some tutorials (e.g. ed-7 on the compiled crysfml backend)
     # produce fit metrics that are not reproducible across CPU arch
     # or BLAS; confirm they ran and saved, but skip the numbers.

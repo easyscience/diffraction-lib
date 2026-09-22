@@ -44,7 +44,7 @@ def calculate_r_factor(
 def calculate_weighted_r_factor(
     y_obs: np.ndarray,
     y_calc: np.ndarray,
-    weights: np.ndarray,
+    standard_uncertainties: np.ndarray,
 ) -> float:
     """
     Calculate weighted R-factor between observed and calculated data.
@@ -55,8 +55,9 @@ def calculate_weighted_r_factor(
         Observed data points.
     y_calc : np.ndarray
         Calculated data points.
-    weights : np.ndarray
-        Weights for each data point.
+    standard_uncertainties : np.ndarray
+        Standard uncertainties for the observed data points. The
+        inverse-variance weights are calculated as ``1 / sigma**2``.
 
     Returns
     -------
@@ -65,7 +66,8 @@ def calculate_weighted_r_factor(
     """
     y_obs = np.asarray(y_obs)
     y_calc = np.asarray(y_calc)
-    weights = np.asarray(weights)
+    standard_uncertainties = np.asarray(standard_uncertainties)
+    weights = 1.0 / standard_uncertainties**2
     numerator = np.sum(weights * (y_obs - y_calc) ** 2)
     denominator = np.sum(weights * y_obs**2)
     return np.sqrt(numerator / denominator) if denominator != 0 else np.nan

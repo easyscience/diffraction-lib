@@ -184,6 +184,9 @@ project.display.parameters.free()
 project.analysis.minimizer.type = 'bumps (lm)'
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 project.display.fit.results()
 

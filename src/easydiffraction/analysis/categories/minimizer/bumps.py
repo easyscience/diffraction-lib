@@ -7,19 +7,23 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
+from easydiffraction.analysis.categories.minimizer.lsq_base import (
+    ObjectiveParameterToleranceMinimizerBase,
+)
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 
 
 @MinimizerCategoryFactory.register
-class BumpsMinimizer(LeastSquaresMinimizerBase):
+class BumpsMinimizer(ObjectiveParameterToleranceMinimizerBase):
     """Persisted settings for the default BUMPS minimizer."""
 
     _engine_metadata: ClassVar[dict[str, str]] = {
         'optimizer_name': 'bumps',
         'method_name': 'lm',
     }
+    _default_chi_square_change_tolerance: ClassVar[float] = 1e-8
+    _default_parameter_change_tolerance: ClassVar[float] = 1e-8
     url: str = 'https://bumps.readthedocs.io'
 
     type_info = TypeInfo(

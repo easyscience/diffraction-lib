@@ -282,6 +282,9 @@ analysis.minimizer.type = 'bumps (lm)'
 # if the initial parameters are far from optimal.
 
 # %%
+analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 analysis.fit()
 
 # %%

@@ -24,6 +24,8 @@ from typing import ClassVar
 if TYPE_CHECKING:  # pragma: no cover
     from types import TracebackType
 
+    from rich.traceback import Traceback as RichTraceback
+
 import html
 import re
 import sys
@@ -31,6 +33,7 @@ from pathlib import Path
 
 from rich import traceback
 from rich.console import Console
+from rich.console import ConsoleRenderable
 from rich.console import Group
 from rich.console import RenderableType
 from rich.logging import RichHandler
@@ -117,17 +120,52 @@ class IconifiedRichHandler(RichHandler):
                 return Text(str(message))
         return super().render_message(record, message)
 
+    def render(
+        self,
+        *,
+        record: logging.LogRecord,
+        traceback: RichTraceback | None,
+        message_renderable: ConsoleRenderable,
+    ) -> ConsoleRenderable:
+        """Render notebook logs without Rich's fixed-width log grid."""
+        if not in_jupyter():
+            return super().render(
+                record=record,
+                traceback=traceback,
+                message_renderable=message_renderable,
+            )
+
+        message = (
+            message_renderable
+            if isinstance(message_renderable, Text)
+            else Text(str(message_renderable))
+        )
+        line = Text.assemble(self.get_level_text(record), ' ', message)
+        return Group(line, traceback) if traceback is not None else line
+
 
 # ======================================================================
 # CONSOLE MANAGER
 # ======================================================================
 
 
+class NotebookAwareConsole(Console):
+    """Rich console that leaves line wrapping to the notebook UI."""
+
+    def print(self, *objects: object, **kwargs: object) -> None:
+        """
+        Print without inserting width-based line breaks in Jupyter.
+        """
+        if in_jupyter():
+            kwargs.setdefault('soft_wrap', True)
+        super().print(*objects, **kwargs)
+
+
 class ConsoleManager:
     """Central provider for shared Rich Console instance."""
 
     _MIN_CONSOLE_WIDTH = 130
-    _instance: Console | None = None
+    _instance: NotebookAwareConsole | None = None
 
     @staticmethod
     def _detect_width() -> int:
@@ -148,10 +186,10 @@ class ConsoleManager:
         return max(width, min_width)
 
     @classmethod
-    def get(cls) -> Console:
+    def get(cls) -> NotebookAwareConsole:
         """Return a shared Rich Console instance."""
         if cls._instance is None:
-            cls._instance = Console(
+            cls._instance = NotebookAwareConsole(
                 width=cls._detect_width(),
                 force_jupyter=False,
             )

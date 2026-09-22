@@ -11,6 +11,9 @@ from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'leastsq'
 DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE = 1e-8
+DEFAULT_PARAMETER_CHANGE_TOLERANCE = 1e-8
+DEFAULT_GRADIENT_TOLERANCE = 0.0
 
 
 @MinimizerFactory.register
@@ -27,6 +30,9 @@ class LmfitMinimizer(MinimizerBase):
         name: str = MinimizerTypeEnum.LMFIT,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        chi_square_change_tolerance: float = DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE,
+        parameter_change_tolerance: float = DEFAULT_PARAMETER_CHANGE_TOLERANCE,
+        gradient_tolerance: float = DEFAULT_GRADIENT_TOLERANCE,
     ) -> None:
         """Initialize the lmfit minimizer with default settings."""
         super().__init__(
@@ -34,6 +40,9 @@ class LmfitMinimizer(MinimizerBase):
             method=method,
             max_iterations=max_iterations,
         )
+        self.chi_square_change_tolerance = chi_square_change_tolerance
+        self.parameter_change_tolerance = parameter_change_tolerance
+        self.gradient_tolerance = gradient_tolerance
 
     def _prepare_solver_args(  # noqa: PLR6301
         self,
@@ -88,6 +97,9 @@ class LmfitMinimizer(MinimizerBase):
             method=self.method,
             nan_policy='propagate',
             max_nfev=self.max_iterations,
+            ftol=self.chi_square_change_tolerance,
+            xtol=self.parameter_change_tolerance,
+            gtol=self.gradient_tolerance,
         )
 
     def _sync_result_to_parameters(  # noqa: PLR6301

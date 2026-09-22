@@ -7,13 +7,13 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
+from easydiffraction.analysis.categories.minimizer.lsq_base import GradientToleranceMinimizerBase
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 
 
 @MinimizerCategoryFactory.register
-class LmfitLeastSquaresMinimizer(LeastSquaresMinimizerBase):
+class LmfitLeastSquaresMinimizer(GradientToleranceMinimizerBase):
     """Persisted settings for the LMFIT least_squares minimizer."""
 
     _engine_metadata: ClassVar[dict[str, str]] = {

@@ -19,6 +19,8 @@ from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'lm'
 DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE = 1e-8
+DEFAULT_PARAMETER_CHANGE_TOLERANCE = 1e-8
 _COVARIANCE_RELATIVE_STEP = 1e-4
 
 
@@ -206,6 +208,9 @@ class BumpsMinimizer(MinimizerBase):
         name: str = MinimizerTypeEnum.BUMPS,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        chi_square_change_tolerance: float | None = DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE,
+        parameter_change_tolerance: float | None = DEFAULT_PARAMETER_CHANGE_TOLERANCE,
+        population_convergence_tolerance: float | None = None,
     ) -> None:
         """Initialize the BUMPS minimizer with default settings."""
         super().__init__(
@@ -213,6 +218,9 @@ class BumpsMinimizer(MinimizerBase):
             method=method,
             max_iterations=max_iterations,
         )
+        self.chi_square_change_tolerance = chi_square_change_tolerance
+        self.parameter_change_tolerance = parameter_change_tolerance
+        self.population_convergence_tolerance = population_convergence_tolerance
 
     @staticmethod
     def _tracks_progress_via_solver_monitor() -> bool:
@@ -291,11 +299,19 @@ class BumpsMinimizer(MinimizerBase):
         )
 
         fitclass = next(cls for cls in FITTERS if cls.id == self.method)
+        driver_options: dict[str, object] = {'steps': self.max_iterations}
+        if self.chi_square_change_tolerance is not None:
+            driver_options['ftol'] = self.chi_square_change_tolerance
+        if self.parameter_change_tolerance is not None:
+            driver_options['xtol'] = self.parameter_change_tolerance
+        if self.population_convergence_tolerance is not None:
+            driver_options['xtol'] = self.population_convergence_tolerance
+
         driver = FitDriver(
             fitclass=fitclass,
             problem=problem,
             monitors=[progress_monitor],
-            steps=self.max_iterations,
+            **driver_options,
         )
         driver.clip()
         try:

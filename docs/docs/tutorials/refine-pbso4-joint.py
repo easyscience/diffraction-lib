@@ -325,6 +325,9 @@ expt2.instrument.calib_twotheta_offset.free = True
 # ### Run Fitting
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %%

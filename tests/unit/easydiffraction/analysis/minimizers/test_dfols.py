@@ -41,7 +41,7 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
     # Patch dfols.solve to return our FakeRes
     import easydiffraction.analysis.minimizers.dfols as mod
 
-    def fake_solve(fun, x0, bounds, maxfun):
+    def fake_solve(fun, x0, bounds, maxfun, rhoend):
         # Verify we pass reasonable arguments
         del fun
         assert isinstance(x0, np.ndarray)
@@ -49,6 +49,7 @@ def test_dfols_prepare_run_and_sync(monkeypatch):
         assert isinstance(bounds, tuple)
         assert all(isinstance(b, np.ndarray) for b in bounds)
         assert maxfun == 10
+        assert rhoend == 1e-8
         return FakeRes()
 
     monkeypatch.setattr(mod, 'solve', fake_solve)

@@ -77,6 +77,39 @@ class TestAtomSite:
         site.type_symbol = 'Fe'
         assert site.type_symbol.value == 'Fe'
 
+    def test_ionic_type_symbol_setter(self, monkeypatch):
+        import easydiffraction.datablocks.structure.categories.atom_sites.default as atom_sites_mod
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        warning_messages = []
+        monkeypatch.setattr(atom_sites_mod.log, 'warning', warning_messages.append)
+        site = AtomSite()
+        site.type_symbol = 'Fe3+'
+
+        assert site.type_symbol.value == 'Fe3+'
+        assert warning_messages == []
+
+    def test_unsupported_ionic_type_symbol_warns_for_default_cryspy(self, monkeypatch):
+        import easydiffraction.datablocks.structure.categories.atom_sites.default as atom_sites_mod
+        from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+        warning_messages = []
+        monkeypatch.setattr(atom_sites_mod.log, 'warning', warning_messages.append)
+        site = AtomSite()
+
+        site.type_symbol = 'Pb3+'
+        site.type_symbol = 'Pb3+'
+
+        assert site.type_symbol.value == 'Pb3+'
+        assert warning_messages == [
+            (
+                "Charged atom type 'Pb3+' is not available in the default CrysPy "
+                "scattering-factor database. Supported ionic forms for 'Pb': Pb2+, "
+                "Pb4+. The default neutral-atom scattering factors for 'Pb' (no "
+                'ionic charge) will be used.'
+            )
+        ]
+
     def test_coordinate_setters(self):
         from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
 

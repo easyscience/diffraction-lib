@@ -10,6 +10,7 @@ in crystallographic structures.
 from __future__ import annotations
 
 import math
+import re
 
 from cryspy.A_functions_base.database import DATABASE
 
@@ -31,6 +32,10 @@ from easydiffraction.datablocks.structure.categories.atom_sites.enums import Adp
 from easydiffraction.datablocks.structure.categories.atom_sites.factory import AtomSitesFactory
 from easydiffraction.io.cif.handler import TagSpec
 from easydiffraction.utils.logging import log
+
+_CHARGED_TYPE_SYMBOL_PATTERN = re.compile(
+    r'(?P<neutral>\d*(?P<element>[A-Z][a-z]?))(?P<charge>[1-8][+-])'
+)
 
 
 class AtomSite(CategoryItem):
@@ -61,6 +66,7 @@ class AtomSite(CategoryItem):
         # search (only the cheap per-iteration snap runs). None until
         # first detection; invalidated when detection clears the site.
         self._wyckoff_template_cache: str | None = None
+        self._type_symbol_charge_warnings: set[str] = set()
 
         self._id = StringDescriptor(
             name='id',
@@ -160,7 +166,10 @@ class AtomSite(CategoryItem):
             value_spec=AttributeSpec(default=None, allow_none=True),
             tags=TagSpec(
                 edi_names=['_atom_site.multiplicity'],
-                cif_names=['_atom_site.site_symmetry_multiplicity'],
+                cif_names=[
+                    '_atom_site.site_symmetry_multiplicity',
+                    '_atom_site_symmetry_multiplicity',
+                ],
             ),
         )
         self._occupancy = Parameter(
@@ -215,14 +224,22 @@ class AtomSite(CategoryItem):
     @property
     def _type_symbol_allowed_values(self) -> list[str]:
         """
-        Chemical symbols accepted by *cryspy*.
+        Chemical and ionic symbols accepted by *cryspy*.
 
         Returns
         -------
         list[str]
-            Unique element/isotope symbols from the database.
+            Unique element/isotope symbols from the database, with
+            common signed oxidation-state suffixes.
         """
-        return list({key[1] for key in DATABASE['Isotopes']})
+        symbols = {key[1] for key in DATABASE['Isotopes']}
+        ions = {
+            f'{symbol}{charge}{sign}'
+            for symbol in symbols
+            for charge in range(1, 9)
+            for sign in ('+', '-')
+        }
+        return list(symbols | ions)
 
     def _resolve_structure_space_group(self) -> object | None:
         """
@@ -649,6 +666,63 @@ class AtomSite(CategoryItem):
     @type_symbol.setter
     def type_symbol(self, value: str) -> None:
         self._type_symbol.value = value
+        self._warn_about_default_calculator_charge()
+
+    def _warn_about_default_calculator_charge(self) -> None:
+        """Warn when the default calculator cannot use this charge."""
+        from easydiffraction.analysis.calculators.factory import CalculatorFactory  # noqa: PLC0415
+        from easydiffraction.datablocks.experiment.item.enums import (  # noqa: PLC0415
+            ScatteringTypeEnum,
+        )
+
+        type_symbol = self._type_symbol.value.strip()
+        match = _CHARGED_TYPE_SYMBOL_PATTERN.fullmatch(type_symbol)
+        if match is None:
+            return
+
+        calculator = CalculatorFactory.default_tag(
+            scattering_type=ScatteringTypeEnum.BRAGG,
+        )
+        available = CalculatorFactory.supported_tags()
+        if available and calculator not in available:
+            calculator = available[0]
+
+        warning_key = f'{calculator}:{type_symbol}'
+        if warning_key in self._type_symbol_charge_warnings:
+            return
+
+        if calculator == 'cryspy':
+            element_symbol = match.group('element')
+            ion_symbol = f'{element_symbol}{match.group("charge")}'
+            scattering_amplitudes = DATABASE['Scattering amplitude']
+            if ion_symbol in scattering_amplitudes:
+                return
+            neutral_symbol = match.group('neutral')
+            supported_ions = sorted(
+                symbol
+                for symbol in scattering_amplitudes
+                if re.fullmatch(rf'{re.escape(element_symbol)}[1-8][+-]', symbol)
+            )
+            ionic_support = (
+                f"Supported ionic forms for '{element_symbol}': {', '.join(supported_ions)}."
+                if supported_ions
+                else f"No ionic forms are available for '{element_symbol}'."
+            )
+            log.warning(
+                f"Charged atom type '{type_symbol}' is not available in the default "
+                f'CrysPy scattering-factor database. {ionic_support} The default '
+                f"neutral-atom scattering factors for '{neutral_symbol}' (no ionic "
+                'charge) will be used.'
+            )
+        elif calculator == 'crysfml':
+            log.warning(
+                f"Charged atom type '{type_symbol}' is not supported by the default "
+                'CrysFML calculator yet; the charge will be ignored.'
+            )
+        else:
+            return
+
+        self._type_symbol_charge_warnings.add(warning_key)
 
     @property
     def adp_type(self) -> EnumDescriptor:

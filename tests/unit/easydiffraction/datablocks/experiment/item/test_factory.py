@@ -29,6 +29,15 @@ def test_experiment_factory_from_scratch():
     assert ex.experiment_type.sample_form.value == SampleFormEnum.POWDER.value
 
 
+def test_from_cif_str_normalizes_datablock_name():
+    from easydiffraction.datablocks.experiment.item.factory import ExperimentFactory
+
+    experiment = ExperimentFactory.from_cif_str('data_83267-ICSD\n')
+
+    assert experiment.name == '83267-icsd'
+    assert experiment.as_cif.startswith('data_83267-icsd\n')
+
+
 def test_from_cif_str_restores_non_default_peak_profile_type():
     """
     Loading a CIF with a non-default peak profile type must reconstruct

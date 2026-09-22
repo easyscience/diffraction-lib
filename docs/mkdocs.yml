@@ -223,6 +223,7 @@ nav:
           - Experiment: user-guide/analysis-workflow/experiment.md
           - Analysis: user-guide/analysis-workflow/analysis.md
           - Report: user-guide/analysis-workflow/report.md
+      - Reliability Factors: user-guide/analysis-workflow/reliability-factors.md
   - Tutorials:
       - Tutorials: tutorials/index.md
       - Getting Started:
@@ -235,8 +236,9 @@ nav:
           - HS pd-neut-cwl: tutorials/refine-hs-hrpt.ipynb
           - Si pd-neut-tof: tutorials/refine-si-sepd.ipynb
           - PbSO4 pd-xray-cwl: tutorials/refine-pbso4-xray.ipynb
-          - LaM(7)O3 P02.1 pd-xray-cwl: tutorials/refine-lam7o3-p021.ipynb
+          - LaM(7)O3 pd-xray-cwl: tutorials/refine-lam7o3-p021.ipynb
           - LMO pd-neut-cwl: tutorials/refine-lmo-echidna.ipynb
+          - YAlO3+Al2O3 pd-neut-cwl: tutorials/refine-yap-3k.ipynb
       - Without Measured Data:
           - LBCO pd-neut-cwl: tutorials/simulate-lbco-cwl.ipynb
           - Si pd-neut-tof: tutorials/simulate-si-tof.ipynb

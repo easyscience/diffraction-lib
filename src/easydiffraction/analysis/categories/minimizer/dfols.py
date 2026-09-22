@@ -7,13 +7,15 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
+from easydiffraction.analysis.categories.minimizer.lsq_base import (
+    TrustRegionToleranceMinimizerBase,
+)
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 
 
 @MinimizerCategoryFactory.register
-class DfolsMinimizer(LeastSquaresMinimizerBase):
+class DfolsMinimizer(TrustRegionToleranceMinimizerBase):
     """Persisted settings for the DFO-LS minimizer."""
 
     _engine_metadata: ClassVar[dict[str, str]] = {

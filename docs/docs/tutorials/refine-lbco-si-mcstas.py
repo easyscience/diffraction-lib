@@ -88,13 +88,13 @@ structure_2 = StructureFactory.from_scratch(name='si')
 
 # %%
 structure_2.space_group.name_h_m = 'F d -3 m'
-structure_2.space_group.coord_system_code = '2'
+structure_2.space_group.coord_system_code = '1'
 
 # %% [markdown]
 # #### Set Unit Cell
 
 # %%
-structure_2.cell.length_a = 5.43146
+structure_2.cell.length_a = 5.43
 
 # %% [markdown]
 # #### Set Atom Sites
@@ -106,7 +106,8 @@ structure_2.atom_sites.create(
     fract_x=0.0,
     fract_y=0.0,
     fract_z=0.0,
-    adp_iso=0.0,
+    adp_type='Biso',
+    adp_iso=0.89,
 )
 
 # %% [markdown]
@@ -293,6 +294,9 @@ for point in experiment.background:
 
 # %% [markdown]
 # ### Run Fitting
+
+# %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %%
 project.analysis.fit()

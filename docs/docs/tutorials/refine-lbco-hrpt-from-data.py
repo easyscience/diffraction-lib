@@ -154,6 +154,9 @@ for point in experiment.background:
 experiment.linked_structures['lbco'].scale.free = True
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %%
