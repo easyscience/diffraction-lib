@@ -57,9 +57,9 @@ project.save_as(dir_path='projects/refine-yap-3k')
 yap_cif = """
 data_yap
 
-_cell.length_a 5.2
-_cell.length_b 5.3
-_cell.length_c 7.4
+_cell.length_a 5.18
+_cell.length_b 5.33
+_cell.length_c 7.37
 _cell.angle_alpha 90.
 _cell.angle_beta 90.
 _cell.angle_gamma 90.
@@ -123,7 +123,7 @@ alumina.space_group.coord_system_code = 'h'
 
 # %%
 alumina.cell.length_a = 4.75
-alumina.cell.length_c = 13.0
+alumina.cell.length_c = 12.95
 
 # %% [markdown]
 # #### Set Atom Sites
@@ -294,6 +294,7 @@ project.analysis.minimizer.show_supported()
 
 # %%
 project.analysis.minimizer.type = 'bumps (lm)'
+project.analysis.minimizer.max_iterations = 1000
 
 # %% [markdown]
 # ### Perform Fit 1/3: Cell, Scale, and Background
