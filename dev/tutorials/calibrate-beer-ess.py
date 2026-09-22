@@ -300,6 +300,9 @@ project.analysis.constraints.create(expression='n2_austenite_scale = s2_austenit
 # Run full fitting with all free parameters.
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %% [markdown]

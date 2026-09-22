@@ -62,6 +62,9 @@ project.experiments.add_from_cif_path(expt_path)
 # ### Without Constraints
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 # Start refinement. All parameters, which have standard uncertainties
 # in the input CIF files, are refined by default.
 project.analysis.fit()

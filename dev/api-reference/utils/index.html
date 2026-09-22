@@ -5913,6 +5913,17 @@ tailored to the configured console.</p>
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;NotebookAwareConsole&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.logging.NotebookAwareConsole&lt;/code&gt;)" href="#easydiffraction.utils.logging.NotebookAwareConsole">NotebookAwareConsole</a></code></td>
+            <td>
+              <div class="doc-md-description">
+                <p>Rich console that leaves line wrapping to the notebook UI.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><a class="autorefs autorefs-internal" title="&lt;code&gt;ConsoleManager&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.logging.ConsoleManager&lt;/code&gt;)" href="#easydiffraction.utils.logging.ConsoleManager">ConsoleManager</a></code></td>
             <td>
               <div class="doc-md-description">
@@ -6041,6 +6052,17 @@ tailored to the configured console.</p>
               <td>
                 <div class="doc-md-description">
                   <p>Render the log message body as a Rich Text object.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;n&quot;&gt;render&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;record&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;traceback&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;message_renderable&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.logging.IconifiedRichHandler.render&lt;/code&gt;)" href="#easydiffraction.utils.logging.IconifiedRichHandler.render">render</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Render notebook logs without Rich's fixed-width log grid.</p>
 <!-- prettier-ignore-start -->
 
 <!-- prettier-ignore-end -->
@@ -6241,6 +6263,126 @@ tailored to the configured console.</p>
           </tr>
       </tbody>
     </table>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.utils.logging.IconifiedRichHandler.render" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">render</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">traceback</span><span class="p">,</span> <span class="n">message_renderable</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Render notebook logs without Rich's fixed-width log grid.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h5 id="easydiffraction.utils.logging.NotebookAwareConsole" class="doc doc-heading">
+            <code>NotebookAwareConsole</code>
+
+
+</h5>
+
+
+    <div class="doc doc-contents ">
+
+
+
+        <p>Rich console that leaves line wrapping to the notebook UI.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+
+
+
+
+
+
+
+
+
+
+
+
+<p><span class="doc-section-title">Methods:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+            <tr class="doc-section-item">
+              <td><code><a class="autorefs autorefs-internal" title="&lt;code class=&quot;highlight language-python&quot;&gt;&lt;span class=&quot;nb&quot;&gt;print&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;objects&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;kwargs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt; (&lt;code&gt;easydiffraction.utils.logging.NotebookAwareConsole.print&lt;/code&gt;)" href="#easydiffraction.utils.logging.NotebookAwareConsole.print">print</a></code></td>
+              <td>
+                <div class="doc-md-description">
+                  <p>Print without inserting width-based line breaks in Jupyter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
+                </div>
+              </td>
+            </tr>
+      </tbody>
+    </table>
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+<h6 id="easydiffraction.utils.logging.NotebookAwareConsole-functions">Methods:</h6>
+
+<div class="doc doc-object doc-function">
+
+
+<h7 id="easydiffraction.utils.logging.NotebookAwareConsole.print" class="doc doc-heading">
+            <code class="highlight language-python"><span class="nb">print</span><span class="p">(</span><span class="o">*</span><span class="n">objects</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+
+</h7>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Print without inserting width-based line breaks in Jupyter.</p>
+<!-- prettier-ignore-start -->
+
+<!-- prettier-ignore-end -->
 
 
     </div>

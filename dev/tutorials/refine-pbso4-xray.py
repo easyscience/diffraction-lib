@@ -51,7 +51,7 @@ struct.cell.length_c = 6.96
 # %%
 struct.atom_sites.create(
     id='Pb',
-    type_symbol='Pb',
+    type_symbol='Pb4+',
     fract_x=0.1876,
     fract_y=0.25,
     fract_z=0.167,
@@ -69,7 +69,7 @@ struct.atom_sites.create(
 )
 struct.atom_sites.create(
     id='O1',
-    type_symbol='O',
+    type_symbol='O1-',
     fract_x=0.9082,
     fract_y=0.25,
     fract_z=0.5954,
@@ -78,7 +78,7 @@ struct.atom_sites.create(
 )
 struct.atom_sites.create(
     id='O2',
-    type_symbol='O',
+    type_symbol='O1-',
     fract_x=0.1935,
     fract_y=0.25,
     fract_z=0.5432,
@@ -87,7 +87,7 @@ struct.atom_sites.create(
 )
 struct.atom_sites.create(
     id='O3',
-    type_symbol='O',
+    type_symbol='O1-',
     fract_x=0.0811,
     fract_y=0.0272,
     fract_z=0.8086,
@@ -245,6 +245,9 @@ for term in expt.background:
 
 # %% [markdown]
 # ### Run Fitting
+
+# %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %%
 project.analysis.fit()

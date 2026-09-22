@@ -177,6 +177,9 @@ project_1.analysis.minimizer.show_supported()
 project_1.analysis.minimizer.type = 'bumps (lm)'
 
 # %%
+project_1.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project_1.analysis.fit()
 project_1.display.fit.results()
 
@@ -523,6 +526,9 @@ project_2.display.parameters.free()
 
 # %% [markdown]
 # **Solution:**
+
+# %% tags=["solution", "hide-input"]
+project_2.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %% tags=["solution", "hide-input"]
 project_2.analysis.minimizer.type = 'bumps (lm)'

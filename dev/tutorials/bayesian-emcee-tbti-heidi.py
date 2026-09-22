@@ -144,6 +144,9 @@ experiment.extinction.radius.free = True
 project.analysis.minimizer.show_supported()
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %% [markdown]
