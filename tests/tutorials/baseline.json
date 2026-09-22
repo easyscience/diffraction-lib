@@ -209,14 +209,14 @@
   "refine-lbco-si-mcstas": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 9.532167,
-    "r_factor_all": 0.058084,
-    "wr_factor_all": 0.076338,
+    "reduced_chi_square": 3.445143,
+    "r_factor_all": 0.049173,
+    "wr_factor_all": 0.045893,
     "parameters": {
-      "lbco.cell.length_a": 3.89046,
-      "si.cell.length_a": 5.4358,
-      "mcstas.linked_structure.lbco.scale": 39.15,
-      "mcstas.linked_structure.si.scale": 0.0412
+      "lbco.cell.length_a": 3.89045,
+      "si.cell.length_a": 5.43284,
+      "mcstas.linked_structure.lbco.scale": 39.7,
+      "mcstas.linked_structure.si.scale": 0.3311
     }
   },
   "refine-lmo-echidna": {
