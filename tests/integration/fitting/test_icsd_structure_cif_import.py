@@ -84,8 +84,8 @@ O4 O2- 4 a 0.2336(3) 0.2336(3) 0.2336(3) 0.037(1) 1.
 """
 
 
-def test_icsd_cif_import_preserves_structure_and_ionic_symbols_for_cryspy():
-    """Import the ICSD structure and preserve ionic atom types through Cryspy."""
+def test_icsd_cif_import_preserves_ions_and_uses_cryspy_fallbacks():
+    """Preserve imported ions while replacing unsupported CrysPy symbols."""
     from cryspy.H_functions_global.function_1_cryspy_objects import str_to_globaln
 
     structure = StructureFactory.from_cif_str(ZRW2O8_CIF)
@@ -147,5 +147,14 @@ def test_icsd_cif_import_preserves_structure_and_ionic_symbols_for_cryspy():
 
     assert cryspy_structure.data_name == '83267-icsd'
     assert [site.type_symbol for site in cryspy_structure.atom_site.items] == [
+        'Zr4+',
+        'W6+',
+        'W6+',
+        'O',
+        'O',
+        'O',
+        'O',
+    ]
+    assert [site.type_symbol.value for site in structure.atom_sites] == [
         expected[0] for expected in expected_sites.values()
     ]

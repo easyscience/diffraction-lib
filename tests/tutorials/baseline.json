@@ -259,13 +259,13 @@
   "refine-pbso4-xray": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 3.403071,
-    "r_factor_all": 0.06796,
-    "wr_factor_all": 0.089973,
+    "reduced_chi_square": 3.413049,
+    "r_factor_all": 0.068017,
+    "wr_factor_all": 0.090105,
     "parameters": {
-      "pbso4.cell.length_a": 8.480969,
-      "pbso4.cell.length_b": 5.399004,
-      "pbso4.cell.length_c": 6.96054,
+      "pbso4.cell.length_a": 8.480971,
+      "pbso4.cell.length_b": 5.399011,
+      "pbso4.cell.length_c": 6.960543,
       "xrd.linked_structure.pbso4.scale": 0.000999
     }
   },
@@ -284,12 +284,12 @@
   "refine-taurine-senju": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 12.192189,
-    "r_factor_all": 0.133438,
-    "wr_factor_all": 0.084877,
+    "reduced_chi_square": 11.886304,
+    "r_factor_all": 0.132617,
+    "wr_factor_all": 0.083805,
     "parameters": {
-      "taurine.atom_site.S1.fract_x": 0.203646,
-      "senju.linked_structure.scale": 1.358181
+      "taurine.atom_site.S1.fract_x": 0.203176,
+      "senju.linked_structure.scale": 1.359678
     }
   },
   "refine-tbti-heidi": {
@@ -306,18 +306,18 @@
   "refine-yap-3k": {
     "result_kind": "deterministic",
     "rtol": 0.02,
-    "reduced_chi_square": 9.351763,
-    "n_free_parameters": 48,
-    "r_factor_all": 0.031541,
-    "wr_factor_all": 0.039777,
+    "reduced_chi_square": 9.248924,
+    "n_free_parameters": 49,
+    "r_factor_all": 0.031261,
+    "wr_factor_all": 0.039551,
     "parameters": {
-      "yap.cell.length_a": 5.172822,
-      "yap.cell.length_b": 5.327139,
-      "yap.cell.length_c": 7.361322,
-      "alumina.cell.length_a": 4.75835,
-      "alumina.cell.length_c": 12.9749,
-      "yap_3k.linked_structure.yap.scale": 27.984,
-      "yap_3k.linked_structure.alumina.scale": 0.183
+      "yap.cell.length_a": 5.172815,
+      "yap.cell.length_b": 5.327131,
+      "yap.cell.length_c": 7.361296,
+      "alumina.cell.length_a": 4.75804,
+      "alumina.cell.length_c": 12.9748,
+      "yap_3k.linked_structure.yap.scale": 28.006,
+      "yap_3k.linked_structure.alumina.scale": 0.185
     }
   }
 }
