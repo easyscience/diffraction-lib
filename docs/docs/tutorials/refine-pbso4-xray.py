@@ -247,7 +247,7 @@ for term in expt.background:
 # ### Run Fitting
 
 # %%
-project.analysis.minimizer.chi_square_change_tolerance = 1e-3
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
 
 # %%
 project.analysis.fit()

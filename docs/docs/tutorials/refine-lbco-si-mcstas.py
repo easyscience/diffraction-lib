@@ -295,6 +295,9 @@ for point in experiment.background:
 # ### Run Fitting
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 project.display.fit.results()
 project.display.fit.correlations()

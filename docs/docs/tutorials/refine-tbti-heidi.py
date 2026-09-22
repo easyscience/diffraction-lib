@@ -126,6 +126,9 @@ experiment.linked_structure.scale.free = True
 experiment.extinction.radius.free = True
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 # Start refinement. All parameters, which have standard uncertainties
 # in the input CIF files, are refined by default.
 project.analysis.fit()

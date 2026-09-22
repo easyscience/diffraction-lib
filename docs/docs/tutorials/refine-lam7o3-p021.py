@@ -335,6 +335,9 @@ project.display.pattern(expt_name='p021', x_min=2.2, x_max=4.0)
 # #### Run Fitting
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %% [markdown]
