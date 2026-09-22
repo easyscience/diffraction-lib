@@ -69,7 +69,7 @@ The tutorials are organized into the following categories:
 - [YAlO3+Al2O3 `pd-neut-cwl`](refine-yap-3k.ipynb) – Demonstrates a
   staged two-phase Rietveld refinement of YAlO3 with an Al2O3 impurity
   using constant wavelength neutron powder diffraction data measured at
-  3 K on SPODI at MLZ, adapted from a FullProf example.
+  3 K on SPODI at MLZ.
 
 ## Without Measured Data
 
