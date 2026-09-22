@@ -277,6 +277,9 @@ project.analysis.constraints.create(expression='biso_Co2 = biso_Co1')
 # ### Run Fitting
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %%

@@ -169,6 +169,33 @@ To select the desired minimizer, e.g., 'lmfit':
 project.analysis.minimizer.type = 'lmfit'
 ```
 
+The available convergence settings change with the selected minimizer.
+Their names describe the stopping condition rather than the backend's
+short option name (`ftol`, `xtol`, or `gtol`).
+
+| Minimizer                  | Available convergence settings and defaults                                                              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `lmfit`, `lmfit (leastsq)` | `chi_square_change_tolerance=1e-8`, `parameter_change_tolerance=1e-8`, `gradient_tolerance=0` (disabled) |
+| `lmfit (least_squares)`    | `chi_square_change_tolerance=1e-8`, `parameter_change_tolerance=1e-8`, `gradient_tolerance=1e-8`         |
+| `bumps`, `bumps (lm)`      | `chi_square_change_tolerance=1e-8`, `parameter_change_tolerance=1e-8`                                    |
+| `bumps (amoeba)`           | `chi_square_change_tolerance=1e-8`, `parameter_change_tolerance=1e-6`                                    |
+| `bumps (de)`               | `population_convergence_tolerance=1e-6`                                                                  |
+| `dfols`                    | `final_trust_region_radius=1e-8`                                                                         |
+
+For example, to require a smaller relative change in chi-square before
+LMFIT stops:
+
+```python
+project.analysis.minimizer.type = 'lmfit (leastsq)'
+project.analysis.minimizer.chi_square_change_tolerance = 1e-10
+```
+
+`chi_square_change_tolerance` is the setting that directly tests the
+change in chi-square. The other stopping criteria can still affect the
+final chi-square because a minimizer stops when any active criterion is
+satisfied. Bayesian samplers use sampling controls instead of these
+deterministic convergence tolerances.
+
 ### Fit Mode
 
 In EasyDiffraction, you can set the **fit mode** to control how the

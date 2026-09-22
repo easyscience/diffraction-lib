@@ -11,6 +11,8 @@ from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'amoeba'
 DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE = 1e-8
+DEFAULT_PARAMETER_CHANGE_TOLERANCE = 1e-6
 
 
 @MinimizerFactory.register
@@ -27,10 +29,14 @@ class BumpsAmoebaMinimizer(BumpsMinimizer):
         name: str = MinimizerTypeEnum.BUMPS_AMOEBA,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        chi_square_change_tolerance: float = DEFAULT_CHI_SQUARE_CHANGE_TOLERANCE,
+        parameter_change_tolerance: float = DEFAULT_PARAMETER_CHANGE_TOLERANCE,
     ) -> None:
         """Initialize the BUMPS Nelder-Mead simplex minimizer."""
         super().__init__(
             name=name,
             method=method,
             max_iterations=max_iterations,
+            chi_square_change_tolerance=chi_square_change_tolerance,
+            parameter_change_tolerance=parameter_change_tolerance,
         )

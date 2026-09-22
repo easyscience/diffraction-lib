@@ -11,6 +11,7 @@ from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_METHOD = 'de'
 DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_POPULATION_CONVERGENCE_TOLERANCE = 1e-6
 
 
 @MinimizerFactory.register
@@ -27,10 +28,14 @@ class BumpsDEMinimizer(BumpsMinimizer):
         name: str = MinimizerTypeEnum.BUMPS_DE,
         method: str = DEFAULT_METHOD,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        population_convergence_tolerance: float = DEFAULT_POPULATION_CONVERGENCE_TOLERANCE,
     ) -> None:
         """Initialize the BUMPS differential evolution minimizer."""
         super().__init__(
             name=name,
             method=method,
             max_iterations=max_iterations,
+            chi_square_change_tolerance=None,
+            parameter_change_tolerance=None,
+            population_convergence_tolerance=population_convergence_tolerance,
         )

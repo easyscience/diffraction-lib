@@ -56,6 +56,9 @@ project.display.structure(struct_name='cosio')
 # and continues from the remaining files.
 
 # %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-2
+
+# %%
 project.analysis.fit()
 
 # %% [markdown]

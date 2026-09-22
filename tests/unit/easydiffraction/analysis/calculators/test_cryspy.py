@@ -60,6 +60,85 @@ def test_cryspy_calculator_engine_flag_and_converters():
     assert calc._convert_structure_to_cryspy_cif(DummySample()) == 'data_x'
 
 
+def test_cryspy_falls_back_for_unsupported_charge_number_and_sign(monkeypatch):
+    import easydiffraction.analysis.calculators.cryspy as cryspy_mod
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+
+    class Descriptor:
+        def __init__(self, value):
+            self._value = value
+
+        @property
+        def value(self):
+            return self._value
+
+    def atom(type_symbol):
+        descriptor = Descriptor(type_symbol)
+        return SimpleNamespace(type_symbol=descriptor, _type_symbol=descriptor)
+
+    supported = atom('Fe3+')
+    unsupported_number = atom('Fe1+')
+    unsupported_sign = atom('Fe3-')
+    isotope = atom('57Fe1+')
+    structure = SimpleNamespace(
+        atom_sites=[supported, unsupported_number, unsupported_sign, isotope]
+    )
+    warning_messages = []
+    monkeypatch.setattr(cryspy_mod.log, 'warning', warning_messages.append)
+    calculator = CryspyCalculator()
+
+    saved = calculator._temporarily_use_supported_type_symbols(structure)
+
+    assert supported.type_symbol.value == 'Fe3+'
+    assert unsupported_number.type_symbol.value == 'Fe'
+    assert unsupported_sign.type_symbol.value == 'Fe'
+    assert isotope.type_symbol.value == '57Fe'
+    assert len(warning_messages) == 3
+    assert "Charged atom type 'Fe1+'" in warning_messages[0]
+    assert "Supported ionic forms for 'Fe': Fe2+, Fe3+." in warning_messages[0]
+    assert (
+        "default neutral-atom scattering factors for 'Fe' (no ionic charge)" in warning_messages[0]
+    )
+    assert "Charged atom type 'Fe3-'" in warning_messages[1]
+    assert "Charged atom type '57Fe1+'" in warning_messages[2]
+    assert "Supported ionic forms for 'Fe': Fe2+, Fe3+." in warning_messages[2]
+    assert (
+        "default neutral-atom scattering factors for '57Fe' (no ionic charge)"
+        in warning_messages[2]
+    )
+
+    calculator._restore_type_symbols(saved)
+
+    assert [atom.type_symbol.value for atom in structure.atom_sites] == [
+        'Fe3+',
+        'Fe1+',
+        'Fe3-',
+        '57Fe1+',
+    ]
+
+    calculator._temporarily_use_supported_type_symbols(structure)
+    assert len(warning_messages) == 3
+
+
+def test_cryspy_does_not_repeat_default_calculator_charge_warning(monkeypatch):
+    import easydiffraction.analysis.calculators.cryspy as cryspy_mod
+    from easydiffraction.analysis.calculators.cryspy import CryspyCalculator
+    from easydiffraction.datablocks.structure.categories.atom_sites.default import AtomSite
+
+    warning_messages = []
+    monkeypatch.setattr(cryspy_mod.log, 'warning', warning_messages.append)
+    atom = AtomSite()
+    atom.type_symbol = 'Pb3+'
+    calculator = CryspyCalculator()
+
+    saved = calculator._temporarily_use_supported_type_symbols(SimpleNamespace(atom_sites=[atom]))
+
+    assert atom.type_symbol.value == 'Pb'
+    assert len(warning_messages) == 1
+    calculator._restore_type_symbols(saved)
+    assert atom.type_symbol.value == 'Pb3+'
+
+
 def test_tof_pseudo_voigt_cif_section_uses_non_convoluted_peak_shape():
     import easydiffraction.analysis.calculators.cryspy as MUT
     from easydiffraction.datablocks.experiment.categories.peak.tof import TofPseudoVoigt

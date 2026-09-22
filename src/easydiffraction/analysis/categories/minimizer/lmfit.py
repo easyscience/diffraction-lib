@@ -7,19 +7,23 @@ from __future__ import annotations
 from typing import ClassVar
 
 from easydiffraction.analysis.categories.minimizer.factory import MinimizerCategoryFactory
-from easydiffraction.analysis.categories.minimizer.lsq_base import LeastSquaresMinimizerBase
+from easydiffraction.analysis.categories.minimizer.lsq_base import GradientToleranceMinimizerBase
 from easydiffraction.analysis.minimizers.enums import MinimizerTypeEnum
 from easydiffraction.core.metadata import TypeInfo
 
 
 @MinimizerCategoryFactory.register
-class LmfitMinimizer(LeastSquaresMinimizerBase):
+class LmfitMinimizer(GradientToleranceMinimizerBase):
     """Persisted settings for the default LMFIT minimizer."""
 
     _engine_metadata: ClassVar[dict[str, str]] = {
         'optimizer_name': 'lmfit',
         'method_name': 'leastsq',
     }
+    _default_chi_square_change_tolerance: ClassVar[float] = 1e-8
+    _default_parameter_change_tolerance: ClassVar[float] = 1e-8
+    _default_gradient_tolerance: ClassVar[float] = 0.0
+    _gradient_tolerance_allows_zero: ClassVar[bool] = True
     url: str = 'https://lmfit.github.io/lmfit-py'
 
     type_info = TypeInfo(

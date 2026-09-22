@@ -11,6 +11,7 @@ from easydiffraction.analysis.minimizers.factory import MinimizerFactory
 from easydiffraction.core.metadata import TypeInfo
 
 DEFAULT_MAX_ITERATIONS = 1000
+DEFAULT_FINAL_TRUST_REGION_RADIUS = 1e-8
 
 
 @MinimizerFactory.register
@@ -26,10 +27,12 @@ class DfolsMinimizer(MinimizerBase):
         self,
         name: str = MinimizerTypeEnum.DFOLS,
         max_iterations: int = DEFAULT_MAX_ITERATIONS,
+        final_trust_region_radius: float = DEFAULT_FINAL_TRUST_REGION_RADIUS,
         **kwargs: object,
     ) -> None:
         """Initialize the DFO-LS minimizer with default settings."""
         super().__init__(name=name, method=None, max_iterations=max_iterations)
+        self.final_trust_region_radius = final_trust_region_radius
         # Intentionally unused, accepted for API compatibility
         del kwargs
 
@@ -61,7 +64,13 @@ class DfolsMinimizer(MinimizerBase):
         """Run the DFO-LS solver on the objective function."""
         x0 = kwargs.get('x0')
         bounds = kwargs.get('bounds')
-        return solve(objective_function, x0=x0, bounds=bounds, maxfun=self.max_iterations)
+        return solve(
+            objective_function,
+            x0=x0,
+            bounds=bounds,
+            maxfun=self.max_iterations,
+            rhoend=self.final_trust_region_radius,
+        )
 
     def _sync_result_to_parameters(  # noqa: PLR6301
         self,

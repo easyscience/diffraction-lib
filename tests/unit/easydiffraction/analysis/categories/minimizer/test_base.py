@@ -14,4 +14,9 @@ def test_descriptor_values_and_native_kwargs_use_descriptor_values():
     assert minimizer._descriptor_values(('max_iterations',)) == {
         'max_iterations': 25,
     }
-    assert minimizer._native_kwargs() == {'max_iterations': 25}
+    assert minimizer._native_kwargs() == {
+        'max_iterations': 25,
+        'chi_square_change_tolerance': 1e-8,
+        'parameter_change_tolerance': 1e-8,
+        'gradient_tolerance': 0.0,
+    }

@@ -4,6 +4,7 @@
 
 import logging
 import sys
+from io import StringIO
 
 import pytest
 
@@ -12,6 +13,7 @@ from easydiffraction.utils.logging import ConsolePrinter
 from easydiffraction.utils.logging import ExceptionHookManager
 from easydiffraction.utils.logging import IconifiedRichHandler
 from easydiffraction.utils.logging import Logger
+from easydiffraction.utils.logging import NotebookAwareConsole
 from easydiffraction.utils.logging import _rich_markup_to_inline_html
 
 
@@ -81,6 +83,44 @@ class TestDetectWidth:
         width = ConsoleManager._detect_width()
         assert width >= ConsoleManager._MIN_CONSOLE_WIDTH
         assert isinstance(width, int)
+
+
+class TestNotebookAwareConsole:
+    def test_notebook_output_has_no_hard_width_wrap(self, monkeypatch):
+        monkeypatch.setattr('easydiffraction.utils.logging.in_jupyter', lambda: True)
+        stream = StringIO()
+        console = NotebookAwareConsole(
+            file=stream,
+            width=20,
+            force_terminal=False,
+            color_system=None,
+        )
+
+        console.print('This message is deliberately wider than twenty characters.', end='')
+
+        assert stream.getvalue() == 'This message is deliberately wider than twenty characters.'
+
+    def test_notebook_log_has_no_hard_width_wrap(self, monkeypatch):
+        monkeypatch.setattr('easydiffraction.utils.logging.in_jupyter', lambda: True)
+        stream = StringIO()
+        console = NotebookAwareConsole(
+            file=stream,
+            width=20,
+            force_terminal=False,
+            color_system=None,
+        )
+        handler = IconifiedRichHandler(
+            console=console,
+            mode='compact',
+            show_time=False,
+            show_path=False,
+        )
+        handler.setFormatter(logging.Formatter('%(message)s'))
+        message = 'This warning is deliberately wider than twenty characters.'
+
+        handler.emit(_make_record(msg=message))
+
+        assert stream.getvalue() == f'⚠️ {message}\n'
 
 
 class TestGetLevelText:
