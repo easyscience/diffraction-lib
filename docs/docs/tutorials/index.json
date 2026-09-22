@@ -254,5 +254,13 @@
     "title": "Structure Refinement: LMO, ECHIDNA",
     "description": "Rietveld refinement of an LMO structure with constrained Li/Ni site mixing using constant wavelength neutron powder diffraction data from ECHIDNA at ANSTO",
     "level": "intermediate"
+  },
+  "refine-yap-3k": {
+    "order": 33,
+    "url": "https://easyscience.github.io/diffraction-lib/{version}/tutorials/refine-yap-3k/refine-yap-3k.ipynb",
+    "original_name": "yap_3k",
+    "title": "Structure Refinement: YAlO3+Al2O3, SPODI",
+    "description": "Staged two-phase Rietveld refinement of YAlO3 with an Al2O3 impurity using constant wavelength neutron powder diffraction data measured at 3 K on SPODI at MLZ, adapted from a FullProf example",
+    "level": "intermediate"
   }
 }

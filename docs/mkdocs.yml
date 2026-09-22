@@ -238,6 +238,7 @@ nav:
           - PbSO4 pd-xray-cwl: tutorials/refine-pbso4-xray.ipynb
           - LaM(7)O3 pd-xray-cwl: tutorials/refine-lam7o3-p021.ipynb
           - LMO pd-neut-cwl: tutorials/refine-lmo-echidna.ipynb
+          - YAlO3+Al2O3 pd-neut-cwl: tutorials/refine-yap-3k.ipynb
       - Without Measured Data:
           - LBCO pd-neut-cwl: tutorials/simulate-lbco-cwl.ipynb
           - Si pd-neut-tof: tutorials/simulate-si-tof.ipynb
