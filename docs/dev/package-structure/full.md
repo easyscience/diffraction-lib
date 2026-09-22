@@ -748,6 +748,7 @@
 │   │   └── 🏷️ class FigureEmbedMode
 │   ├── 📄 logging.py
 │   │   ├── 🏷️ class IconifiedRichHandler
+│   │   ├── 🏷️ class NotebookAwareConsole
 │   │   ├── 🏷️ class ConsoleManager
 │   │   ├── 🏷️ class LoggerConfig
 │   │   ├── 🏷️ class ExceptionHookManager
