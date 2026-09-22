@@ -29,7 +29,7 @@ jobs:
 
       # Build the Python package (to dist/ folder)
       - name: Create Python package
-        run: pixi run default-build
+        run: pixi run --frozen default-build
 
       # Publish the package to PyPI (from dist/ folder)
       # Instead of publishing with personal access token, we use
