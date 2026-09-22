@@ -60,7 +60,7 @@ struct.atom_sites.create(
 )
 struct.atom_sites.create(
     id='S',
-    type_symbol='S1+',
+    type_symbol='S',
     fract_x=0.0654,
     fract_y=0.25,
     fract_z=0.684,
@@ -245,6 +245,9 @@ for term in expt.background:
 
 # %% [markdown]
 # ### Run Fitting
+
+# %%
+project.analysis.minimizer.chi_square_change_tolerance = 1e-3
 
 # %%
 project.analysis.fit()
