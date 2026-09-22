@@ -302,5 +302,22 @@
       "tbti.atom_site.Ti.occupancy": 0.9661,
       "heidi.linked_structure.scale": 2.874
     }
+  },
+  "refine-yap-3k": {
+    "result_kind": "deterministic",
+    "rtol": 0.02,
+    "reduced_chi_square": 9.351763,
+    "n_free_parameters": 48,
+    "r_factor_all": 0.031541,
+    "wr_factor_all": 0.039777,
+    "parameters": {
+      "yap.cell.length_a": 5.172822,
+      "yap.cell.length_b": 5.327139,
+      "yap.cell.length_c": 7.361322,
+      "alumina.cell.length_a": 4.75835,
+      "alumina.cell.length_c": 12.9749,
+      "yap_3k.linked_structure.yap.scale": 27.984,
+      "yap_3k.linked_structure.alumina.scale": 0.183
+    }
   }
 }
