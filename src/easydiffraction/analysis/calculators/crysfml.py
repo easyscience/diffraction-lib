@@ -142,6 +142,7 @@ class CrysfmlCalculator(CalculatorBase):
         """Initialize CrysFML calculator state."""
         super().__init__()
         self._cw_doublet_fallback_warned = False
+        self._unsupported_charge_symbols_warned: set[str] = set()
 
     @property
     def name(self) -> str:
@@ -534,11 +535,26 @@ class CrysfmlCalculator(CalculatorBase):
         occupancy = self._normalized_occupancy(atom, structure)
         return (
             f'  Atom  {_cfl_label(atom.id.value)}  '
-            f'{_element_symbol(atom.type_symbol.value)}  '
+            f'{self._cfl_type_symbol(atom.type_symbol.value)}  '
             f'{_fmt(atom.fract_x.value)}  {_fmt(atom.fract_y.value)}  '
             f'{_fmt(atom.fract_z.value)}  {_fmt(atom.adp_iso_as_b)}  '
             f'{_fmt(occupancy)}'
         )
+
+    def _cfl_type_symbol(self, type_symbol: str) -> str:
+        """
+        Return CrysFML's element symbol and warn when charge is lost.
+        """
+        element_symbol = _element_symbol(type_symbol)
+        stripped_type_symbol = type_symbol.strip()
+        has_charge = bool(re.fullmatch(r'\d*[A-Z][a-z]?[1-8][+-]', stripped_type_symbol))
+        if has_charge and stripped_type_symbol not in self._unsupported_charge_symbols_warned:
+            self._unsupported_charge_symbols_warned.add(stripped_type_symbol)
+            log.warning(
+                f"[CrysfmlCalculator] Charged atom type '{stripped_type_symbol}' "
+                'is not supported by CrysFML yet; the charge will be ignored.'
+            )
+        return element_symbol
 
     def _normalized_occupancy(self, atom: object, structure: Structure) -> float:
         """

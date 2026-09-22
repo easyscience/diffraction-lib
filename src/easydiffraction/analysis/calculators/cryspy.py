@@ -7,6 +7,7 @@ from __future__ import annotations
 import contextlib
 import copy
 import io
+import re
 from typing import TYPE_CHECKING
 from typing import Any
 
@@ -43,6 +44,9 @@ except ImportError:
 
 
 EXPECTED_HKL_INDEX_ROWS = 3
+_CHARGED_TYPE_SYMBOL_PATTERN = re.compile(
+    r'(?P<neutral>\d*(?P<element>[A-Z][a-z]?))(?P<charge>[1-8][+-])'
+)
 
 
 @CalculatorFactory.register
@@ -75,6 +79,7 @@ class CryspyCalculator(CalculatorBase):
         self._cached_pref_orient: dict[str, tuple] = {}
         self._cached_polarization_settings: dict[str, tuple[float, float] | None] = {}
         self._last_powder_phase_blocks: dict[str, dict[str, Any] | None] = {}
+        self._unsupported_charge_symbols_warned: set[str] = set()
 
     def _invalidate_stale_cache(
         self,
@@ -957,14 +962,74 @@ class CryspyCalculator(CalculatorBase):
         str
             The Cryspy CIF string representation of the structure.
         """
-        saved = self._temporarily_convert_to_u_notation(structure)
+        saved_adp = self._temporarily_convert_to_u_notation(structure)
+        saved_type_symbols: list[tuple[object, str]] = []
 
         try:
+            saved_type_symbols = self._temporarily_use_supported_type_symbols(structure)
             cif = structure.as_cif
         finally:
-            self._restore_from_u_notation(structure, saved)
+            self._restore_type_symbols(saved_type_symbols)
+            self._restore_from_u_notation(structure, saved_adp)
 
         return self._relabel_cif_tags_for_cryspy(cif)
+
+    def _temporarily_use_supported_type_symbols(
+        self,
+        structure: Structure,
+    ) -> list[tuple[object, str]]:
+        """
+        Replace unsupported CrysPy ions with their neutral symbols.
+        """
+        from cryspy.A_functions_base.database import DATABASE  # noqa: PLC0415
+
+        supported_ions = DATABASE['Scattering amplitude']
+        saved: list[tuple[object, str]] = []
+
+        for atom in structure.atom_sites:
+            type_symbol = atom.type_symbol.value.strip()
+            match = _CHARGED_TYPE_SYMBOL_PATTERN.fullmatch(type_symbol)
+            if match is None:
+                continue
+
+            ion_symbol = f'{match.group("element")}{match.group("charge")}'
+            if ion_symbol in supported_ions:
+                continue
+
+            neutral_symbol = match.group('neutral')
+            saved.append((atom, atom._type_symbol._value))
+            atom._type_symbol._value = neutral_symbol
+
+            warning_key = f'cryspy:{type_symbol}'
+            atom_warning_keys = getattr(atom, '_type_symbol_charge_warnings', ())
+            already_warned = warning_key in atom_warning_keys
+            if not already_warned and type_symbol not in self._unsupported_charge_symbols_warned:
+                self._unsupported_charge_symbols_warned.add(type_symbol)
+                element_symbol = match.group('element')
+                available_ions = sorted(
+                    symbol
+                    for symbol in supported_ions
+                    if re.fullmatch(rf'{re.escape(element_symbol)}[1-8][+-]', symbol)
+                )
+                ionic_support = (
+                    f"Supported ionic forms for '{element_symbol}': {', '.join(available_ions)}."
+                    if available_ions
+                    else f"No ionic forms are available for '{element_symbol}'."
+                )
+                log.warning(
+                    f"[CryspyCalculator] Charged atom type '{type_symbol}' is not "
+                    f'available in the CrysPy scattering-factor database. {ionic_support} '
+                    'Using the default neutral-atom scattering factors for '
+                    f"'{neutral_symbol}' (no ionic charge)."
+                )
+
+        return saved
+
+    @staticmethod
+    def _restore_type_symbols(saved: list[tuple[object, str]]) -> None:
+        """Restore charged type symbols after CrysPy CIF generation."""
+        for atom, type_symbol in saved:
+            atom._type_symbol._value = type_symbol
 
     # Edi persistence renamed several CIF tags away from the legacy
     # IUCr spellings that cryspy's CIF parser still requires. The

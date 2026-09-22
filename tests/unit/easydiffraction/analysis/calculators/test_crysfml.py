@@ -100,6 +100,26 @@ def test_element_symbol_strips_isotope_and_ionic_notation(type_symbol, expected)
     assert _element_symbol(type_symbol) == expected
 
 
+def test_crysfml_warns_once_when_ionic_charge_is_ignored(monkeypatch):
+    import easydiffraction.analysis.calculators.crysfml as crysfml_mod
+    from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
+
+    warning_messages = []
+    monkeypatch.setattr(crysfml_mod.log, 'warning', warning_messages.append)
+    calculator = CrysfmlCalculator()
+
+    assert calculator._cfl_type_symbol('Fe3+') == 'Fe'
+    assert calculator._cfl_type_symbol('Fe3+') == 'Fe'
+    assert calculator._cfl_type_symbol('Fe') == 'Fe'
+
+    assert warning_messages == [
+        (
+            "[CrysfmlCalculator] Charged atom type 'Fe3+' is not supported by "
+            'CrysFML yet; the charge will be ignored.'
+        )
+    ]
+
+
 def test_crysfml_calculate_pattern_applies_absorption(monkeypatch):
     from easydiffraction.analysis.calculators.crysfml import CrysfmlCalculator
     from easydiffraction.analysis.corrections import absorption
